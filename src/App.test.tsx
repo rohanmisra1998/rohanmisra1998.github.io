@@ -41,4 +41,10 @@ describe('App', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false')
     expect(navigation).toHaveAttribute('hidden')
   })
+
+  it('keeps the Proofline decorative and the portrait descriptive', () => {
+    render(<App />)
+    expect(screen.getByTestId('proofline')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByRole('img', { name: /Rohan Misra/i })).toBeInTheDocument()
+  })
 })

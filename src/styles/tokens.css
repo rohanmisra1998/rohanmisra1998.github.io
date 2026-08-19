@@ -1,0 +1,18 @@
+:root {
+  --paper: #f6f7f2;
+  --ink: #0b1f33;
+  --signal: #4c6fff;
+  --saffron: #ffb000;
+  --field: #47705a;
+  --mist: #dde5e8;
+  --white: #ffffff;
+  --display: 'Bricolage Grotesque Variable', sans-serif;
+  --body: 'DM Sans Variable', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --content: min(1180px, calc(100vw - 48px));
+  --radius-sm: 12px;
+  --radius-lg: 30px;
+  --shadow: 0 24px 70px rgb(11 31 51 / 12%);
+  --space-section: clamp(5rem, 10vw, 9rem);
+  --rule: 1px solid rgb(11 31 51 / 16%);
+}

@@ -1,0 +1,75 @@
+.proofline__signal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-proofline 1200ms 180ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.proofline__node {
+  opacity: 0;
+  animation: show-proof 240ms 1080ms ease-out forwards;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: reveal-content 620ms 80ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: opacity 480ms ease, transform 480ms ease;
+}
+
+.hero__portrait.reveal {
+  animation-delay: 180ms;
+}
+
+.action,
+header nav a::after {
+  transition-duration: 180ms;
+  transition-property: background-color, color, transform;
+  transition-timing-function: ease;
+}
+
+@keyframes draw-proofline {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes show-proof {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reveal-content {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .proofline__signal {
+    stroke-dashoffset: 0;
+  }
+
+  .proofline__node {
+    opacity: 1;
+  }
+}
