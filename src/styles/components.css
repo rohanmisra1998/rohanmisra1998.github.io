@@ -26,8 +26,8 @@ header > a::after {
 header > button {
   position: relative;
   display: none;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   margin-left: clamp(1rem, 2vw, 2rem);
   padding: 0;
   border: var(--rule);
@@ -295,7 +295,7 @@ section[aria-labelledby='operating-thesis-heading'] {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
   gap: clamp(2rem, 7vw, 7rem);
-  margin-top: var(--space-section);
+  margin-top: 0;
   padding-inline: clamp(1.5rem, 4vw, 4rem);
   background: var(--ink);
   color: var(--paper);
@@ -934,7 +934,9 @@ footer p {
 
   header nav a,
   header nav span {
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
     padding-block: 0.75rem;
     font-size: 0.72rem;
   }
@@ -1080,7 +1082,7 @@ footer p {
   section[aria-labelledby='operating-thesis-heading'] {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    margin-top: 5rem;
+    margin-top: 0;
     padding-inline: 1.5rem;
   }
 
@@ -1128,6 +1130,15 @@ footer p {
 
   .operator-proof__evidence-item h4 {
     font-size: clamp(1.65rem, 8vw, 2.15rem);
+  }
+
+  .operator-proof__evidence-item p,
+  .social-proof > p,
+  .builder-lab__honesty,
+  .experience-row__detail p,
+  .writing-row__body p {
+    font-size: 1rem;
+    line-height: 1.6;
   }
 
   .social-proof {
@@ -1241,5 +1252,20 @@ footer p {
 
   footer {
     padding-block: 1.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .writing-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .writing-row__date {
+    grid-column: auto;
+  }
+
+  .writing-row__action {
+    justify-content: flex-start;
+    min-height: 44px;
   }
 }
