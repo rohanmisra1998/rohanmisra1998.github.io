@@ -1,0 +1,39 @@
+import type { WritingItem } from '../content/types'
+
+interface WritingProps {
+  items: WritingItem[]
+}
+
+export function Writing({ items }: WritingProps) {
+  return (
+    <section className="writing" id="writing" aria-labelledby="writing-heading">
+      <div className="section-heading section-heading--writing">
+        <p className="section-label">Published thinking</p>
+        <h2 id="writing-heading">Writing</h2>
+        <p className="section-heading__note">Three essays from the archive, in full on LinkedIn.</p>
+      </div>
+
+      <div className="writing__list">
+        {items.map((item) => (
+          <a
+            className="writing-row"
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.title}
+            key={item.href}
+          >
+            <p className="writing-row__date">{item.published}</p>
+            <div className="writing-row__body">
+              <h3>{item.title}</h3>
+              <p>{item.theme}</p>
+            </div>
+            <span className="writing-row__action">
+              LinkedIn <span aria-hidden="true">↗</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}

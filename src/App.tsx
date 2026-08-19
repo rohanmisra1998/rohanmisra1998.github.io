@@ -1,7 +1,11 @@
+import { About } from './components/About'
+import { Contact } from './components/Contact'
+import { Experience } from './components/Experience'
 import { Hero } from './components/Hero'
 import { OperatingThesis } from './components/OperatingThesis'
 import { SelectedWork } from './components/SelectedWork'
 import { SiteHeader } from './components/SiteHeader'
+import { Writing } from './components/Writing'
 import { siteContent } from './content/site-content'
 
 export default function App() {
@@ -12,10 +16,10 @@ export default function App() {
         <Hero content={siteContent.hero} />
         <SelectedWork projects={siteContent.work} />
         <OperatingThesis copy={siteContent.operatingThesis} />
-        <div id="experience" aria-label="Experience" />
-        <div id="writing" aria-label="Writing" />
-        <div id="about" aria-label="About" />
-        <div id="contact" aria-label="Contact" />
+        <Experience items={siteContent.experience} />
+        <Writing items={siteContent.writing} />
+        <About interests={siteContent.interests} />
+        <Contact config={siteContent.contact} />
       </main>
       <footer>
         <p>Built with curiosity and a bias to ship.</p>

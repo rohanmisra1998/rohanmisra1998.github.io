@@ -149,3 +149,18 @@ test('mobile Trail Pulse capability copy remains readable', async ({ page }, tes
   expect(typography.fontSize).toBeGreaterThanOrEqual(16)
   expect(typography.lineHeight).toBeGreaterThanOrEqual(24)
 })
+
+test('writing and contact actions are safe external links', async ({ page }) => {
+  await page.goto('/')
+  const article = page.getByRole('link', { name: /Financialisation of Housing/i })
+  await expect(article).toHaveAttribute('target', '_blank')
+  await expect(article).toHaveAttribute('rel', /noreferrer/)
+  await expect(page.getByRole('link', { name: /LinkedIn/i })).toHaveAttribute(
+    'href',
+    /rohan-misra-mba/
+  )
+  await expect(page.locator('#contact').getByText('CV · updating')).toHaveAttribute(
+    'aria-disabled',
+    'true'
+  )
+})

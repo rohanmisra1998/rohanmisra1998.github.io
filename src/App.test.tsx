@@ -59,4 +59,20 @@ describe('App', () => {
     expect(screen.getByTestId('proofline')).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getByRole('img', { name: /Rohan Misra/i })).toBeInTheDocument()
   })
+
+  it('renders the corrected experience, verified essays, and safe contact state', () => {
+    render(<App />)
+    expect(screen.getByText('Senior Manager, Strategy & Operations')).toBeInTheDocument()
+    expect(screen.getByText('July 2025–present')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Financialisation of Housing/i })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
+    )
+    expect(
+      screen
+        .getAllByText('CV · updating')
+        .every((node) => node.getAttribute('aria-disabled') === 'true')
+    ).toBe(true)
+    expect(screen.queryByRole('link', { name: /email/i })).not.toBeInTheDocument()
+  })
 })
