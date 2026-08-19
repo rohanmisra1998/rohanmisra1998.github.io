@@ -729,6 +729,11 @@ footer p {
   .builder-lab {
     width: min(40rem, 82%);
   }
+
+  .builder-lab__capabilities p {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
 }
 
 @media (max-width: 640px) {
@@ -874,7 +879,7 @@ footer p {
 
   .builder-lab__capabilities article,
   .builder-lab__capabilities article:nth-child(even) {
-    padding: 1rem 0;
+    padding: 1.25rem 0;
     border-top: var(--rule);
     border-left: 0;
   }

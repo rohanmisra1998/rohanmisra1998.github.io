@@ -96,4 +96,56 @@ test('Trail Pulse is a secondary Builder Lab experiment with honest detail', asy
   await expect(card.getByRole('link', { name: 'Try Trail Pulse' })).toHaveAttribute(
     'href', 'https://trail-pulse-alpha.vercel.app/'
   )
+
+  for (const action of [
+    card.getByRole('link', { name: 'Try Trail Pulse' }),
+    page.getByRole('link', { name: 'Read the report' })
+  ]) {
+    await expect(action).toHaveAttribute('target', '_blank')
+    await expect(action).toHaveAttribute('rel', /(?=.*noopener)(?=.*noreferrer)/)
+  }
+})
+
+test('desktop work hierarchy keeps Trail Pulse measurably secondary', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Desktop hierarchy measurement')
+
+  await page.goto('/')
+  await page.evaluate(() => document.fonts.ready)
+  const primary = page.getByRole('article', { name: 'Transformation at scale' })
+  const trailPulse = page.getByRole('article', { name: 'Trail Pulse' })
+  const details = trailPulse.locator('details')
+  await expect(details).not.toHaveAttribute('open', '')
+
+  const cardOrder = await page.locator('.work-card').evaluateAll((cards) =>
+    cards.map((card) => card.getAttribute('aria-labelledby'))
+  )
+  expect(cardOrder).toEqual(['transformation-at-scale-heading', 'trail-pulse-heading'])
+
+  const primaryBox = await primary.boundingBox()
+  const trailPulseBox = await trailPulse.boundingBox()
+  expect(primaryBox).not.toBeNull()
+  expect(trailPulseBox).not.toBeNull()
+  const areaRatio = (trailPulseBox!.width * trailPulseBox!.height) /
+    (primaryBox!.width * primaryBox!.height)
+  expect(areaRatio).toBeLessThan(0.55)
+
+  const [primaryHeadingSize, trailPulseHeadingSize] = await Promise.all([
+    primary.locator('h3').evaluate((heading) => Number.parseFloat(getComputedStyle(heading).fontSize)),
+    trailPulse.locator('h3').evaluate((heading) => Number.parseFloat(getComputedStyle(heading).fontSize))
+  ])
+  expect(trailPulseHeadingSize / primaryHeadingSize).toBeLessThan(0.75)
+})
+
+test('mobile Trail Pulse capability copy remains readable', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-mobile', 'Mobile disclosure typography')
+
+  await page.goto('/')
+  const card = page.getByRole('article', { name: 'Trail Pulse' })
+  await card.getByText('What Trail Pulse does').click()
+  const typography = await card.locator('.builder-lab__capabilities p').first().evaluate((copy) => ({
+    fontSize: Number.parseFloat(getComputedStyle(copy).fontSize),
+    lineHeight: Number.parseFloat(getComputedStyle(copy).lineHeight)
+  }))
+  expect(typography.fontSize).toBeGreaterThanOrEqual(16)
+  expect(typography.lineHeight).toBeGreaterThanOrEqual(24)
 })

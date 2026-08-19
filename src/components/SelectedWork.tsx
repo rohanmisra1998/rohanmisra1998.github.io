@@ -55,7 +55,7 @@ export function SelectedWork({ projects }: SelectedWorkProps) {
           </div>
           <p>{socialImpact.summary}</p>
           {reportLink && (
-            <a href={reportLink.href} target="_blank" rel="noreferrer">
+            <a href={reportLink.href} target="_blank" rel="noopener noreferrer">
               {reportLink.label} <ExternalArrow />
             </a>
           )}
@@ -103,7 +103,7 @@ export function SelectedWork({ projects }: SelectedWorkProps) {
               className="builder-lab__action"
               href={trailPulseLink.href}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               {trailPulseLink.label} <ExternalArrow />
             </a>

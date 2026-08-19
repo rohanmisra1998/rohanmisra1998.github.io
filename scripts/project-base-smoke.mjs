@@ -75,6 +75,22 @@ try {
     await page.locator('.hero__portrait img').evaluate((image) => image.naturalWidth > 0),
     'The base-aware portrait did not decode'
   )
+
+  const trailPulseImage = page.locator('.builder-lab__image img')
+  await trailPulseImage.scrollIntoViewIfNeeded()
+  await trailPulseImage.evaluate((image) => image.decode())
+  assert.ok(
+    await trailPulseImage.evaluate((image) => image.naturalWidth > 0),
+    'The base-aware Trail Pulse image did not decode'
+  )
+  const trailPulsePathname = await trailPulseImage.evaluate(
+    (image) => new URL(image.currentSrc || image.src).pathname
+  )
+  assert.equal(trailPulsePathname, `${projectBase}images/trail-pulse-results.webp`)
+  assert.ok(
+    imageRequests.includes(trailPulsePathname),
+    `Trail Pulse did not request within the project base: ${imageRequests.join(', ')}`
+  )
   console.log(`Project-base smoke passed: ${imageRequests.join(', ')}`)
 } finally {
   await browser?.close()
