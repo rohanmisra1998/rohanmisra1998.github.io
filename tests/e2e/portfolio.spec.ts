@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 function relativeLuminance(color: string) {
   const channels = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((channel) => {
@@ -214,4 +215,48 @@ test('critical hero content is visible when first attached', async ({ page }) =>
   ).__heroFirstAttachment)
 
   expect(firstAttachment).toEqual({ copyOpacity: '1', portraitOpacity: '1' })
+})
+
+test('complete page has no automatically detectable accessibility violations', async ({ page }) => {
+  await page.goto('/')
+
+  const results = await new AxeBuilder({ page }).analyze()
+
+  expect(results.violations).toEqual([])
+})
+
+test('open mobile navigation has no automatically detectable accessibility violations', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-mobile', 'Mobile-only disclosure state')
+
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Open navigation' }).click()
+  await expect(page.locator('nav[aria-label="Primary"]')).toBeVisible()
+
+  const results = await new AxeBuilder({ page }).analyze()
+
+  expect(results.violations).toEqual([])
+})
+
+test('open Trail Pulse disclosure has no automatically detectable accessibility violations', async ({ page }) => {
+  await page.goto('/')
+  const card = page.getByRole('article', { name: 'Trail Pulse' })
+  await card.locator('summary').click()
+  await expect(card.locator('details')).toHaveAttribute('open', '')
+
+  const results = await new AxeBuilder({ page }).analyze()
+
+  expect(results.violations).toEqual([])
+})
+
+test('supported viewport widths do not introduce horizontal overflow', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'One cross-viewport regression check')
+
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      `${width}px viewport overflowed horizontally`
+    ).toBe(true)
+  }
 })

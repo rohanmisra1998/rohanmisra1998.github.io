@@ -10,7 +10,7 @@
     "test:base": "node scripts/project-base-smoke.mjs",
     "typecheck": "tsc -b",
     "assets": "node scripts/prepare-assets.mjs",
-    "privacy:audit": "node scripts/privacy-audit.mjs src public dist",
+    "privacy:audit": "node scripts/privacy-audit.mjs src public index.html dist",
     "build": "npm run assets && tsc -b && vite build",
     "test:e2e": "playwright test",
     "verify": "npm run test:run && npm run build && npm run test:base && npm run privacy:audit && npm run test:e2e"

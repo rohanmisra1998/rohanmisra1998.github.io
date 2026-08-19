@@ -102,4 +102,37 @@ describe('App', () => {
       expect(link).toHaveAttribute('rel', expect.stringMatching(/(?=.*noopener)(?=.*noreferrer)/))
     }
   })
+
+  it('gives every page section a visible heading and Trail Pulse a native summary', () => {
+    render(<App />)
+    const sections = [...document.querySelectorAll('main section')]
+    expect(sections.length).toBeGreaterThan(0)
+
+    for (const section of sections) {
+      const heading = section.querySelector('h1, h2, h3, h4, h5, h6')
+      expect(heading, `Section #${section.id || '(no id)'} needs a heading`).not.toBeNull()
+      expect(heading?.textContent?.trim()).not.toBe('')
+    }
+
+    const trailPulseDetails = screen
+      .getByRole('article', { name: 'Trail Pulse' })
+      .querySelector('details')
+    const summary = trailPulseDetails?.querySelector(':scope > summary')
+    expect(summary?.tagName).toBe('SUMMARY')
+    expect(summary?.textContent?.trim()).not.toBe('')
+  })
+
+  it('provides an aria-label for any icon-only control', () => {
+    render(<App />)
+    const controls = [...document.querySelectorAll('button, a[href]')]
+
+    for (const control of controls) {
+      const copy = control.cloneNode(true)
+      if (!(copy instanceof HTMLElement)) continue
+      copy.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove())
+
+      if (copy.textContent?.trim()) continue
+      expect(control.getAttribute('aria-label')?.trim()).toBeTruthy()
+    }
+  })
 })
