@@ -25,6 +25,26 @@ test('rebuilds the repository-specific Pages artifact after verification', async
   )
 })
 
+test('preserves transient Playwright diffs when verification fails', async () => {
+  const workflow = await readFile(workflowPath, 'utf8')
+  const verifyStep = workflow.indexOf('- run: npm run verify')
+  const workflowSteps = workflow.split(/\r?\n(?=      - )/)
+  const failureUploadStep = workflowSteps.find((step) => (
+    step.includes('uses: actions/upload-artifact@v4')
+  ))
+
+  assert.notEqual(verifyStep, -1, 'the exact verification gate must remain present')
+  assert.ok(failureUploadStep, 'a Playwright failure-artifact upload step must be present')
+  assert.ok(
+    workflow.indexOf(failureUploadStep) > verifyStep,
+    'the failure-artifact upload must run after verification creates test-results'
+  )
+  assert.match(failureUploadStep, /^\s*if: failure\(\)$/m)
+  assert.match(failureUploadStep, /^\s*path: test-results\s*$/m)
+  assert.match(failureUploadStep, /^\s*retention-days: 7\s*$/m)
+  assert.match(failureUploadStep, /^\s*name: .+\$\{\{ github\.run_id \}\}.+$/m)
+})
+
 test('keeps the reviewed Pages deployment guardrails', async () => {
   const workflow = await readFile(workflowPath, 'utf8')
 
