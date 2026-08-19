@@ -5,7 +5,10 @@ header {
 }
 
 header > a {
+  display: inline-flex;
+  align-items: center;
   width: max-content;
+  min-block-size: 2.75rem;
   font-family: var(--display);
   font-size: 1.05rem;
   font-weight: 720;
@@ -492,6 +495,7 @@ section[aria-labelledby='operating-thesis-heading'] p {
 }
 
 .social-proof a {
+  min-block-size: 2.75rem;
   color: var(--white);
   border-bottom: 2px solid var(--saffron);
 }
@@ -1135,6 +1139,7 @@ footer p {
   .operator-proof__evidence-item p,
   .social-proof > p,
   .builder-lab__honesty,
+  .section-heading__note,
   .experience-row__detail p,
   .writing-row__body p {
     font-size: 1rem;

@@ -126,7 +126,10 @@ for (const viewport of viewports) {
     await expect(page).toHaveScreenshot(`${viewport.name}-home.png`, {
       animations: 'allow',
       caret: 'hide',
-      fullPage: true
+      fullPage: true,
+      maxDiffPixelRatio: 0,
+      maxDiffPixels: 0,
+      threshold: 0
     })
     expectCleanBrowser()
   })
@@ -156,7 +159,10 @@ test('reduced motion keeps the first-view narrative and Proofline visible', asyn
   expectCleanBrowser()
   await expect(page).toHaveScreenshot('reduced-motion-hero.png', {
     animations: 'allow',
-    caret: 'hide'
+    caret: 'hide',
+    maxDiffPixelRatio: 0,
+    maxDiffPixels: 0,
+    threshold: 0
   })
   expectCleanBrowser()
 })
@@ -217,41 +223,102 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
       .toBe(true)
   }
 
-  await page.setViewportSize({ width: 320, height: 720 })
-  await page.goto('/')
-  await waitForPortfolioToSettle(page)
-  const trailPulse = page.getByRole('article', { name: 'Trail Pulse' })
-  await trailPulse.locator('summary').click()
-  await expect(trailPulse.locator('details')).toHaveAttribute('open', '')
-  await expectNoHorizontalOverflow(page, '320px open Trail Pulse disclosure')
+  for (const { width, height } of [
+    { width: 390, height: 844 },
+    { width: 320, height: 720 }
+  ]) {
+    await page.setViewportSize({ width, height })
+    await page.goto('/')
+    await waitForPortfolioToSettle(page)
 
-  const bodyTextSizes = await page.locator([
-    '.hero__subhead',
-    '.operator-proof__summary',
-    '.operator-proof__evidence-item p',
-    '.social-proof > p',
-    '.builder-lab__summary',
-    '.builder-lab__honesty',
-    '.builder-lab__capabilities p',
-    '.experience-row__detail p',
-    '.writing-row__body p'
-  ].join(',')).evaluateAll((nodes) => nodes.map((node) => ({
-    className: node.className,
-    fontSize: Number.parseFloat(getComputedStyle(node).fontSize),
-    text: node.textContent?.trim().slice(0, 48)
-  })))
-  expect(bodyTextSizes.every(({ fontSize }) => fontSize >= 16), JSON.stringify(bodyTextSizes, null, 2))
-    .toBe(true)
+    const trailPulse = page.getByRole('article', { name: 'Trail Pulse' })
+    await trailPulse.locator('summary').click()
+    await expect(trailPulse.locator('details')).toHaveAttribute('open', '')
+    await expectNoHorizontalOverflow(page, `${width}px open Trail Pulse disclosure`)
 
-  for (const title of await page.locator('.writing-row__body h3').all()) {
-    expect(await title.evaluate((heading) => heading.scrollWidth <= heading.clientWidth + 1)).toBe(true)
+    const bodyTextSizes = await page.locator([
+      '.hero__subhead',
+      "section[aria-labelledby='operating-thesis-heading'] p",
+      '.operator-proof__summary',
+      '.operator-proof__evidence-item p',
+      '.social-proof > p',
+      '.builder-lab__summary',
+      '.builder-lab__honesty',
+      '.builder-lab__capabilities p',
+      '.section-heading__note',
+      '.experience-row__detail p',
+      '.writing-row__body p',
+      '.about__statement',
+      '.contact__body > p'
+    ].join(',')).evaluateAll((nodes) => nodes.map((node) => ({
+      className: node.className,
+      fontSize: Number.parseFloat(getComputedStyle(node).fontSize),
+      text: node.textContent?.trim().slice(0, 48)
+    })))
+    expect.soft(
+      bodyTextSizes.every(({ fontSize }) => fontSize >= 16),
+      `${width}px explanatory/body copy fell below 16px: ${JSON.stringify(bodyTextSizes, null, 2)}`
+    ).toBe(true)
+
+    for (const title of await page.locator('.writing-row__body h3').all()) {
+      expect(await title.evaluate((heading) => heading.scrollWidth <= heading.clientWidth + 1)).toBe(true)
+    }
+    await expect(page.locator('#contact').getByText('CV · updating')).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+    await expect(page.locator('#contact').getByRole('link', { name: 'LinkedIn', exact: true }))
+      .toBeVisible()
+
+    const expectVisibleTargetsHaveRobustGeometry = async (state: string) => {
+      const targets = await page.locator('a[href], button, summary').evaluateAll((elements) => (
+        elements.flatMap((element) => {
+          const box = element.getBoundingClientRect()
+          const style = getComputedStyle(element)
+          if (
+            box.width === 0
+            || box.height === 0
+            || style.display === 'none'
+            || style.visibility === 'hidden'
+          ) {
+            return []
+          }
+          return [{
+            height: box.height,
+            label: element.getAttribute('aria-label') || element.textContent?.trim().replace(/\s+/g, ' '),
+            tag: element.tagName.toLowerCase(),
+            width: box.width
+          }]
+        })
+      ))
+
+      expect(targets.length, `${width}px ${state} exposed no interactive targets`).toBeGreaterThan(0)
+      for (const target of targets) {
+        expect.soft(
+          Math.max(target.width, target.height),
+          `${width}px ${state} ${target.tag} “${target.label}” target was ${target.width}×${target.height}`
+        ).toBeGreaterThanOrEqual(44)
+      }
+    }
+
+    await expectVisibleTargetsHaveRobustGeometry('closed navigation')
+
+    for (const link of [
+      page.locator('header > a'),
+      page.getByRole('link', { name: /Read the report/ })
+    ]) {
+      const box = await link.boundingBox()
+      expect(box, `${width}px reviewed inline link has no box`).not.toBeNull()
+      expect.soft(box!.height, `${width}px reviewed inline link lacks a 44px block target`)
+        .toBeGreaterThanOrEqual(44)
+    }
+
+    const menuButton = page.locator('button[aria-controls="primary-navigation"]')
+    await menuButton.click()
+    await expect(page.locator('nav[aria-label="Primary"]')).toBeVisible()
+    await expectVisibleTargetsHaveRobustGeometry('open navigation')
+    await menuButton.click()
   }
-  await expect(page.locator('#contact').getByText('CV · updating')).toHaveAttribute(
-    'aria-disabled',
-    'true'
-  )
-  await expect(page.locator('#contact').getByRole('link', { name: 'LinkedIn', exact: true }))
-    .toBeVisible()
   expectCleanBrowser()
 })
 
