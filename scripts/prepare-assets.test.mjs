@@ -5,7 +5,7 @@ import path from 'node:path'
 import test from 'node:test'
 import sharp from 'sharp'
 
-import { prepareAssets } from './prepare-assets.mjs'
+import { createOgSvg, prepareAssets } from './prepare-assets.mjs'
 
 const expectedAssets = [
   'rohan-portrait.avif',
@@ -34,4 +34,12 @@ test('prepareAssets creates the required portfolio image set', async (t) => {
   const socialImage = await sharp(path.join(outputDirectory, 'og-rohan-misra.png')).metadata()
   assert.equal(socialImage.width, 1200)
   assert.equal(socialImage.height, 630)
+})
+
+test('the social-card SVG uses deterministic paths instead of host fonts', async () => {
+  const ogSvg = await createOgSvg()
+
+  assert.doesNotMatch(ogSvg, /<text\b/i)
+  assert.doesNotMatch(ogSvg, /font-family/i)
+  assert.match(ogSvg, /<path d="M/i)
 })
