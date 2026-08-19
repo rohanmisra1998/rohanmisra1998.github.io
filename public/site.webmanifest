@@ -1,0 +1,16 @@
+{
+  "name": "Rohan Misra — Tech-first operator",
+  "short_name": "Rohan Misra",
+  "description": "Building scalable products and systems for messy operational problems.",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0B1F33",
+  "background_color": "#F6F7F2",
+  "display": "minimal-ui"
+}
