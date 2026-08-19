@@ -8,6 +8,10 @@ const viewports = [
   { name: 'mobile', width: 390, height: 844 }
 ] as const
 
+function hasRobustInteractiveTargetGeometry(target: { height: number; width: number }) {
+  return target.width >= 44 && target.height >= 44
+}
+
 function skipOutsideReviewProject(testInfo: TestInfo) {
   test.skip(
     testInfo.project.name !== reviewProject,
@@ -167,6 +171,20 @@ test('reduced motion keeps the first-view narrative and Proofline visible', asyn
   expectCleanBrowser()
 })
 
+test('interactive target geometry rejects boxes with only one 44px dimension', ({}, testInfo) => {
+  skipOutsideReviewProject(testInfo)
+
+  expect(
+    hasRobustInteractiveTargetGeometry({ height: 20, width: 100 }),
+    'A wide but shallow target must not satisfy the mobile target contract.'
+  ).toBe(false)
+  expect(
+    hasRobustInteractiveTargetGeometry({ height: 100, width: 20 }),
+    'A narrow but tall target must not satisfy the mobile target contract.'
+  ).toBe(false)
+  expect(hasRobustInteractiveTargetGeometry({ height: 44, width: 44 })).toBe(true)
+})
+
 test('responsive boundary contracts preserve navigation, reading, and contact states', async ({ page }, testInfo) => {
   skipOutsideReviewProject(testInfo)
   const expectCleanBrowser = captureUnexpectedBrowserMessages(page)
@@ -295,23 +313,13 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
       expect(targets.length, `${width}px ${state} exposed no interactive targets`).toBeGreaterThan(0)
       for (const target of targets) {
         expect.soft(
-          Math.max(target.width, target.height),
+          hasRobustInteractiveTargetGeometry(target),
           `${width}px ${state} ${target.tag} “${target.label}” target was ${target.width}×${target.height}`
-        ).toBeGreaterThanOrEqual(44)
+        ).toBe(true)
       }
     }
 
     await expectVisibleTargetsHaveRobustGeometry('closed navigation')
-
-    for (const link of [
-      page.locator('header > a'),
-      page.getByRole('link', { name: /Read the report/ })
-    ]) {
-      const box = await link.boundingBox()
-      expect(box, `${width}px reviewed inline link has no box`).not.toBeNull()
-      expect.soft(box!.height, `${width}px reviewed inline link lacks a 44px block target`)
-        .toBeGreaterThanOrEqual(44)
-    }
 
     const menuButton = page.locator('button[aria-controls="primary-navigation"]')
     await menuButton.click()
