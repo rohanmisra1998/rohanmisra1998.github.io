@@ -21,6 +21,7 @@ header {
 }
 
 header nav {
+  grid-column: 3;
   justify-self: end;
 }
 
@@ -60,6 +61,16 @@ footer {
 }
 
 @media (max-width: 900px) {
+  header {
+    grid-template-columns: 1fr auto;
+    min-height: 68px;
+  }
+
+  header nav {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
   .hero {
     grid-template-columns: minmax(0, 6fr) minmax(260px, 4fr);
     gap: clamp(1.75rem, 4vw, 3rem);
@@ -73,16 +84,6 @@ footer {
 @media (max-width: 640px) {
   :root {
     --content: calc(100vw - 32px);
-  }
-
-  header {
-    grid-template-columns: 1fr auto;
-    min-height: 68px;
-  }
-
-  header nav {
-    grid-column: 1 / -1;
-    justify-self: stretch;
   }
 
   .hero {

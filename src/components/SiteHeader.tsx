@@ -13,7 +13,7 @@ const navigationLinks = [
   { href: '#contact', label: 'Contact' }
 ]
 
-const mobileNavigationQuery = '(max-width: 640px)'
+const mobileNavigationQuery = '(max-width: 900px)'
 
 function getIsMobileNavigation() {
   return typeof window !== 'undefined'
@@ -34,6 +34,7 @@ export function SiteHeader({ resumeHref }: SiteHeaderProps) {
     const mediaQuery = window.matchMedia(mobileNavigationQuery)
     const updateNavigationMode = (event: MediaQueryListEvent) => {
       setIsMobileNavigation(event.matches)
+      if (!event.matches) setMenuOpen(false)
     }
 
     setIsMobileNavigation(mediaQuery.matches)
@@ -47,6 +48,7 @@ export function SiteHeader({ resumeHref }: SiteHeaderProps) {
       <a href="#overview">Rohan Misra</a>
       <button
         type="button"
+        hidden={!isMobileNavigation}
         aria-expanded={menuOpen}
         aria-controls="primary-navigation"
         aria-label={menuLabel}

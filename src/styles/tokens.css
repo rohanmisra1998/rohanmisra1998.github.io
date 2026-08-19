@@ -2,9 +2,13 @@
   --paper: #f6f7f2;
   --ink: #0b1f33;
   --signal: #4c6fff;
+  --signal-text: #2949c7;
+  --signal-hover: #2949c7;
   --saffron: #ffb000;
   --field: #47705a;
   --mist: #dde5e8;
+  --ink-muted: #46586a;
+  --ink-subtle: #536475;
   --white: #ffffff;
   --display: 'Bricolage Grotesque Variable', sans-serif;
   --body: 'DM Sans Variable', sans-serif;

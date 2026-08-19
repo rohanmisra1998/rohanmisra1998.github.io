@@ -11,6 +11,14 @@ afterEach(() => {
 
 describe('App', () => {
   it('renders the approved hero and semantic quick-scan navigation', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation(() => ({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn()
+      }))
+    )
     render(<App />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'I turn messy operations into scalable products and systems.'
@@ -18,6 +26,9 @@ describe('App', () => {
     expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+    expect(document.querySelector('button[aria-controls="primary-navigation"]')).toHaveAttribute(
+      'hidden'
+    )
   })
 
   it('opens and closes the mobile navigation', async () => {
@@ -32,6 +43,7 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App />)
     const button = screen.getByRole('button', { name: 'Open navigation' })
+    expect(button).not.toHaveAttribute('hidden')
     const navigation = document.getElementById('primary-navigation')
     expect(navigation).toHaveAttribute('hidden')
     await user.click(button)

@@ -25,7 +25,7 @@ header > a::after {
 
 header > button {
   position: relative;
-  display: grid;
+  display: none;
   width: 2.25rem;
   height: 2.25rem;
   margin-left: clamp(1rem, 2vw, 2rem);
@@ -113,7 +113,7 @@ header nav span[aria-disabled='true'] {
   align-items: center;
   gap: 0.7rem;
   margin-bottom: clamp(1.25rem, 3vw, 2.25rem);
-  color: var(--signal);
+  color: var(--signal-text);
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 500;
@@ -130,7 +130,7 @@ header nav span[aria-disabled='true'] {
 .hero__subhead {
   max-width: 60ch;
   margin-bottom: 2rem;
-  color: rgb(11 31 51 / 78%);
+  color: var(--ink-subtle);
   font-size: clamp(1.05rem, 1.35vw, 1.2rem);
   line-height: 1.65;
 }
@@ -157,7 +157,7 @@ header nav span[aria-disabled='true'] {
 }
 
 .action--primary:hover {
-  background: var(--signal);
+  background: var(--signal-hover);
 }
 
 .action--quiet {
@@ -188,7 +188,7 @@ header nav span[aria-disabled='true'] {
 
 .hero__scope dt {
   margin-bottom: 0.35rem;
-  color: rgb(11 31 51 / 58%);
+  color: var(--ink-muted);
   font-family: var(--mono);
   font-size: 0.65rem;
   letter-spacing: 0.07em;
@@ -240,7 +240,7 @@ header nav span[aria-disabled='true'] {
   gap: 1rem;
   padding-top: 0.8rem;
   border-bottom: var(--rule);
-  color: rgb(11 31 51 / 68%);
+  color: var(--ink-muted);
   font-family: var(--mono);
   font-size: 0.61rem;
   letter-spacing: 0.045em;
@@ -249,7 +249,7 @@ header nav span[aria-disabled='true'] {
 }
 
 .hero__portrait figcaption span:last-child {
-  color: var(--signal);
+  color: var(--signal-text);
   text-align: right;
 }
 
@@ -338,7 +338,7 @@ footer {
 
 footer p {
   margin-bottom: 0;
-  color: rgb(11 31 51 / 62%);
+  color: var(--ink-muted);
   font-family: var(--mono);
   font-size: 0.68rem;
   letter-spacing: 0.045em;
@@ -346,38 +346,8 @@ footer p {
 }
 
 @media (max-width: 900px) {
-  header nav {
-    gap: 0.7rem;
-  }
-
-  header nav a,
-  header nav span {
-    font-size: 0.6rem;
-  }
-
-  .hero h1 {
-    font-size: clamp(3.25rem, 7.5vw, 4.7rem);
-  }
-
-  .hero__scope {
-    grid-template-columns: 1fr;
-  }
-
-  .hero__scope > div + div {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    padding-left: 0;
-    border-top: var(--rule);
-    border-left: 0;
-  }
-
-  .hero__proofline {
-    left: 20%;
-  }
-}
-
-@media (max-width: 640px) {
   header > button {
+    display: grid;
     margin-left: 0;
   }
 
@@ -411,6 +381,28 @@ footer p {
     padding-inline: 0.7rem;
   }
 
+  .hero h1 {
+    font-size: clamp(3.25rem, 7.5vw, 4.7rem);
+  }
+
+  .hero__scope {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__scope > div + div {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    padding-left: 0;
+    border-top: var(--rule);
+    border-left: 0;
+  }
+
+  .hero__proofline {
+    left: 20%;
+  }
+}
+
+@media (max-width: 640px) {
   .hero__eyebrow {
     flex-wrap: wrap;
     font-size: 0.65rem;

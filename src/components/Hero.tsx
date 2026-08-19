@@ -1,4 +1,5 @@
 import { Proofline } from './Proofline'
+import { publicAsset } from '../lib/publicAsset'
 
 interface HeroContent {
   headline: string
@@ -42,10 +43,10 @@ export function Hero({ content }: HeroProps) {
       </div>
       <figure className="hero__portrait reveal">
         <picture>
-          <source srcSet="/images/rohan-portrait.avif" type="image/avif" />
-          <source srcSet="/images/rohan-portrait.webp" type="image/webp" />
+          <source srcSet={publicAsset('images/rohan-portrait.avif')} type="image/avif" />
+          <source srcSet={publicAsset('images/rohan-portrait.webp')} type="image/webp" />
           <img
-            src="/images/rohan-portrait.png"
+            src={publicAsset('images/rohan-portrait.png')}
             alt="Rohan Misra in a modern office setting"
             width="920"
             height="1150"
