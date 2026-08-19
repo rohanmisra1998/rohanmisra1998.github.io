@@ -14,7 +14,7 @@ describe('siteContent', () => {
     expect(siteContent.experience[1]).toMatchObject({
       organization: 'Bain & Company',
       location: 'Chicago, IL',
-      period: '2024–July 2025'
+      period: '2024–June 2025'
     })
   })
 

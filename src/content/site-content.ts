@@ -76,7 +76,7 @@ export const siteContent: SiteContent = {
       organization: 'Bain & Company',
       role: 'Consultant',
       location: 'Chicago, IL',
-      period: '2024–July 2025',
+      period: '2024–June 2025',
       summary: 'Helped organizations turn transformation agendas into implementable operating change.'
     },
     {
