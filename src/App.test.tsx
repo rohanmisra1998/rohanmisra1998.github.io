@@ -9,6 +9,33 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+function expectMainSectionsToBeLabelledRegions(main: HTMLElement, expectedSectionCount: number) {
+  const sections = [...main.querySelectorAll('section')]
+  expect(sections).toHaveLength(expectedSectionCount)
+
+  for (const section of sections) {
+    const headingId = section.getAttribute('aria-labelledby')?.trim()
+    expect(headingId).toBeTruthy()
+    const heading = document.getElementById(headingId!)
+    expect(heading).toBeInstanceOf(HTMLHeadingElement)
+    expect(section).toContainElement(heading)
+    expect(heading).toBeVisible()
+    expect(heading).toHaveAccessibleName()
+
+    let regionAccessibleName = ''
+    const exposedRegion = within(main).getByRole('region', {
+      name: (accessibleName, element) => {
+        if (element !== section) return false
+        regionAccessibleName = accessibleName
+        return true
+      }
+    })
+    expect(exposedRegion).toBe(section)
+    expect(regionAccessibleName).not.toBe('')
+    expect(within(section).getByRole('heading', { name: regionAccessibleName })).toBe(heading)
+  }
+}
+
 describe('App', () => {
   it('renders the approved hero and semantic quick-scan navigation', () => {
     vi.stubGlobal(
@@ -105,24 +132,29 @@ describe('App', () => {
 
   it('exposes every main section as a region labelled by its own visible heading', () => {
     render(<App />)
-    const regions = within(screen.getByRole('main')).getAllByRole('region')
-    expect(regions).toHaveLength(7)
-
-    for (const region of regions) {
-      const headingId = region.getAttribute('aria-labelledby')
-      expect(headingId).toBeTruthy()
-      const heading = document.getElementById(headingId!)
-      expect(heading).toBeInstanceOf(HTMLHeadingElement)
-      expect(heading).toBeVisible()
-      expect(heading).toHaveAccessibleName()
-      expect(region).toHaveAccessibleName()
-      expect(within(region).getAllByRole('heading')).toContain(heading)
-    }
+    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 7)
 
     const disclosure = within(
       screen.getByRole('article', { name: 'Trail Pulse' })
     ).getByRole('group', { name: 'What Trail Pulse does' })
     expect(disclosure).toHaveAccessibleName('What Trail Pulse does')
+  })
+
+  it('does not omit an unlabeled main section from semantic validation', () => {
+    render(
+      <main>
+        <section aria-labelledby="fixture-heading">
+          <h2 id="fixture-heading">Expected section</h2>
+        </section>
+        <section>
+          <h2>Unlabelled section</h2>
+        </section>
+      </main>
+    )
+
+    expect(() => {
+      expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 1)
+    }).toThrow()
   })
 
   it('exposes an accessible name for every control, including icon-only controls', () => {
