@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface SiteHeaderProps {
   resumeHref: string | null
@@ -13,9 +13,34 @@ const navigationLinks = [
   { href: '#contact', label: 'Contact' }
 ]
 
+const mobileNavigationQuery = '(max-width: 640px)'
+
+function getIsMobileNavigation() {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia(mobileNavigationQuery).matches
+}
+
 export function SiteHeader({ resumeHref }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isMobileNavigation, setIsMobileNavigation] = useState(getIsMobileNavigation)
   const menuLabel = menuOpen ? 'Close navigation' : 'Open navigation'
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') {
+      return
+    }
+
+    const mediaQuery = window.matchMedia(mobileNavigationQuery)
+    const updateNavigationMode = (event: MediaQueryListEvent) => {
+      setIsMobileNavigation(event.matches)
+    }
+
+    setIsMobileNavigation(mediaQuery.matches)
+    mediaQuery.addEventListener('change', updateNavigationMode)
+
+    return () => mediaQuery.removeEventListener('change', updateNavigationMode)
+  }, [])
 
   return (
     <header>
@@ -29,7 +54,12 @@ export function SiteHeader({ resumeHref }: SiteHeaderProps) {
       >
         {menuLabel}
       </button>
-      <nav id="primary-navigation" aria-label="Primary" data-open={menuOpen}>
+      <nav
+        id="primary-navigation"
+        aria-label="Primary"
+        data-open={menuOpen}
+        hidden={isMobileNavigation && !menuOpen}
+      >
         {navigationLinks.map(({ href, label }) => (
           <a key={href} href={href} onClick={() => setMenuOpen(false)}>
             {label}
