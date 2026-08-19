@@ -75,4 +75,31 @@ describe('App', () => {
     ).toBe(true)
     expect(screen.queryByRole('link', { name: /email/i })).not.toBeInTheDocument()
   })
+
+  it('renders every verified essay as a named safe external link', () => {
+    render(<App />)
+    const essays = [
+      {
+        title: 'Financialisation of Housing: An Imbroglio Decoded',
+        href: 'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
+      },
+      {
+        title: 'The Failed Promise of Pakistan',
+        href: 'https://www.linkedin.com/pulse/failed-promise-pakistan-rohan-misra/'
+      },
+      {
+        title: 'The Austrian School of Economic Thought: An Exposition',
+        href: 'https://www.linkedin.com/pulse/austrian-school-economic-thought-exposition-rohan-misra/'
+      }
+    ]
+
+    for (const { title, href } of essays) {
+      const link = screen.getByRole('link', {
+        name: `${title} — LinkedIn, opens in a new tab`
+      })
+      expect(link).toHaveAttribute('href', href)
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', expect.stringMatching(/(?=.*noopener)(?=.*noreferrer)/))
+    }
+  })
 })

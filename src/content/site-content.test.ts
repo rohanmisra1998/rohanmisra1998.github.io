@@ -16,6 +16,14 @@ describe('siteContent', () => {
       location: 'Chicago, IL',
       period: '2024–June 2025'
     })
+    expect(siteContent.experience.slice(0, 2).map(({ period }) => period)).toEqual([
+      'July 2025–present',
+      '2024–June 2025'
+    ])
+    expect(siteContent.experience[0].summary).toBe(
+      'Supporting strategy and operations in a global marketplace business.'
+    )
+    expect(JSON.stringify(siteContent)).not.toMatch(/Collectibles|Motors/i)
   })
 
   it('stores the approved Trail Pulse story and verified writing links', () => {
@@ -31,8 +39,27 @@ describe('siteContent', () => {
       'Logistics',
       'Exact navigation'
     ])
-    expect(siteContent.writing).toHaveLength(3)
-    expect(siteContent.writing.every(({ href }) => href.startsWith('https://www.linkedin.com/pulse/'))).toBe(true)
+    expect(siteContent.writing.map(({ title, published, href }) => ({
+      title,
+      published,
+      href
+    }))).toEqual([
+      {
+        title: 'Financialisation of Housing: An Imbroglio Decoded',
+        published: 'August 14, 2018',
+        href: 'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
+      },
+      {
+        title: 'The Failed Promise of Pakistan',
+        published: 'August 26, 2018',
+        href: 'https://www.linkedin.com/pulse/failed-promise-pakistan-rohan-misra/'
+      },
+      {
+        title: 'The Austrian School of Economic Thought: An Exposition',
+        published: 'January 17, 2019',
+        href: 'https://www.linkedin.com/pulse/austrian-school-economic-thought-exposition-rohan-misra/'
+      }
+    ])
   })
 
   it('does not enable the stale CV or a phone contact', () => {

@@ -20,7 +20,7 @@ export function Writing({ items }: WritingProps) {
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={item.title}
+            aria-label={`${item.title} — LinkedIn, opens in a new tab`}
             key={item.href}
           >
             <p className="writing-row__date">{item.published}</p>

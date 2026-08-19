@@ -152,10 +152,31 @@ test('mobile Trail Pulse capability copy remains readable', async ({ page }, tes
 
 test('writing and contact actions are safe external links', async ({ page }) => {
   await page.goto('/')
-  const article = page.getByRole('link', { name: /Financialisation of Housing/i })
-  await expect(article).toHaveAttribute('target', '_blank')
-  await expect(article).toHaveAttribute('rel', /noreferrer/)
-  await expect(page.getByRole('link', { name: /LinkedIn/i })).toHaveAttribute(
+  const essays = [
+    {
+      title: 'Financialisation of Housing: An Imbroglio Decoded',
+      href: 'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
+    },
+    {
+      title: 'The Failed Promise of Pakistan',
+      href: 'https://www.linkedin.com/pulse/failed-promise-pakistan-rohan-misra/'
+    },
+    {
+      title: 'The Austrian School of Economic Thought: An Exposition',
+      href: 'https://www.linkedin.com/pulse/austrian-school-economic-thought-exposition-rohan-misra/'
+    }
+  ]
+
+  for (const { title, href } of essays) {
+    const article = page.getByRole('link', {
+      name: `${title} — LinkedIn, opens in a new tab`,
+      exact: true
+    })
+    await expect(article).toHaveAttribute('href', href)
+    await expect(article).toHaveAttribute('target', '_blank')
+    await expect(article).toHaveAttribute('rel', /(?=.*noopener)(?=.*noreferrer)/)
+  }
+  await expect(page.locator('#contact').getByRole('link', { name: 'LinkedIn', exact: true })).toHaveAttribute(
     'href',
     /rohan-misra-mba/
   )
@@ -163,4 +184,34 @@ test('writing and contact actions are safe external links', async ({ page }) => 
     'aria-disabled',
     'true'
   )
+})
+
+test('critical hero content is visible when first attached', async ({ page }) => {
+  await page.addInitScript(() => {
+    const observer = new MutationObserver(() => {
+      const copy = document.querySelector<HTMLElement>('.hero__copy')
+      const portrait = document.querySelector<HTMLElement>('.hero__portrait')
+
+      if (!copy || !portrait) return
+
+      ;(window as unknown as {
+        __heroFirstAttachment?: { copyOpacity: string; portraitOpacity: string }
+      }).__heroFirstAttachment = {
+        copyOpacity: getComputedStyle(copy).opacity,
+        portraitOpacity: getComputedStyle(portrait).opacity
+      }
+      observer.disconnect()
+    })
+
+    observer.observe(document, { childList: true, subtree: true })
+  })
+
+  await page.goto('/')
+  const firstAttachment = await page.evaluate(() => (
+    window as unknown as {
+      __heroFirstAttachment?: { copyOpacity: string; portraitOpacity: string }
+    }
+  ).__heroFirstAttachment)
+
+  expect(firstAttachment).toEqual({ copyOpacity: '1', portraitOpacity: '1' })
 })

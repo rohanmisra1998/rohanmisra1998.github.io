@@ -70,7 +70,7 @@ export const siteContent: SiteContent = {
       role: 'Senior Manager, Strategy & Operations',
       location: 'San Jose, CA',
       period: 'July 2025–present',
-      summary: 'Supporting strategy and operations across Collectibles and Motors.'
+      summary: 'Supporting strategy and operations in a global marketplace business.'
     },
     {
       organization: 'Bain & Company',
