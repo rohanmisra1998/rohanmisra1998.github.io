@@ -83,3 +83,17 @@ test('small text and the primary hover state meet WCAG AA contrast', async ({ pa
   }))
   expect(contrastRatio(hoverColors.foreground, hoverColors.background)).toBeGreaterThanOrEqual(4.5)
 })
+
+test('Trail Pulse is a secondary Builder Lab experiment with honest detail', async ({ page }) => {
+  await page.goto('/')
+  const card = page.getByRole('article', { name: 'Trail Pulse' })
+  await expect(card).toContainText('AI-assisted experiment')
+  const details = card.locator('details')
+  await expect(details).not.toHaveAttribute('open', '')
+  await card.getByText('What Trail Pulse does').click()
+  await expect(details).toHaveAttribute('open', '')
+  await expect(card.getByText('Exact navigation')).toBeVisible()
+  await expect(card.getByRole('link', { name: 'Try Trail Pulse' })).toHaveAttribute(
+    'href', 'https://trail-pulse-alpha.vercel.app/'
+  )
+})
