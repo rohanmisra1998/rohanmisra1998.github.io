@@ -1,0 +1,39 @@
+{
+  "name": "rohan-misra-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc -b",
+    "assets": "node scripts/prepare-assets.mjs",
+    "privacy:audit": "node scripts/privacy-audit.mjs src public dist",
+    "build": "npm run assets && tsc -b && vite build",
+    "test:e2e": "playwright test",
+    "verify": "npm run test:run && npm run build && npm run privacy:audit && npm run test:e2e"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource-variable/dm-sans": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.5",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "jsdom": "30.0.1",
+    "sharp": "0.35.3",
+    "typescript": "7.0.2",
+    "vite": "8.0.10",
+    "vitest": "4.1.6"
+  }
+}
