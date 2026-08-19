@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -103,36 +103,46 @@ describe('App', () => {
     }
   })
 
-  it('gives every page section a visible heading and Trail Pulse a native summary', () => {
+  it('exposes every main section as a region labelled by its own visible heading', () => {
     render(<App />)
-    const sections = [...document.querySelectorAll('main section')]
-    expect(sections.length).toBeGreaterThan(0)
+    const regions = within(screen.getByRole('main')).getAllByRole('region')
+    expect(regions).toHaveLength(7)
 
-    for (const section of sections) {
-      const heading = section.querySelector('h1, h2, h3, h4, h5, h6')
-      expect(heading, `Section #${section.id || '(no id)'} needs a heading`).not.toBeNull()
-      expect(heading?.textContent?.trim()).not.toBe('')
+    for (const region of regions) {
+      const headingId = region.getAttribute('aria-labelledby')
+      expect(headingId).toBeTruthy()
+      const heading = document.getElementById(headingId!)
+      expect(heading).toBeInstanceOf(HTMLHeadingElement)
+      expect(heading).toBeVisible()
+      expect(heading).toHaveAccessibleName()
+      expect(region).toHaveAccessibleName()
+      expect(within(region).getAllByRole('heading')).toContain(heading)
     }
 
-    const trailPulseDetails = screen
-      .getByRole('article', { name: 'Trail Pulse' })
-      .querySelector('details')
-    const summary = trailPulseDetails?.querySelector(':scope > summary')
-    expect(summary?.tagName).toBe('SUMMARY')
-    expect(summary?.textContent?.trim()).not.toBe('')
+    const disclosure = within(
+      screen.getByRole('article', { name: 'Trail Pulse' })
+    ).getByRole('group', { name: 'What Trail Pulse does' })
+    expect(disclosure).toHaveAccessibleName('What Trail Pulse does')
   })
 
-  it('provides an aria-label for any icon-only control', () => {
+  it('exposes an accessible name for every control, including icon-only controls', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation(() => ({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn()
+      }))
+    )
     render(<App />)
-    const controls = [...document.querySelectorAll('button, a[href]')]
+    const controls = [
+      ...screen.queryAllByRole('button'),
+      ...screen.queryAllByRole('link')
+    ]
+    expect(controls).not.toHaveLength(0)
 
     for (const control of controls) {
-      const copy = control.cloneNode(true)
-      if (!(copy instanceof HTMLElement)) continue
-      copy.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove())
-
-      if (copy.textContent?.trim()) continue
-      expect(control.getAttribute('aria-label')?.trim()).toBeTruthy()
+      expect(control).toHaveAccessibleName()
     }
   })
 })

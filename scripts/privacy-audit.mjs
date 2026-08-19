@@ -1,5 +1,6 @@
 import { lstat, readdir, readFile } from 'node:fs/promises'
 import { basename, extname, resolve } from 'node:path'
+import { TextDecoder } from 'node:util'
 import { pathToFileURL } from 'node:url'
 
 const TEXT_EXTENSIONS = new Set([
@@ -11,8 +12,11 @@ const TEXT_EXTENSIONS = new Set([
   '.css',
   '.json',
   '.md',
+  '.map',
   '.svg',
-  '.txt'
+  '.txt',
+  '.webmanifest',
+  '.xml'
 ])
 
 const PRIVATE_TOPIC_PATTERN =
@@ -20,33 +24,39 @@ const PRIVATE_TOPIC_PATTERN =
 const FORBIDDEN_SOURCE_FILE_PATTERN = /handoff|addendum/i
 const CONTACT_LINK_PATTERN = /(?:mailto|tel)\s*:/i
 const NON_CONTACT_PROTOCOL_KEY_PATTERN =
-  /([,{]\s*)(?:mailto|tel)\s*:\s*(?:true|false|![01])(?=\s*[,}])/gi
-const EMAIL_ADDRESS_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i
-const SAFE_SYNTHETIC_EMAIL_PATTERN = /\bprivacy-audit@example\.invalid\b/gi
+  /([,{](?:\s|\\[nrt])*)(?:mailto|tel)\s*:\s*(?:true|false|![01])(?=(?:\s|\\[nrt])*[,}])/gi
+const EMAIL_ADDRESS_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi
+const SAFE_SYNTHETIC_EMAIL = 'privacy-audit@example.invalid'
+const PUBLISHED_ROOT_NAMES = new Set(['public', 'dist'])
+const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true })
+const UTF16LE_DECODER = new TextDecoder('utf-16le', { fatal: true })
+const UTF16BE_DECODER = new TextDecoder('utf-16be', { fatal: true })
+const BINARY_CONTROL_PATTERN = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/
 
-function isBelowPublicDirectory(filePath) {
+function isPublishedPath(filePath) {
   return resolve(filePath)
     .split(/[\\/]/)
-    .some((segment) => segment.toLowerCase() === 'public')
+    .some((segment) => PUBLISHED_ROOT_NAMES.has(segment.toLowerCase()))
 }
 
-async function collectFiles(inputPath) {
+async function collectEntries(inputPath, published = isPublishedPath(inputPath)) {
   const absolutePath = resolve(inputPath)
   const entry = await lstat(absolutePath)
 
-  if (entry.isSymbolicLink()) return []
-  if (entry.isFile()) return [absolutePath]
+  if (entry.isSymbolicLink()) return [{ filePath: absolutePath, published, symbolicLink: true }]
+  if (entry.isFile()) return [{ filePath: absolutePath, published, symbolicLink: false }]
   if (!entry.isDirectory()) return []
 
   const children = await readdir(absolutePath, { withFileTypes: true })
   children.sort((left, right) => left.name.localeCompare(right.name))
 
-  const files = []
+  const entries = []
   for (const child of children) {
-    if (child.isSymbolicLink()) continue
-    files.push(...await collectFiles(resolve(absolutePath, child.name)))
+    const childPath = resolve(absolutePath, child.name)
+    const childPublished = published || PUBLISHED_ROOT_NAMES.has(child.name.toLowerCase())
+    entries.push(...await collectEntries(childPath, childPublished))
   }
-  return files
+  return entries
 }
 
 function addViolation(violations, filePath, rule) {
@@ -54,15 +64,22 @@ function addViolation(violations, filePath, rule) {
 }
 
 export async function auditPaths(paths) {
-  const files = new Set()
+  const entries = new Map()
   for (const inputPath of paths) {
-    for (const filePath of await collectFiles(inputPath)) {
-      files.add(filePath)
+    for (const entry of await collectEntries(inputPath)) {
+      const existing = entries.get(entry.filePath)
+      entries.set(entry.filePath, {
+        ...entry,
+        published: entry.published || existing?.published || false,
+        symbolicLink: entry.symbolicLink || existing?.symbolicLink || false
+      })
     }
   }
 
   const violations = new Set()
-  for (const filePath of [...files].sort((left, right) => left.localeCompare(right))) {
+  const orderedEntries = [...entries.values()]
+    .sort((left, right) => left.filePath.localeCompare(right.filePath))
+  for (const { filePath, published, symbolicLink } of orderedEntries) {
     if (FORBIDDEN_SOURCE_FILE_PATTERN.test(basename(filePath))) {
       addViolation(violations, filePath, 'forbidden-source-file')
     }
@@ -70,15 +87,24 @@ export async function auditPaths(paths) {
     const extension = extname(filePath).toLowerCase()
     if (
       extension === '.pdf'
-      && isBelowPublicDirectory(filePath)
+      && published
       && process.env.ALLOW_PUBLIC_CV !== 'true'
     ) {
       addViolation(violations, filePath, 'unapproved-pdf')
     }
 
+    if (symbolicLink) {
+      addViolation(violations, filePath, 'forbidden-symlink')
+      continue
+    }
+
     if (!TEXT_EXTENSIONS.has(extension)) continue
 
-    const contents = await readFile(filePath, 'utf8')
+    const contents = decodeText(await readFile(filePath))
+    if (contents === null) {
+      addViolation(violations, filePath, 'unsupported-text-encoding')
+      continue
+    }
     if (PRIVATE_TOPIC_PATTERN.test(contents)) {
       addViolation(violations, filePath, 'forbidden-private-topic')
     }
@@ -87,13 +113,32 @@ export async function auditPaths(paths) {
       addViolation(violations, filePath, 'forbidden-contact-link')
     }
 
-    const emailSafeContents = contents.replace(SAFE_SYNTHETIC_EMAIL_PATTERN, '')
-    if (EMAIL_ADDRESS_PATTERN.test(emailSafeContents)) {
+    const emailAddresses = contents.match(EMAIL_ADDRESS_PATTERN) ?? []
+    if (emailAddresses.some((email) => email.toLowerCase() !== SAFE_SYNTHETIC_EMAIL)) {
       addViolation(violations, filePath, 'forbidden-email-address')
     }
   }
 
   return [...violations].sort((left, right) => left.localeCompare(right))
+}
+
+function decodeText(contents) {
+  try {
+    let decoded
+    if (contents[0] === 0xef && contents[1] === 0xbb && contents[2] === 0xbf) {
+      decoded = UTF8_DECODER.decode(contents.subarray(3))
+    } else if (contents[0] === 0xff && contents[1] === 0xfe) {
+      decoded = UTF16LE_DECODER.decode(contents.subarray(2))
+    } else if (contents[0] === 0xfe && contents[1] === 0xff) {
+      decoded = UTF16BE_DECODER.decode(contents.subarray(2))
+    } else {
+      if (contents.includes(0)) return null
+      decoded = UTF8_DECODER.decode(contents)
+    }
+    return BINARY_CONTROL_PATTERN.test(decoded) ? null : decoded
+  } catch {
+    return null
+  }
 }
 
 async function runCli() {

@@ -86,8 +86,11 @@ export function SelectedWork({ projects }: SelectedWorkProps) {
             <p className="builder-lab__honesty">{trailPulse.honestyNote}</p>
           )}
 
-          <details className="builder-lab__details">
-            <summary>What Trail Pulse does</summary>
+          <details
+            className="builder-lab__details"
+            aria-labelledby="trail-pulse-summary"
+          >
+            <summary id="trail-pulse-summary">What Trail Pulse does</summary>
             <div className="builder-lab__capabilities">
               {trailPulse.capabilities.map((capability) => (
                 <article key={capability.title}>
