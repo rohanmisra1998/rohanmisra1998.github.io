@@ -171,6 +171,28 @@ test('reduced motion keeps the first-view narrative and Proofline visible', asyn
   expectCleanBrowser()
 })
 
+test('hero portrait resolves WebP across reviewed visual contexts', async ({ page }, testInfo) => {
+  skipOutsideReviewProject(testInfo)
+
+  const scenarios = [
+    ...viewports.map((viewport) => ({ ...viewport, reducedMotion: 'no-preference' as const })),
+    { name: 'reduced-motion', width: 1440, height: 1100, reducedMotion: 'reduce' as const }
+  ]
+
+  for (const scenario of scenarios) {
+    await page.setViewportSize(scenario)
+    await page.emulateMedia({ reducedMotion: scenario.reducedMotion })
+    await page.goto('/')
+    await waitForPortfolioToSettle(page)
+
+    const currentPath = await page.locator('.hero__portrait img').evaluate((image) => (
+      new URL((image as HTMLImageElement).currentSrc).pathname
+    ))
+    expect(currentPath, `${scenario.name} selected the wrong portrait source`)
+      .toMatch(/\/images\/rohan-portrait\.webp$/)
+  }
+})
+
 test('interactive target geometry rejects boxes with only one 44px dimension', ({}, testInfo) => {
   skipOutsideReviewProject(testInfo)
 

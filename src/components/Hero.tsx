@@ -43,7 +43,6 @@ export function Hero({ content }: HeroProps) {
       </div>
       <figure className="hero__portrait reveal">
         <picture>
-          <source srcSet={publicAsset('images/rohan-portrait.avif')} type="image/avif" />
           <source srcSet={publicAsset('images/rohan-portrait.webp')} type="image/webp" />
           <img
             src={publicAsset('images/rohan-portrait.png')}
