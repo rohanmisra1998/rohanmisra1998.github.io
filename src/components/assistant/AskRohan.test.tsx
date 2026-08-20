@@ -100,7 +100,7 @@ describe('AskRohan', () => {
     renderAssistant()
     await user.click(screen.getByRole('button', { name: 'Ask Rohan AI' }))
     await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
-    expect(await screen.findByText(/3\+ buy-side diligences/i)).toBeVisible()
+    expect(await screen.findByText(/3\+ buy-side investment theses/i)).toBeVisible()
     const transcript = screen.getByRole('log')
     transcript.scrollTop = 137
     fireEvent.scroll(transcript)
@@ -108,7 +108,7 @@ describe('AskRohan', () => {
     await user.click(screen.getByRole('button', { name: 'Expand assistant' }))
     await user.click(screen.getByRole('button', { name: 'Collapse to compact assistant' }))
     expect(screen.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
-    expect(screen.getByText(/3\+ buy-side diligences/i)).toBeVisible()
+    expect(screen.getByText(/3\+ buy-side investment theses/i)).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: 'Close assistant panel' }))
     const reopen = screen.getByRole('button', { name: 'Reopen Ask Rohan AI' })
@@ -119,7 +119,7 @@ describe('AskRohan', () => {
 
     await user.click(reopen)
     expect(screen.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
-    expect(screen.getByText(/3\+ buy-side diligences/i)).toBeVisible()
+    expect(screen.getByText(/3\+ buy-side investment theses/i)).toBeVisible()
     expect(screen.getByRole('log').scrollTop).toBe(137)
 
     await user.click(screen.getByRole('button', { name: 'Clear conversation' }))
@@ -203,10 +203,10 @@ describe('AskRohan', () => {
     expect(await screen.findByText(/early AI-assisted/i)).toBeVisible()
     expect(screen.getByText('<img src=x> What is Trail Pulse?')).toBeVisible()
     expect(document.querySelector('.ask-rohan img[src="x"]')).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Builder Lab' })).toHaveAttribute('href', '#builder-lab')
-    const caseAction = screen.getByRole('button', { name: 'View supporting case' })
-    await user.click(caseAction)
-    expect(onRequestCase).toHaveBeenCalledWith('trail-pulse', caseAction)
+    expect(screen.getByRole('link', { name: 'Personal projects' }))
+      .toHaveAttribute('href', '#personal-projects')
+    expect(screen.queryByRole('button', { name: 'View supporting case' })).not.toBeInTheDocument()
+    expect(onRequestCase).not.toHaveBeenCalled()
   })
 
   it('presents clarification, fallback, and unavailable guidance as real transcript replies', async () => {
@@ -353,10 +353,14 @@ describe('AskRohan', () => {
 
     await user.click(within(assistant).getByRole('button', { name: /Trail Pulse, and how mature/i }))
     expect(await within(assistant).findByText(/early AI-assisted/i)).toBeVisible()
-    assertTargetSize([
-      ...within(assistant).getAllByRole('link'),
-      within(assistant).getByRole('button', { name: 'View supporting case' })
-    ])
+    assertTargetSize(within(assistant).getAllByRole('link'))
+
+    await user.click(within(assistant).getByRole('button', { name: 'Clear conversation' }))
+    await user.click(within(assistant).getByRole('button', { name: /private-equity diligence/i }))
+    const caseAction = await within(assistant).findByRole('button', {
+      name: 'View supporting case'
+    })
+    assertTargetSize([caseAction])
 
     await user.click(within(assistant).getByRole('button', { name: 'Close assistant panel' }))
     assertTargetSize([screen.getByRole('button', { name: 'Reopen Ask Rohan AI' })])
@@ -438,8 +442,8 @@ describe('AskRohan', () => {
 
     const launcher = screen.getByRole('button', { name: 'Ask Rohan AI' })
     await user.click(launcher)
-    await user.click(screen.getByRole('button', { name: /Trail Pulse, and how mature/i }))
-    expect(await screen.findByText(/early AI-assisted/i)).toBeVisible()
+    await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
+    expect(await screen.findByText(/3\+ buy-side investment theses/i)).toBeVisible()
     if (!mobile) await user.click(screen.getByRole('button', { name: 'Expand assistant' }))
 
     const assistantDialog = screen.getByRole('dialog', { name: 'Ask Rohan AI' })
@@ -451,18 +455,23 @@ describe('AskRohan', () => {
 
     await user.click(caseAction)
 
-    const caseDialog = await screen.findByRole('dialog', { name: 'Trail Pulse' })
+    const caseDialog = await screen.findByRole('dialog', {
+      name: 'B2B SaaS & logistics investment diligence'
+    })
     expect(screen.getAllByRole('dialog')).toEqual([caseDialog])
     expect(screen.queryByRole('dialog', { name: 'Ask Rohan AI' })).not.toBeInTheDocument()
     expect(snapshots).toEqual([{
-      slug: 'trail-pulse',
+      slug: 'buy-side-commercial-diligence',
       trigger: caseAction,
       bodyOverflow: '',
       shellInert: false,
       assistantDialogCount: 0,
       ordinaryLauncherFocused: false
     }])
-    expect(within(caseDialog).getByRole('heading', { level: 2, name: 'Trail Pulse' }))
+    expect(within(caseDialog).getByRole('heading', {
+      level: 2,
+      name: 'B2B SaaS & logistics investment diligence'
+    }))
       .toHaveFocus()
   })
 })

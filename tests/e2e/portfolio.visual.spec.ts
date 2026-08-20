@@ -157,17 +157,17 @@ async function expectNoHorizontalOverflow(page: Page, label: string) {
 }
 
 async function expectIntentionalSectionRhythm(page: Page, viewportHeight: number, label: string) {
-  const [builderLab, writing] = await Promise.all([
-    page.getByRole('region', { name: 'Builder Lab' }).boundingBox(),
+  const [personalProjects, writing] = await Promise.all([
+    page.getByRole('region', { name: 'Personal projects' }).boundingBox(),
     page.getByRole('region', { name: 'Writing' }).boundingBox()
   ])
-  expect(builderLab, `${label} Builder Lab has no box`).not.toBeNull()
+  expect(personalProjects, `${label} Personal projects has no box`).not.toBeNull()
   expect(writing, `${label} Writing has no box`).not.toBeNull()
 
-  const gap = writing!.y - (builderLab!.y + builderLab!.height)
+  const gap = writing!.y - (personalProjects!.y + personalProjects!.height)
   expect(
     gap,
-    `${label} has ${Math.round(gap)}px of dead space between Builder Lab and Writing.`
+    `${label} has ${Math.round(gap)}px of dead space between Personal projects and Writing.`
   ).toBeLessThanOrEqual(Math.round(viewportHeight * 0.2))
 }
 
@@ -236,7 +236,7 @@ for (const viewport of [
 
     await page.setViewportSize(viewport)
     await page.goto('/?case=buy-side-commercial-diligence')
-    const dialog = page.getByRole('dialog', { name: 'Buy-side commercial diligence' })
+    const dialog = page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
     await expect(dialog).toBeVisible()
     await waitForRenderedState(page)
 
@@ -292,7 +292,7 @@ test('assistant grounded answer has a reviewed baseline', async ({ page }, testI
   await page.locator('.action--assistant').click()
   await page.getByRole('button', { name: /private-equity diligence/i }).click()
   await expect(page.getByRole('article', { name: 'Grounded answer' })).toContainText(
-    '3+ buy-side diligences'
+    '3+ buy-side investment theses'
   )
   await waitForRenderedState(page)
 
@@ -458,6 +458,29 @@ test('interactive target geometry rejects boxes with only one 44px dimension', (
   expect(hasRobustInteractiveTargetGeometry({ height: 44, width: 44 })).toBe(true)
 })
 
+test('tablet outside-work interests keep a full-width readable rhythm', async ({ page }, testInfo) => {
+  skipOutsideReviewProject(testInfo)
+
+  await page.setViewportSize({ width: 768, height: 1024 })
+  await page.goto('/')
+  await waitForPortfolioToSettle(page)
+
+  const section = page.getByRole('region', { name: 'Outside work' })
+  const interests = section.getByRole('list', { name: 'Interests' })
+  const [sectionBox, interestsBox] = await Promise.all([
+    section.boundingBox(),
+    interests.boundingBox()
+  ])
+  expect(sectionBox).not.toBeNull()
+  expect(interestsBox).not.toBeNull()
+  expect(interestsBox!.width).toBeGreaterThanOrEqual(sectionBox!.width * 0.9)
+
+  const itemWidths = await interests.getByRole('listitem').evaluateAll((items) => (
+    items.map((item) => item.getBoundingClientRect().width)
+  ))
+  expect(itemWidths.every((width) => width >= 100)).toBe(true)
+})
+
 test('responsive boundary contracts preserve navigation, reading, and contact states', async ({ page }, testInfo) => {
   skipOutsideReviewProject(testInfo)
   const expectCleanBrowser = captureUnexpectedBrowserMessages(page)
@@ -522,10 +545,10 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
     await page.goto('/')
     await waitForPortfolioToSettle(page)
 
-    const trailPulse = page.getByRole('region', { name: 'Selected work' })
+    const trailPulse = page.getByRole('region', { name: 'Personal projects' })
       .getByRole('article', { name: 'Trail Pulse' })
-    await expect(trailPulse.getByRole('group', { name: 'What Trail Pulse does' })).toBeVisible()
-    await expectNoHorizontalOverflow(page, `${width}px Trail Pulse evidence group`)
+    await expect(trailPulse.getByRole('list', { name: 'Trail Pulse capabilities' })).toBeVisible()
+    await expectNoHorizontalOverflow(page, `${width}px Trail Pulse project card`)
 
     const bodyTextSizes = await page.locator([
       '.hero__subhead',
@@ -533,9 +556,9 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
       '.operator-proof__summary',
       '.operator-proof__evidence-item p',
       '.social-proof > p',
-      '.builder-lab__summary',
-      '.builder-lab__honesty',
-      '.builder-lab__capabilities p',
+      '.builder-card__description',
+      '.builder-card__honesty',
+      '.builder-card li',
       '.section-heading__note',
       '.experience-row__detail p',
       '.writing-row__body p',
@@ -624,7 +647,7 @@ test('hover and keyboard focus remain visible across light, dark, and green surf
       exact: true
     }),
     page.getByRole('region', { name: 'Selected work' })
-      .getByRole('button', { name: 'Open case study: Trail Pulse' })
+      .getByRole('button', { name: 'Open case study: Omnichannel payments strategy' })
   ]
 
   for (const control of controls) {

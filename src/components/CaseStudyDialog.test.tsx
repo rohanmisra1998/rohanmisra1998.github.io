@@ -67,8 +67,8 @@ afterEach(() => {
 })
 
 describe('CaseStudyDialog', () => {
-  it('portals outside the shell and presents the approved case hierarchy', () => {
-    const item = portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')!
+  it('portals outside the shell and presents challenge, approach, and quantified outcome without role', () => {
+    const item = portfolioContent.work.find(({ slug }) => slug === 'omnichannel-payments-strategy')!
     render(
       <>
         <div id="page-shell">Portfolio shell</div>
@@ -76,7 +76,7 @@ describe('CaseStudyDialog', () => {
       </>
     )
 
-    const dialog = screen.getByRole('dialog', { name: 'Trail Pulse' })
+    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })
     expect(document.getElementById('page-shell')).not.toContainElement(dialog)
     expect(document.body).toContainElement(dialog)
     expect(dialog).toHaveAttribute('aria-modal', 'true')
@@ -86,14 +86,12 @@ describe('CaseStudyDialog', () => {
       item.title,
       item.industry,
       item.thesis,
-      item.role,
       'Challenge',
       item.challenge,
       'Approach',
       item.approach,
-      'Evidence',
-      item.evidence,
-      item.maturityNote!
+      'Outcome',
+      '$150M+ in value uplift'
     ]
     let lastPosition = -1
     for (const copy of orderedCopy) {
@@ -102,11 +100,8 @@ describe('CaseStudyDialog', () => {
       lastPosition = position
     }
 
-    const externalAction = within(dialog).getByRole('link', { name: /Try Trail Pulse/i })
-    expect(externalAction).toHaveAttribute('href', 'https://trail-pulse-alpha.vercel.app/')
-    expect(externalAction).toHaveAttribute('target', '_blank')
-    expect(externalAction.getAttribute('rel')).toMatch(/noopener/)
-    expect(externalAction.getAttribute('rel')).toMatch(/noreferrer/)
+    expect(dialog).not.toHaveTextContent('Role')
+    expect(dialog).not.toHaveTextContent('Evidence')
   })
 
   it('exposes the integrated assistant action for the current work', () => {
@@ -140,10 +135,10 @@ describe('CaseStudyDialog', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: /Open case study: Workforce/i }))
+    await user.click(screen.getByRole('button', { name: /Open case study: Utilities/i }))
     expect(location.search).toBe('?case=workforce-operations-transformation')
     expect(
-      screen.getByRole('dialog', { name: 'Workforce operations transformation' })
+      screen.getByRole('dialog', { name: 'Utilities workforce transformation' })
     ).toBeVisible()
 
     history.back()
@@ -154,17 +149,16 @@ describe('CaseStudyDialog', () => {
   it('starts on the heading, preserves natural Tab order, traps boundaries, and restores focus', async () => {
     const user = userEvent.setup()
     render(<App />)
-    const trigger = screen.getByRole('button', { name: /Open case study: Trail Pulse/i })
+    const trigger = screen.getByRole('button', { name: /Open case study: Omnichannel payments/i })
 
     await user.click(trigger)
 
-    const dialog = screen.getByRole('dialog', { name: 'Trail Pulse' })
+    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })
     const heading = within(dialog).getByRole('heading', {
       level: 2,
-      name: 'Trail Pulse'
+      name: 'Omnichannel payments strategy'
     })
     const close = within(dialog).getByRole('button', { name: 'Close case study' })
-    const external = within(dialog).getByRole('link', { name: 'Try Trail Pulse' })
     const assistantAction = within(dialog).getByRole('button', {
       name: 'Ask Rohan AI about this work'
     })
@@ -175,7 +169,7 @@ describe('CaseStudyDialog', () => {
     expect(heading).toHaveFocus()
 
     await user.keyboard('{Tab}')
-    expect(external).toHaveFocus()
+    expect(assistantAction).toHaveFocus()
 
     heading.focus()
     await user.keyboard('{Shift>}{Tab}{/Shift}')
@@ -193,30 +187,20 @@ describe('CaseStudyDialog', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
-  it('keeps builder maturity while omitting diligence process notes', () => {
-    const builder = portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')!
+  it('omits diligence process notes while preserving industry and capabilities', () => {
     const diligence = portfolioContent.work.find(
       ({ slug }) => slug === 'buy-side-commercial-diligence'
     )!
-    const { rerender } = render(
-      <>
-        <div id="page-shell">Portfolio shell</div>
-        <CaseStudyDialog item={builder} onClose={() => {}} onOpenAssistant={() => {}} />
-      </>
-    )
-
-    expect(screen.getByRole('complementary', { name: 'Maturity disclosure' }))
-      .toHaveTextContent(builder.maturityNote!)
-
-    rerender(
+    render(
       <>
         <div id="page-shell">Portfolio shell</div>
         <CaseStudyDialog item={diligence} onClose={() => {}} onOpenAssistant={() => {}} />
       </>
     )
 
-    const dialog = screen.getByRole('dialog', { name: 'Buy-side commercial diligence' })
-    expect(within(dialog).getByText('B2B SaaS and logistics')).toBeVisible()
+    const dialog = screen.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
+    expect(within(dialog).getByText(/Technology investing · B2B SaaS and logistics/))
+      .toBeVisible()
     expect(within(dialog).getByText('Market assessment')).toBeVisible()
     expect(dialog.querySelector('.case-dialog__disclosure')).not.toBeInTheDocument()
     expect(dialog.querySelector('.case-dialog__maturity')).not.toBeInTheDocument()

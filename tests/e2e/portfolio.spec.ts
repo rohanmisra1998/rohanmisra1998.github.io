@@ -108,53 +108,55 @@ test('keyboard users can skip directly to the main portfolio content', async ({ 
 
 test('case query supports direct load, close, and browser Back', async ({ page }) => {
   await page.goto('/?case=buy-side-commercial-diligence')
-  await expect(page.getByRole('dialog', { name: 'Buy-side commercial diligence' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toBeVisible()
   await page.getByRole('button', { name: 'Close case study' }).click()
   await expect(page).toHaveURL('/')
-  await page.getByRole('button', { name: /Open case study: Workforce/i }).click()
+  await page.getByRole('button', { name: /Open case study: Utilities/i }).click()
   await page.goBack()
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await expect(page).toHaveURL('/')
 })
 
-test('selected work exposes six approved cards, then all eight, without anonymization process notes', async ({ page }) => {
+test('selected work exposes six CV-grounded cases in two technology-first groups', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
   const initialCards = selectedWork.getByRole('article')
 
   await expect(initialCards).toHaveCount(6)
-  await expect(initialCards.nth(0)).toHaveAccessibleName('Workforce operations transformation')
-  await expect(initialCards.nth(5)).toHaveAccessibleName('Trail Pulse')
-  await expect(initialCards.nth(5)).toHaveAttribute('data-emphasis', 'secondary')
-  await expect(selectedWork.getByText('B2B SaaS and logistics')).toBeVisible()
-  await expect(selectedWork.getByText('Life sciences', { exact: true })).toBeVisible()
+  await expect(initialCards.nth(0)).toHaveAccessibleName('Omnichannel payments strategy')
+  await expect(initialCards.nth(5)).toHaveAccessibleName('Pharma & life-sciences growth transformation')
+  await expect(selectedWork.getByRole('group', { name: 'Tech × AI × Growth' })).toBeVisible()
+  await expect(selectedWork.getByRole('group', {
+    name: 'Operations × Large-scale transformations'
+  })).toBeVisible()
+  await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
+  await expect(selectedWork.getByText('Created a path to $150M+ in value uplift.')).toBeVisible()
+  await expect(selectedWork.getByText(/15,000 hours of recruiter and talent-team capacity/)).toBeVisible()
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
-  await expect(selectedWork.getByText('Builder Lab · early AI-assisted, vibe-coded experiment'))
-    .toBeVisible()
+  await expect(selectedWork.getByRole('button', { name: 'See all work' })).toHaveCount(0)
+  await expect(selectedWork.getByRole('article', { name: 'Trail Pulse' })).toHaveCount(0)
 
-  await selectedWork.getByRole('button', { name: 'See all work' }).click()
-  await expect(selectedWork.getByRole('article')).toHaveCount(8)
-  await expect(selectedWork.getByText('Automotive services')).toBeVisible()
-  await expect(selectedWork.getByText('Pharmaceuticals', { exact: true })).toBeVisible()
-
-  await selectedWork.getByRole('button', { name: 'Open case study: Buy-side commercial diligence' })
+  await selectedWork.getByRole('button', { name: 'Open case study: B2B SaaS & logistics investment diligence' })
     .click()
-  const diligenceDialog = page.getByRole('dialog', { name: 'Buy-side commercial diligence' })
-  await expect(diligenceDialog.getByText('B2B SaaS and logistics')).toBeVisible()
+  const diligenceDialog = page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
+  await expect(diligenceDialog.getByText('Technology investing · B2B SaaS and logistics')).toBeVisible()
   await expect(diligenceDialog.getByText('Market assessment')).toBeVisible()
+  await expect(diligenceDialog.getByText('Outcome')).toBeVisible()
+  await expect(diligenceDialog.getByText('Informed 3+ buy-side investment theses.')).toBeVisible()
+  await expect(diligenceDialog.getByText('Role', { exact: true })).toHaveCount(0)
+  await expect(diligenceDialog.getByText('Evidence', { exact: true })).toHaveCount(0)
   await expect(diligenceDialog.locator('.case-dialog__disclosure')).toHaveCount(0)
   await expect(diligenceDialog).not.toContainText(/target identities|transaction detail is disclosed/i)
 })
 
-test('Trail Pulse remains an honest secondary case and a Builder Lab experiment', async ({ page }) => {
+test('Trail Pulse remains an honest Personal project rather than professional work', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  const selectedTrailPulse = selectedWork.getByRole('article', { name: 'Trail Pulse' })
-  await expect(selectedTrailPulse.getByRole('group', { name: 'What Trail Pulse does' })).toBeVisible()
+  await expect(selectedWork.getByRole('article', { name: 'Trail Pulse' })).toHaveCount(0)
 
-  const builderLab = page.getByRole('region', { name: 'Builder Lab' })
-  const builderTrailPulse = builderLab.getByRole('article', { name: 'Trail Pulse' })
+  const personalProjects = page.getByRole('region', { name: 'Personal projects' })
+  const builderTrailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
   await expect(builderTrailPulse.getByText(
     'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
     { exact: true }
@@ -439,18 +441,17 @@ test('invalid direct case queries are removed without opening a dialog', async (
 test('case dialog starts on its heading, preserves natural Tab order, traps both boundaries, and restores its trigger', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  const trigger = selectedWork.getByRole('button', { name: 'Open case study: Trail Pulse' })
+  const trigger = selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' })
   await trigger.click()
 
-  const dialog = page.getByRole('dialog', { name: 'Trail Pulse' })
-  const heading = dialog.getByRole('heading', { level: 2, name: 'Trail Pulse' })
+  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+  const heading = dialog.getByRole('heading', { level: 2, name: 'Omnichannel payments strategy' })
   const close = dialog.getByRole('button', { name: 'Close case study' })
-  const external = dialog.getByRole('link', { name: 'Try Trail Pulse' })
   const assistantAction = dialog.getByRole('button', { name: 'Ask Rohan AI about this work' })
   await expect(heading).toBeFocused()
 
   await page.keyboard.press('Tab')
-  await expect(external).toBeFocused()
+  await expect(assistantAction).toBeFocused()
 
   await heading.focus()
   await page.keyboard.press('Shift+Tab')
@@ -497,12 +498,15 @@ test('normal motion stays within the approved interaction caps', async ({ page }
 
 test('case dialog presents title before industry in the accessibility reading order', async ({ page }) => {
   await page.goto('/?case=buy-side-commercial-diligence')
-  const dialog = page.getByRole('dialog', { name: 'Buy-side commercial diligence' })
-  const title = dialog.getByRole('heading', { level: 2, name: 'Buy-side commercial diligence' })
+  const dialog = page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
+  const title = dialog.getByRole('heading', { level: 2, name: 'B2B SaaS & logistics investment diligence' })
   await expect(title).toBeFocused()
   const order = await dialog.locator('.case-dialog__rail > h2, .case-dialog__rail > .case-dialog__industry')
     .evaluateAll((elements) => elements.map((element) => element.textContent?.trim()))
-  expect(order).toEqual(['Buy-side commercial diligence', 'B2B SaaS and logistics'])
+  expect(order).toEqual([
+    'B2B SaaS & logistics investment diligence',
+    'Technology investing · B2B SaaS and logistics'
+  ])
   const titleGeometry = await title.evaluate((element) => {
     const box = element.getBoundingClientRect()
     const text = document.createRange()
@@ -581,11 +585,8 @@ test('supported widths keep rendered content in the viewport and controls at lea
     }
 
     const selectedWork = page.getByRole('region', { name: 'Selected work' })
-    await selectedWork.getByRole('button', { name: 'See all work' }).click()
-    await expectMinimumTargetSize(page.locator('a[href]:visible, button:visible'), `${width}px expanded work`)
-
-    await selectedWork.getByRole('button', { name: 'Open case study: Trail Pulse' }).click()
-    const dialog = page.getByRole('dialog', { name: 'Trail Pulse' })
+    await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
     await settleAnimations(dialog)
     await expectMinimumTargetSize(
       dialog.locator('a[href]:visible, button:visible'),
@@ -601,10 +602,9 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
   for (const selector of [
     '.hero__subhead',
     '.hero__current',
-    '.selected-work__header > div > p',
-    '.case-card__evidence',
+    '.selected-work__group-heading h3',
+    '.case-card__outcome',
     '.case-card__capabilities li',
-    '.case-card__maturity',
     '.section-heading__note',
     '.builder-card__description',
     '.builder-card__honesty',
@@ -616,7 +616,9 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.education__meta',
     '.writing-row__body > p',
     '.about__statement',
-    '.contact__body > p'
+    '.contact__body > p',
+    '.outside-work__heading > p:last-child',
+    '.outside-work__interests li'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered content`).toBeGreaterThan(0)
@@ -628,13 +630,11 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
   }
 
   await page.getByRole('region', { name: 'Selected work' })
-    .getByRole('button', { name: 'Open case study: Trail Pulse' }).click()
+    .getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
   for (const selector of [
     '.case-dialog__thesis',
-    '.case-dialog__role > p:last-child',
     '.case-dialog__capability-group li',
-    '.case-dialog__narrative h3',
-    '.case-dialog__maturity'
+    '.case-dialog__narrative h3'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered dialog copy`).toBeGreaterThan(0)
@@ -716,8 +716,8 @@ test('settled home, open disclosure, and open case have no detectable accessibil
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  await selectedWork.getByRole('button', { name: 'Open case study: Trail Pulse' }).click()
-  const dialog = page.getByRole('dialog', { name: 'Trail Pulse' })
+  await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
   await expect(dialog).toBeVisible()
   await settleAnimations(dialog)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
@@ -748,15 +748,15 @@ test('assistant graph preloads for offline use and both case handoffs keep one s
   expect(assistantResources.some((name) => name.includes('assistant-knowledge'))).toBe(true)
 
   await page.getByRole('button', {
-    name: /Open case study: Talent-acquisition operating model/i
+    name: /Open case study: AI-powered recruiting transformation/i
   }).click()
   await expect(page.getByRole('button', { name: 'Ask Rohan AI about this work' }))
     .toHaveCount(0)
   await page.getByRole('button', { name: 'Close case study' }).click()
 
-  await page.getByRole('button', { name: /Open case study: Buy-side/i }).click()
+  await page.getByRole('button', { name: /Open case study: B2B SaaS/i }).click()
   await launcher.evaluate((button) => (button as HTMLButtonElement).click())
-  await expect(page.getByRole('dialog', { name: 'Buy-side commercial diligence' })).toHaveCount(0)
+  await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toHaveCount(0)
   await expect(page.locator('.ask-rohan')).toHaveCount(1)
   await expect(page.getByRole('textbox', { name: 'Ask a question' })).toBeFocused()
   expect(await page.locator('[inert]').count()).toBe(0)
@@ -769,14 +769,14 @@ test('assistant graph preloads for offline use and both case handoffs keep one s
   await expect(composer).toBeFocused()
   await page.getByRole('button', { name: /private-equity diligence/i }).click()
   await expect(page.getByRole('article', { name: 'Grounded answer' })).toContainText(
-    '3+ buy-side diligences'
+    '3+ buy-side investment theses'
   )
   await page.getByRole('button', { name: 'View supporting case' }).click()
-  await expect(page.getByRole('dialog', { name: 'Buy-side commercial diligence' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toBeVisible()
   await expect(page.getByRole('dialog')).toHaveCount(1)
 
   await page.getByRole('button', { name: 'Close case study' }).click()
-  const caseTrigger = page.getByRole('button', { name: /Open case study: Buy-side/i })
+  const caseTrigger = page.getByRole('button', { name: /Open case study: B2B SaaS/i })
   await caseTrigger.click()
   await page.getByRole('button', { name: 'Ask Rohan AI about this work' }).click()
   await expect(composer).toBeFocused()

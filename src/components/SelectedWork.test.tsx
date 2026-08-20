@@ -1,5 +1,4 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { portfolioContent } from '../content/portfolio-content'
 import { SelectedWork } from './SelectedWork'
@@ -7,69 +6,68 @@ import { SelectedWork } from './SelectedWork'
 afterEach(cleanup)
 
 describe('SelectedWork', () => {
-  it('shows six home-visible cases and reveals all eight in place', async () => {
-    const user = userEvent.setup()
+  it('shows the six approved cases in two explicit technology-first groups', () => {
     render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
 
     expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(6)
-    expect(screen.queryByText('Performance and value-realization program')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'See all work' })).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'See all work' }))
-
-    expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(8)
-    expect(screen.getByText('Performance and value-realization program')).toBeVisible()
+    const tech = screen.getByRole('group', { name: 'Tech × AI × Growth' })
+    const operations = screen.getByRole('group', {
+      name: 'Operations × Large-scale transformations'
+    })
+    expect(within(tech).getAllByRole('article').map((card) => card.getAttribute('aria-labelledby')))
+      .toEqual([
+        'work-omnichannel-payments-strategy-heading',
+        'work-buy-side-commercial-diligence-heading',
+        'work-talent-acquisition-operating-model-heading'
+      ])
+    expect(within(operations).getAllByRole('article').map((card) => card.getAttribute('aria-labelledby')))
+      .toEqual([
+        'work-workforce-operations-transformation-heading',
+        'work-performance-and-value-realization-program-heading',
+        'work-pharma-life-sciences-growth-transformation-heading'
+      ])
   })
 
-  it('keeps Trail Pulse last and visually secondary in the initial collection', () => {
+  it('leads with CV-grounded outcomes, industries, and technical transformation skills', () => {
     render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
 
-    const cards = screen.getAllByRole('article')
-    expect(cards).toHaveLength(6)
-    expect(cards.at(-1)).toHaveAccessibleName('Trail Pulse')
-    expect(cards.at(-1)).toHaveAttribute('data-emphasis', 'secondary')
-  })
+    const payments = screen.getByRole('article', { name: 'Omnichannel payments strategy' })
+    expect(within(payments).getByText(/India's largest payments platform/)).toBeVisible()
+    expect(payments).toHaveTextContent('$150M+ in value uplift')
 
-  it('shows evidence, industries, and skills without anonymization process notes', () => {
-    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
+    const talent = screen.getByRole('article', { name: 'AI-powered recruiting transformation' })
+    expect(talent).toHaveTextContent('AI-tool integration')
+    expect(talent).toHaveTextContent('15,000 hours')
 
-    const workforce = screen.getByRole('article', { name: 'Workforce operations transformation' })
-    expect(within(workforce).getByText('Utilities')).toBeVisible()
-    expect(within(workforce).getByText('10+ pilots implemented · 8%+ workforce-productivity improvement')).toBeVisible()
-    expect(within(workforce).getAllByRole('listitem')).toHaveLength(3)
-
-    const diligence = screen.getByRole('article', { name: 'Buy-side commercial diligence' })
-    expect(within(diligence).getByText('B2B SaaS and logistics')).toBeVisible()
+    const diligence = screen.getByRole('article', { name: 'B2B SaaS & logistics investment diligence' })
+    expect(within(diligence).getByText(/B2B SaaS and logistics/)).toBeVisible()
     expect(within(diligence).getByText('Market assessment')).toBeVisible()
-    expect(diligence).toHaveTextContent('3+ buy-side diligences informing investor decisions')
-    expect(diligence.querySelector('.case-card__disclosure')).not.toBeInTheDocument()
-    expect(diligence.querySelector('.case-card__maturity')).not.toBeInTheDocument()
-    expect(diligence).not.toHaveTextContent(/target identities|transaction detail is disclosed/i)
+    expect(diligence).toHaveTextContent('3+ buy-side investment theses')
 
-    const trailPulse = screen.getByRole('article', { name: 'Trail Pulse' })
-    expect(trailPulse.querySelector('.case-card__maturity'))
-      .toHaveTextContent('Builder Lab · early AI-assisted, vibe-coded experiment')
+    const pharma = screen.getByRole('article', { name: 'Pharma & life-sciences growth transformation' })
+    expect(pharma).toHaveTextContent('30%+')
+    expect(pharma).toHaveTextContent('200+ counties')
+    expect(screen.queryByRole('article', { name: 'Trail Pulse' })).not.toBeInTheDocument()
   })
 
-  it('exposes a unique slug-derived visual variant for every case', async () => {
-    const user = userEvent.setup()
+  it('exposes a unique slug-derived visual variant for every case', () => {
     const { container } = render(
       <SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />
     )
-    await user.click(screen.getByRole('button', { name: 'See all work' }))
 
     const variants = [...container.querySelectorAll<HTMLElement>('.case-card__visual')]
       .map((visual) => visual.dataset.visualVariant)
 
     expect(variants).toEqual([
-      'workforce-operations-transformation',
-      'buy-side-commercial-diligence',
       'omnichannel-payments-strategy',
+      'buy-side-commercial-diligence',
       'talent-acquisition-operating-model',
-      'life-sciences-sector-and-value-creation-scan',
-      'trail-pulse',
+      'workforce-operations-transformation',
       'performance-and-value-realization-program',
-      'distribution-transformation-and-growth'
+      'pharma-life-sciences-growth-transformation'
     ])
-    expect(new Set(variants)).toHaveProperty('size', 8)
+    expect(new Set(variants)).toHaveProperty('size', 6)
   })
 })

@@ -12,7 +12,7 @@ function HistoryHarness() {
   return (
     <div>
       <output aria-label="Active case">{activeCase?.slug ?? 'none'}</output>
-      <button type="button" onClick={(event) => openCase('trail-pulse', event.currentTarget)}>
+      <button type="button" onClick={(event) => openCase('omnichannel-payments-strategy', event.currentTarget)}>
         Open valid
       </button>
       <button type="button" onClick={(event) => openCase('not-approved', event.currentTarget)}>
@@ -42,12 +42,12 @@ afterEach(() => {
 
 describe('useCaseHistory', () => {
   it('parses a directly loaded valid query and replaces it on close', async () => {
-    history.replaceState(null, '', '/?case=trail-pulse')
+    history.replaceState(null, '', '/?case=omnichannel-payments-strategy')
     const back = vi.spyOn(history, 'back')
     const user = userEvent.setup()
 
     render(<HistoryHarness />)
-    expect(screen.getByLabelText('Active case')).toHaveTextContent('trail-pulse')
+    expect(screen.getByLabelText('Active case')).toHaveTextContent('omnichannel-payments-strategy')
 
     await user.click(screen.getByRole('button', { name: 'Close' }))
 
@@ -75,8 +75,8 @@ describe('useCaseHistory', () => {
     render(<HistoryHarness />)
 
     await user.click(screen.getByRole('button', { name: 'Open valid' }))
-    expect(location.search).toBe('?case=trail-pulse')
-    expect(history.state).toEqual({ portfolioCase: 'trail-pulse' })
+    expect(location.search).toBe('?case=omnichannel-payments-strategy')
+    expect(history.state).toEqual({ portfolioCase: 'omnichannel-payments-strategy' })
 
     history.back()
     await waitFor(() => expect(screen.getByLabelText('Active case')).toHaveTextContent('none'))

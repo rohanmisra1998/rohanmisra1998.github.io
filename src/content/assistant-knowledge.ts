@@ -38,8 +38,8 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
     if (!item) throw new Error(`Approved work record is missing: ${slug}`)
     return item
   }
-  const trailPulse = content.builderLab.find((item) => item.slug === 'trail-pulse')
-  if (!trailPulse) throw new Error('Approved Builder Lab Trail Pulse record is missing')
+  const trailPulse = content.personalProjects.find((item) => item.slug === 'trail-pulse')
+  if (!trailPulse) throw new Error('Approved Personal projects Trail Pulse record is missing')
 
   const workforce = byWorkSlug('workforce-operations-transformation')
   const diligence = byWorkSlug('buy-side-commercial-diligence')
@@ -52,7 +52,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['operating transformations', 'workforce operations transformation'],
       aliases: ['utility workforce', 'workforce operations', 'operating transformation', 'strategy and operations'],
       keywords: ['utilities', 'workforce', 'pilots', 'implementation', 'process redesign', 'operations'],
-      answer: `Rohan's ${workforce.title} work: ${workforce.approach} ${workforce.evidence}.`,
+      answer: `Rohan's ${workforce.title} work: ${workforce.approach} ${workforce.outcome}`,
       citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
       caseSlug: workforce.slug
     },
@@ -62,7 +62,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['private equity diligence', 'buy side commercial diligence'],
       aliases: ['commercial diligence', 'buy side diligence', 'private equity', 'due diligence'],
       keywords: ['commercial', 'diligence', 'market assessment', 'competitive positioning', 'investment'],
-      answer: `Rohan has led ${diligence.evidence.toLowerCase()}. ${diligence.approach}`,
+      answer: `Rohan's ${diligence.title} work: ${diligence.approach} ${diligence.outcome}`,
       citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
       caseSlug: diligence.slug,
       guardedTerms: ['target names', 'investment recommendation', 'transaction details']
@@ -73,7 +73,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['product strategy go to market', 'omnichannel payments strategy'],
       aliases: ['product gtm', 'go to market', 'product strategy', 'strategy and operations'],
       keywords: ['product', 'strategy', 'gtm', 'roadmap', 'partnerships', 'sales'],
-      answer: `Rohan's ${payments.title} work: ${payments.approach} ${payments.evidence}.`,
+      answer: `Rohan's ${payments.title} work for ${payments.industry.toLowerCase()}: ${payments.approach} ${payments.outcome}`,
       citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
       caseSlug: payments.slug
     },
@@ -93,8 +93,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['trailpulse', 'hiking product', 'trail app'],
       keywords: ['hiking', 'trail', 'recommendations', 'route export', 'mature'],
       answer: `Trail Pulse is ${trailPulse.description} ${trailPulse.honestyNote}`,
-      citations: [section('#builder-lab', 'Builder Lab'), section('#work', 'Work')],
-      caseSlug: 'trail-pulse'
+      citations: [section('#personal-projects', 'Personal projects')]
     },
     {
       id: 'career-path',

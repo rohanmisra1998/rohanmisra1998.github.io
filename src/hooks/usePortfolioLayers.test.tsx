@@ -17,10 +17,10 @@ afterEach(() => {
 
 describe('usePortfolioLayers integration', () => {
   it('owns a directly queried case and returns to none on Escape', async () => {
-    history.replaceState({ portfolioCase: 'trail-pulse' }, '', '/?case=trail-pulse')
+    history.replaceState({ portfolioCase: 'omnichannel-payments-strategy' }, '', '/?case=omnichannel-payments-strategy')
     render(<App />)
 
-    expect(screen.getByRole('dialog', { name: 'Trail Pulse' })).toBeVisible()
+    expect(screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })).toBeVisible()
     expect(screen.queryByRole('dialog', { name: 'Ask Rohan AI' })).not.toBeInTheDocument()
     await waitFor(() => expect(document.querySelector('.ask-rohan-launcher')).toBeInTheDocument())
 
@@ -31,7 +31,7 @@ describe('usePortfolioLayers integration', () => {
   it('keeps ordinary case Escape focus restoration when no handoff occurs', async () => {
     const user = userEvent.setup()
     render(<App />)
-    const trigger = screen.getByRole('button', { name: /Open case study: Trail Pulse/i })
+    const trigger = screen.getByRole('button', { name: /Open case study: Omnichannel payments/i })
 
     await user.click(trigger)
     await user.keyboard('{Escape}')

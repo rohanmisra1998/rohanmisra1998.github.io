@@ -1,11 +1,12 @@
 import { lazy, Suspense } from 'react'
 import { About } from './components/About'
-import { BuilderLab } from './components/BuilderLab'
 import { CaseStudyDialog } from './components/CaseStudyDialog'
 import { Contact } from './components/Contact'
 import { Expertise } from './components/Expertise'
 import { Experience } from './components/Experience'
 import { Hero } from './components/Hero'
+import { OutsideWork } from './components/OutsideWork'
+import { PersonalProjects } from './components/PersonalProjects'
 import { SelectedWork } from './components/SelectedWork'
 import { SiteHeader } from './components/SiteHeader'
 import { Writing } from './components/Writing'
@@ -37,13 +38,14 @@ export default function App() {
             education={portfolioContent.education}
           />
           <Expertise groups={portfolioContent.expertise} />
-          <BuilderLab items={portfolioContent.builderLab} />
+          <PersonalProjects items={portfolioContent.personalProjects} />
           <Writing
             items={portfolioContent.writing}
             publicResearch={portfolioContent.publicResearch}
           />
           <About content={portfolioContent.about} />
           <Contact config={portfolioContent.contact} />
+          <OutsideWork interests={portfolioContent.about.interests} />
         </main>
         <footer>
           <p>Built with curiosity and a bias to ship.</p>

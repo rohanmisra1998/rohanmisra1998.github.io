@@ -14,11 +14,11 @@ A privacy-conscious React and TypeScript portfolio for an operator, strategist, 
 - `src/lib/publicAsset.ts` resolves same-origin public assets through Vite's configured base path.
 - `scripts/` contains asset preparation, privacy auditing, script-test orchestration, and the rendered project-base smoke.
 
-The selected-work collection has eight typed work items. Exactly six have `homeVisible: true`; Trail Pulse is sixth and home-last, with secondary emphasis. Trail Pulse also appears in Builder Lab, so tests and consumers should scope lookups to the appropriate `Selected work` or `Builder Lab` region.
+The selected-work collection has six CV-grounded professional cases, arranged under `Tech × AI × Growth` and `Operations × Large-scale transformations`. Personal builds live separately under `Personal projects`, where the portfolio and Trail Pulse demonstrate hands-on technical curiosity without presenting Trail Pulse as professional client work.
 
 ## Browser contracts
 
-Case studies use a shareable `?case=<slug>` query. A valid slug opens its dialog on direct load. Opening a card pushes a history entry, closing returns to the prior URL when appropriate, and browser Back closes the dialog. Unknown slugs are removed without opening a case study. The dialog title precedes industry in document order, and modal focus is contained and restored.
+Case studies use a shareable `?case=<slug>` query. A valid slug opens its dialog on direct load. Opening a card pushes a history entry, closing returns to the prior URL when appropriate, and browser Back closes the dialog. Unknown slugs are removed without opening a case study. Every case follows the same Challenge → Approach → Outcome narrative, with the outcome anchored to a quantified KPI; the dialog title precedes industry in document order, and modal focus is contained and restored.
 
 Theme preference is stored in local storage under `rohan-theme`. Supported values are `system`, `light`, and `dark`; `system` resolves from `prefers-color-scheme`.
 

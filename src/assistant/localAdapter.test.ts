@@ -182,7 +182,7 @@ describe('localAssistantAdapter', () => {
   })
 
   it('returns unavailable when a real knowledge initialization failure occurs', async () => {
-    const failingKnowledge = createKnowledgeAccess({ ...portfolioContent, builderLab: [] })
+    const failingKnowledge = createKnowledgeAccess({ ...portfolioContent, personalProjects: [] })
     const adapter = createLocalAssistantAdapter(failingKnowledge)
 
     const reply = await adapter.reply({ input: 'What is Trail Pulse, and how mature is it?', history: [] }, new AbortController().signal)
@@ -262,7 +262,7 @@ describe('localAssistantAdapter', () => {
 
     expect(blank).toMatchObject({
       kind: 'fallback',
-      text: 'I can only answer from approved public content on this portfolio. Try Work, Experience, Writing, or Builder Lab.'
+      text: 'I can only answer from approved public content on this portfolio. Try Work, Experience, Writing, or Personal projects.'
     })
     expect(oversized).toMatchObject({ kind: 'fallback', text: blank.text })
   })

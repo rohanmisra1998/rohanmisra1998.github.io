@@ -17,82 +17,63 @@ export const portfolioContent: PortfolioContent = {
   },
   work: [
     {
-      slug: 'workforce-operations-transformation', homeVisible: true, category: 'transformation',
-      title: 'Workforce operations transformation', industry: 'Utilities', role: 'Transformation lead',
-      capabilities: ['Workforce operations', 'Pilot design', 'Process redesign', 'Stakeholder alignment'],
-      thesis: 'Turn complex workforce operations into practical, measurable improvements.',
-      challenge: 'Improve planning, scheduling, and crew management across a complex operating network.',
-      approach: 'Redesign core workflows, build leadership alignment, and move more than ten pilots into implementation.',
-      evidence: '10+ pilots implemented · 8%+ workforce-productivity improvement'
+      slug: 'omnichannel-payments-strategy', category: 'product', group: 'tech-ai-growth',
+      title: 'Omnichannel payments strategy', industry: "Fintech · India's largest payments platform",
+      capabilities: ['Product roadmaps', 'Go-to-market design', 'Sales operating model', 'Partnership strategy'],
+      thesis: 'Build an omnichannel payments offering that can launch, integrate, and scale.',
+      challenge: 'Build an omnichannel payments offering by integrating an acquired offline point-of-sale player.',
+      approach: 'Developed a four-year product roadmap and built the go-to-market model, including the sales operating model and partnership strategy.',
+      outcome: 'Created a path to $150M+ in value uplift.'
     },
     {
-      slug: 'buy-side-commercial-diligence', homeVisible: true, category: 'diligence',
-      title: 'Buy-side commercial diligence', industry: 'B2B SaaS and logistics', role: 'Private-equity diligence lead',
+      slug: 'buy-side-commercial-diligence', category: 'diligence', group: 'tech-ai-growth',
+      title: 'B2B SaaS & logistics investment diligence', industry: 'Technology investing · B2B SaaS and logistics',
       capabilities: ['Market assessment', 'Competitive positioning', 'Right-to-win analysis', 'Risk synthesis'],
-      thesis: 'Assess whether prospective assets support credible investment theses.',
-      challenge: 'Determine whether prospective assets supported credible investment theses.',
-      approach: 'Lead 3+ commercial diligences, triangulating growth, competition, positioning, and risk.',
-      evidence: '3+ buy-side diligences informing investor decisions'
+      thesis: 'Pressure-test whether fast-moving technology businesses can support a credible investment thesis.',
+      challenge: 'Assess prospective B2B SaaS and logistics assets across market growth, right to win, competitive positioning, and risk.',
+      approach: 'Led commercial diligence workstreams, triangulating primary research, market evidence, competitive dynamics, and downside risks.',
+      outcome: 'Informed 3+ buy-side investment theses.'
     },
     {
-      slug: 'omnichannel-payments-strategy', homeVisible: true, category: 'product',
-      title: 'Omnichannel payments strategy', industry: 'Fintech and payments', role: 'Product and GTM strategist',
-      capabilities: ['Product roadmaps', 'Go-to-market design', 'Partnerships', 'Sales operating model'],
-      thesis: 'Define an offline point-of-sale expansion that can launch and scale.',
-      challenge: 'Define expansion of an offline point-of-sale offering.',
-      approach: 'Design a four-year product roadmap and a GTM model spanning sales, partnerships, and operating requirements.',
-      evidence: 'Four-year roadmap and launch operating model'
+      slug: 'talent-acquisition-operating-model', category: 'transformation', group: 'tech-ai-growth',
+      title: 'AI-powered recruiting transformation', industry: 'Insurance · ~$50B P&C carrier',
+      capabilities: ['AI-tool integration', 'Process redesign', 'Operating model', 'Multiyear planning'],
+      thesis: 'Use AI and workflow redesign to give recruiting teams back time for higher-value work.',
+      challenge: 'Revamp a large-scale interview process burdened by manual effort and fragmented candidate workflows.',
+      approach: 'Led a cross-functional team to redesign the interview process, improve AI-tool integrations such as Paradox, and build a multiyear talent-acquisition roadmap.',
+      outcome: 'Freed ~15,000 hours of recruiter and talent-team capacity annually.'
     },
     {
-      slug: 'talent-acquisition-operating-model', homeVisible: true, category: 'transformation',
-      title: 'Talent-acquisition operating model', industry: 'Property and casualty insurance', role: 'Cross-functional strategy lead',
-      capabilities: ['Process redesign', 'AI-tool integration', 'Operating model', 'Multiyear planning'],
-      thesis: 'Reduce interview-process friction and manual effort through a scalable operating model.',
-      challenge: 'Reduce friction and manual effort in a large-scale interview process.',
-      approach: 'Redesign workflows, improve AI-tool integrations, and build a multiyear roadmap.',
-      evidence: 'Initiatives supporting ~15,000 hours of annual capacity'
+      slug: 'workforce-operations-transformation', category: 'transformation', group: 'operations-transformations',
+      title: 'Utilities workforce transformation', industry: 'Utilities · ~$9B enterprise',
+      capabilities: ['Workforce operations', 'Pilot design', 'Process redesign', 'Stakeholder alignment'],
+      thesis: 'Turn complex field operations into a more productive, lower-cost workforce system.',
+      challenge: 'Redesign planning, scheduling, crew assignment, and workforce-management processes across electricity operating centers.',
+      approach: 'Built board and frontline buy-in by designing and implementing 10+ pilots across electricity operating centers.',
+      outcome: 'Delivered $20M+ in savings and increased workforce productivity by 8%+.'
     },
     {
-      slug: 'life-sciences-sector-and-value-creation-scan', homeVisible: true, category: 'diligence',
-      title: 'Life-sciences sector and value-creation scan', industry: 'Life sciences', role: 'Private-equity sector-scan lead',
-      capabilities: ['Sector mapping', 'Acquisition screening', 'Adjacency analysis', 'Portfolio value creation'],
-      thesis: 'Assess the Indian adult-vaccine market and acquisition-led value-creation pathways.',
-      challenge: 'Understand the Indian adult-vaccine market and potential add-on pathways.',
-      approach: 'Map the market and assess acquisition-led value-creation opportunities.',
-      evidence: 'Investor view on sector attractiveness and portfolio-growth pathways'
-    },
-    {
-      slug: 'trail-pulse', homeVisible: true, category: 'builder', title: 'Trail Pulse', industry: 'Consumer outdoors', role: 'Builder',
-      capabilities: ['AI-assisted prototyping', 'Recommendations', 'Trail intelligence', 'Logistics', 'Validated route export'],
-      thesis: 'Help hikers choose a suitable trail with reliable planning and navigation context.',
-      challenge: 'Help hikers choose a suitable trail and leave with reliable planning and navigation context.',
-      approach: 'Build recommendation, practical trail-signal synthesis, logistics guidance, and GPX/KML export gated by geometry validation.',
-      evidence: 'Working public experiment · shipped to learn',
-      maturityNote: 'Builder Lab · early AI-assisted, vibe-coded experiment',
-      externalAction: { label: 'Try Trail Pulse', href: 'https://trail-pulse-alpha.vercel.app/' }
-    },
-    {
-      slug: 'performance-and-value-realization-program', homeVisible: false, category: 'transformation',
-      title: 'Performance and value-realization program', industry: 'Automotive services', role: 'Performance-transformation strategist',
+      slug: 'performance-and-value-realization-program', category: 'transformation', group: 'operations-transformations',
+      title: 'Automotive performance transformation', industry: 'Automotive services · ~$15B enterprise',
       capabilities: ['Supply chain', 'Value-lever identification', 'Executive workshops', 'Implementation roadmaps'],
       thesis: 'Convert a broad performance agenda into region-specific levers, ownership, and a sequenced realization path.',
-      challenge: 'Identify and operationalize performance opportunities across five regions.',
-      approach: 'Identify more than ten supply-chain and operating levers, facilitate executive workshops, and translate priorities into an implementation roadmap.',
-      evidence: '10+ improvement levers across five regions · multiyear realization roadmap'
+      challenge: 'Accelerate performance across supply-chain spend and operations in five key regions.',
+      approach: 'Identified 10+ levers to optimize supply-chain spend and built a multiyear value-realization plan through interactive C-suite workshops.',
+      outcome: 'Created a path to $40M+ in savings across five regions.'
     },
     {
-      slug: 'distribution-transformation-and-growth', homeVisible: false, category: 'transformation',
-      title: 'Distribution transformation and growth', industry: 'Pharmaceuticals', role: 'Commercial-transformation strategist',
-      capabilities: ['Distribution', 'Partner performance', 'Market entry', 'Sales acceleration'],
-      thesis: 'Make a fragmented distribution footprint more productive while creating a practical route into new markets.',
-      challenge: 'Improve partner performance and define a scalable expansion path across a broad geographic network.',
-      approach: 'Rationalize the partner base, redesign performance management, and sequence market-entry and sales-acceleration actions.',
-      evidence: '30%+ partner-base rationalization · expansion plan across 200+ counties'
+      slug: 'pharma-life-sciences-growth-transformation', category: 'transformation', group: 'operations-transformations',
+      title: 'Pharma & life-sciences growth transformation', industry: 'Pharmaceuticals and life sciences · India',
+      capabilities: ['Distribution transformation', 'Market entry', 'Sector mapping', 'Acquisition-led value creation'],
+      thesis: 'Rewire commercial distribution while finding the next acquisition-led growth vectors.',
+      challenge: 'Improve distribution performance, accelerate geographic expansion, and assess acquisition-led growth in Indian pharma and life sciences.',
+      approach: 'Rationalized low-performing channel partners, analyzed market entry across 770+ counties, and mapped the adult-vaccine market and add-on acquisition opportunities.',
+      outcome: 'Reduced the partner base by 30%+ and enabled expansion into 200+ counties.'
     }
   ],
   experience: [
     { organization: 'eBay', role: 'Senior Manager, Strategy & Operations', location: 'San Jose, CA', period: 'July 2025–present', summary: 'Supporting strategy and operations in a global marketplace business.' },
-    { organization: 'Bain & Company', role: 'Consultant', location: 'Chicago, IL', period: '2024–June 2025', summary: 'Led cross-functional strategy, transformation, and diligence work across multiple industries.' },
+    { organization: 'Bain & Company', role: 'Consultant', location: 'Chicago, IL', period: '2024–July 2025', summary: 'Led cross-functional strategy, transformation, and diligence work across multiple industries.' },
     { organization: 'Legacy Pursuit', role: 'Summer Intern', location: 'Chicago, IL', period: 'Summer 2024', summary: 'Developed an industrial-repair investment thesis and conducted anonymized expert and financial diligence.' },
     { organization: 'Bain & Company', role: 'Progressive consulting roles', location: 'Mumbai, India', period: '2019–2023', summary: 'Worked across product strategy, commercial growth, operating transformation, and private-equity diligence.' }
   ],
@@ -108,7 +89,7 @@ export const portfolioContent: PortfolioContent = {
     { title: 'Executive problem solving', items: ['cross-functional leadership', 'executive workshops', 'evidence synthesis', 'multiyear roadmaps'] },
     { title: 'Building with', items: ['React', 'TypeScript', 'Node.js', 'Playwright', 'public data integrations', 'AI-assisted development'] }
   ],
-  builderLab: [
+  personalProjects: [
     {
       slug: 'portfolio', title: 'This portfolio',
       description: 'An AI-assisted React/TypeScript build with an accessible case-study system, deterministic grounded assistant, privacy gates, and hosted verification.',
@@ -135,7 +116,7 @@ export const portfolioContent: PortfolioContent = {
   },
   about: {
     statement: 'I like problems with real operational texture: fragmented markets, imperfect information, and teams that need a practical path from analysis to action. My toolkit was built in consulting, sharpened through operating work, and keeps expanding through hands-on building.',
-    interests: ['Advanced open-water scuba', 'Hiking', 'Travel', 'Cooking']
+    interests: ['Hiking', 'History', 'Travel', 'Scuba diving', 'Horse riding']
   },
   contact: {
     linkedinHref: 'https://www.linkedin.com/in/rohan-misra-mba/',

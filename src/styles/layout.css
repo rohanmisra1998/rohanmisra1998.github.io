@@ -59,7 +59,7 @@ main > #experience {
   padding-top: calc(var(--space-section) * 1.15);
 }
 
-main > #builder-lab {
+main > #personal-projects {
   padding-block: clamp(3.5rem, 7vw, 6rem);
 }
 
@@ -118,7 +118,7 @@ footer {
     padding-block: clamp(4rem, 18vw, 6rem);
   }
 
-  main > #builder-lab {
+  main > #personal-projects {
     padding-block: 3.5rem;
   }
 }

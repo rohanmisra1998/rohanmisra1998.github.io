@@ -172,7 +172,7 @@ test('desktop assistant completes compact, expanded, minimized, closed, and reop
   )
 
   await page.getByRole('button', { name: /private-equity diligence/i }).click()
-  await expect(page.getByRole('log')).toContainText('3+ buy-side diligences')
+  await expect(page.getByRole('log')).toContainText('3+ buy-side investment theses')
 
   await page.getByRole('button', { name: 'Expand assistant' }).click()
   const dialog = page.getByRole('dialog', { name: 'Ask Rohan AI' })
@@ -185,7 +185,7 @@ test('desktop assistant completes compact, expanded, minimized, closed, and reop
   await page.getByRole('button', { name: 'Collapse to compact assistant' }).click()
   await expect(surface).toHaveClass(/ask-rohan--compact/)
   await expect(page.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
-  await expect(page.getByRole('log')).toContainText('3+ buy-side diligences')
+  await expect(page.getByRole('log')).toContainText('3+ buy-side investment theses')
 
   const log = page.getByRole('log')
   const savedScrollTop = await log.evaluate((element) => {
@@ -207,7 +207,7 @@ test('desktop assistant completes compact, expanded, minimized, closed, and reop
 
   await reopen.click()
   await expect(surface).toHaveClass(/ask-rohan--compact/)
-  await expect(page.getByRole('log')).toContainText('3+ buy-side diligences')
+  await expect(page.getByRole('log')).toContainText('3+ buy-side investment theses')
   await expect.poll(() => log.evaluate((element) => element.scrollTop)).toBe(savedScrollTop)
 
   await page.getByRole('button', { name: 'Clear conversation' }).click()
@@ -230,7 +230,7 @@ test('assistant routes exact, paraphrased, ambiguous, unsupported, private, inje
   await page.getByRole('button', { name: exactDiligencePrompt }).click()
   const exactAnswer = page.getByRole('article', { name: 'Grounded answer' })
   await expect(exactAnswer).toContainText(
-    '3+ buy-side diligences'
+    '3+ buy-side investment theses'
   )
   const answerAlignment = await exactAnswer.evaluate((answer) => {
     const transcript = answer.closest('[role="log"]')!
@@ -244,7 +244,7 @@ test('assistant routes exact, paraphrased, ambiguous, unsupported, private, inje
   expect(answerAlignment.answerTop).toBeGreaterThanOrEqual(answerAlignment.expectedTop - 1)
 
   for (const [prompt, expected] of [
-    ['Has he done commercial due diligence?', '3+ buy-side diligences'],
+    ['Has he done commercial due diligence?', '3+ buy-side investment theses'],
     ['Tell me about strategy and operations', 'I found two close topics.'],
     [
       'What is the weather in San Jose?',
@@ -329,7 +329,7 @@ test('assistant citations minimize the modal and focus the cited section heading
   await page.goto('/')
   await openAssistant(page)
   await page.getByRole('button', { name: exactDiligencePrompt }).click()
-  await expect(page.getByRole('log')).toContainText('3+ buy-side diligences')
+  await expect(page.getByRole('log')).toContainText('3+ buy-side investment theses')
   await page.getByRole('button', { name: 'Expand assistant' }).click()
 
   await page.getByRole('navigation', { name: 'Sources' }).getByRole('link', { name: 'Work' }).click()
@@ -369,18 +369,18 @@ test('assistant and case-study handoffs keep exactly one modal owner', async ({ 
   await page.goto('/')
   await openAssistant(page)
   await page.getByRole('button', { name: exactDiligencePrompt }).click()
-  await expect(page.getByRole('log')).toContainText('3+ buy-side diligences')
+  await expect(page.getByRole('log')).toContainText('3+ buy-side investment theses')
 
   await page.getByRole('button', { name: 'View supporting case' }).click()
-  await expect(page.getByRole('dialog', { name: 'Buy-side commercial diligence' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toBeVisible()
   await expect(page.getByRole('dialog')).toHaveCount(1)
   await expect(page.locator('.ask-rohan')).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Close case study' }).click()
-  const caseTrigger = page.getByRole('button', { name: /Open case study: Buy-side/i })
+  const caseTrigger = page.getByRole('button', { name: /Open case study: B2B SaaS/i })
   await caseTrigger.click()
   await page.getByRole('button', { name: 'Ask Rohan AI about this work' }).click()
-  await expect(page.getByRole('dialog', { name: 'Buy-side commercial diligence' })).toHaveCount(0)
+  await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toHaveCount(0)
   await expect(page.locator('.ask-rohan')).toBeVisible()
   await expect(page.getByRole('textbox', { name: 'Ask a question' })).toBeFocused()
   await expect(page.locator('.ask-rohan__follow-ups button').first()).toHaveText(
@@ -681,7 +681,7 @@ test('whole-page assistant states have zero serious or critical Axe violations',
 
   await page.getByRole('button', { name: exactDiligencePrompt }).click()
   await expect(page.getByRole('article', { name: 'Grounded answer' })).toContainText(
-    '3+ buy-side diligences'
+    '3+ buy-side investment theses'
   )
   await expectNoSeriousOrCriticalAxeViolations(page, 'grounded assistant answer')
 

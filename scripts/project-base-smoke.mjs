@@ -101,9 +101,9 @@ try {
     `Rendered images were not observed as project-base requests: ${imageRequests.join(', ')}`
   )
 
-  const builderLab = page.getByRole('region', { name: 'Builder Lab' })
-  const trailPulse = builderLab.getByRole('article', { name: 'Trail Pulse' })
-  assert.equal(await trailPulse.isVisible(), true, 'Trail Pulse is not visible in Builder Lab')
+  const personalProjects = page.getByRole('region', { name: 'Personal projects' })
+  const trailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
+  assert.equal(await trailPulse.isVisible(), true, 'Trail Pulse is not visible in Personal projects')
   const honestyNote = trailPulse.getByText(
     'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
     { exact: true }

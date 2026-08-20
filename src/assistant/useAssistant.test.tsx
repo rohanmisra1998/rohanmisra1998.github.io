@@ -102,7 +102,7 @@ describe('assistantReducer', () => {
           ...message(`message-${index}`, index % 2 === 0 ? 'user' : 'assistant'),
           ...(index === 25 ? {
             topicId: 'trail-pulse',
-            citations: [{ sectionId: '#builder-lab', label: 'Builder Lab' }],
+            citations: [{ sectionId: '#personal-projects', label: 'Personal projects' }],
             caseSlug: 'trail-pulse'
           } : {})
         }
@@ -113,7 +113,7 @@ describe('assistantReducer', () => {
     expect(state.messages[0].id).toBe('message-2')
     expect(state.messages.at(-1)).toMatchObject({
       topicId: 'trail-pulse',
-      citations: [{ sectionId: '#builder-lab', label: 'Builder Lab' }],
+      citations: [{ sectionId: '#personal-projects', label: 'Personal projects' }],
       caseSlug: 'trail-pulse'
     })
   })
@@ -166,7 +166,7 @@ describe('useAssistant', () => {
             kind: 'answer',
             text,
             topicId: 'trail-pulse',
-            citations: [{ sectionId: '#builder-lab', label: 'Builder Lab' }]
+            citations: [{ sectionId: '#personal-projects', label: 'Personal projects' }]
           }))
         })
       }

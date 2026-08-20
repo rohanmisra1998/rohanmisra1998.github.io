@@ -57,10 +57,6 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
             <h2 id={titleId} ref={titleRef} tabIndex={-1}>{item.title}</h2>
             <p className="case-dialog__industry">{item.industry}</p>
             <p className="case-dialog__thesis" id={thesisId}>{item.thesis}</p>
-            <div className="case-dialog__role">
-              <p>Role</p>
-              <p>{item.role}</p>
-            </div>
             <div className="case-dialog__capability-group">
               <p>Capabilities</p>
               <ul>
@@ -78,29 +74,10 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
               <p>Approach</p>
               <h3>{item.approach}</h3>
             </section>
-            <section className="case-dialog__evidence">
-              <p>Evidence</p>
-              <h3>{item.evidence}</h3>
+            <section className="case-dialog__outcome">
+              <p>Outcome</p>
+              <h3>{item.outcome}</h3>
             </section>
-            {item.maturityNote && (
-              <aside
-                className="case-dialog__maturity"
-                aria-label="Maturity disclosure"
-              >
-                <p>{item.maturityNote}</p>
-              </aside>
-            )}
-            {item.externalAction && (
-              <a
-                className="case-dialog__external"
-                href={item.externalAction.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {item.externalAction.label}
-                <span aria-hidden="true">↗</span>
-              </a>
-            )}
             {hasAssistantTopic && onOpenAssistant && (
               <button
                 className="case-dialog__assistant"

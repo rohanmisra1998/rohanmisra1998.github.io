@@ -1,19 +1,17 @@
-export type WorkCategory = 'transformation' | 'diligence' | 'product' | 'builder'
+export type WorkCategory = 'transformation' | 'diligence' | 'product'
+export type WorkGroup = 'tech-ai-growth' | 'operations-transformations'
 
 export interface WorkItem {
   slug: string
-  homeVisible: boolean
   category: WorkCategory
+  group: WorkGroup
   title: string
   industry: string
-  role: string
   capabilities: string[]
   thesis: string
   challenge: string
   approach: string
-  evidence: string
-  maturityNote?: string
-  externalAction?: { label: string; href: string }
+  outcome: string
 }
 
 export interface ExperienceItem {
@@ -33,7 +31,7 @@ export interface EducationItem {
 
 export interface ExpertiseGroup { title: string; items: string[] }
 
-export interface BuilderItem {
+export interface PersonalProjectItem {
   slug: 'portfolio' | 'trail-pulse'
   title: string
   description: string
@@ -75,7 +73,7 @@ export interface PortfolioContent {
   experience: ExperienceItem[]
   education: EducationItem[]
   expertise: ExpertiseGroup[]
-  builderLab: BuilderItem[]
+  personalProjects: PersonalProjectItem[]
   writing: WritingItem[]
   publicResearch: PublicResearchItem
   about: { statement: string; interests: string[] }

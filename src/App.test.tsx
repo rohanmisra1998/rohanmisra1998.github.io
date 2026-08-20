@@ -96,13 +96,13 @@ describe('App', () => {
     await waitFor(() => {
       expect(document.querySelector('.ask-rohan-launcher__button')).toBeInTheDocument()
     })
-    await user.click(screen.getByRole('button', { name: /Open case study: Buy-side/i }))
+    await user.click(screen.getByRole('button', { name: /Open case study: B2B SaaS/i }))
     expect(location.search).toBe('?case=buy-side-commercial-diligence')
 
     await user.click(document.querySelector<HTMLButtonElement>('.ask-rohan-launcher__button')!)
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: 'Buy-side commercial diligence' }))
+      expect(screen.queryByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' }))
         .not.toBeInTheDocument()
     })
     expect(location.search).toBe('')
@@ -126,10 +126,10 @@ describe('App', () => {
     await user.click(screen.getAllByRole('button', { name: 'Ask Rohan AI' })[0])
     await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
     expect(await screen.findByRole('article', { name: 'Grounded answer' }))
-      .toHaveTextContent(/3\+ buy-side diligences/i)
+      .toHaveTextContent(/3\+ buy-side investment theses/i)
     await user.click(screen.getByRole('button', { name: 'View supporting case' }))
 
-    const caseDialog = screen.getByRole('dialog', { name: 'Buy-side commercial diligence' })
+    const caseDialog = screen.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
     expect(caseDialog).toBeVisible()
     expect(screen.queryByRole('dialog', { name: 'Ask Rohan AI' })).not.toBeInTheDocument()
     expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1)
@@ -139,11 +139,11 @@ describe('App', () => {
   it('opens the assistant from a case only after case cleanup and restores its work-card trigger', async () => {
     const user = userEvent.setup()
     render(<App />)
-    const workTrigger = screen.getByRole('button', { name: /Open case study: Buy-side/i })
+    const workTrigger = screen.getByRole('button', { name: /Open case study: B2B SaaS/i })
     await user.click(workTrigger)
     await user.click(screen.getByRole('button', { name: 'Ask Rohan AI about this work' }))
 
-    expect(screen.queryByRole('dialog', { name: 'Buy-side commercial diligence' }))
+    expect(screen.queryByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' }))
       .not.toBeInTheDocument()
     expect(location.search).toBe('')
     expect(await screen.findByLabelText('Ask a question')).toBeVisible()
@@ -162,10 +162,10 @@ describe('App', () => {
     render(<App />)
 
     await user.click(screen.getByRole('button', {
-      name: /Open case study: Talent-acquisition operating model/i
+      name: /Open case study: AI-powered recruiting transformation/i
     }))
 
-    expect(screen.getByRole('dialog', { name: 'Talent-acquisition operating model' }))
+    expect(screen.getByRole('dialog', { name: 'AI-powered recruiting transformation' }))
       .toBeVisible()
     expect(screen.queryByRole('button', { name: 'Ask Rohan AI about this work' }))
       .not.toBeInTheDocument()
@@ -178,7 +178,7 @@ describe('App', () => {
       expect(document.querySelector('.ask-rohan-launcher__button')).toBeInTheDocument()
     })
     const launcher = document.querySelector<HTMLButtonElement>('.ask-rohan-launcher__button')!
-    const workTrigger = screen.getByRole('button', { name: /Open case study: Buy-side/i })
+    const workTrigger = screen.getByRole('button', { name: /Open case study: B2B SaaS/i })
     await user.click(workTrigger)
     workTrigger.remove()
 
@@ -382,10 +382,10 @@ describe('App', () => {
     expect(screen.getByText('Private-equity diligence')).toBeVisible()
   })
 
-  it('keeps Builder Lab honest and repairs the public report link', () => {
+  it('keeps Personal projects honest and repairs the public report link', () => {
     render(<App />)
-    const builderLab = screen.getByRole('region', { name: 'Builder Lab' })
-    const trailPulse = within(builderLab).getByRole('article', { name: 'Trail Pulse' })
+    const personalProjects = screen.getByRole('region', { name: 'Personal projects' })
+    const trailPulse = within(personalProjects).getByRole('article', { name: 'Trail Pulse' })
     expect(trailPulse).toHaveTextContent('not a flagship product')
     expect(screen.getByRole('link', { name: /A Fair Share for Children/i })).toHaveAttribute(
       'href',
@@ -405,15 +405,42 @@ describe('App', () => {
     expect(screen.queryByText(/CV/i)).not.toBeInTheDocument()
   })
 
+  it('ends the main narrative with a personable Outside work section', () => {
+    render(<App />)
+    const main = screen.getByRole('main')
+    const contact = main.querySelector('#contact')
+    const outsideWork = main.querySelector('#outside-work')
+    const about = main.querySelector('#about')
+
+    expect(contact).not.toBeNull()
+    expect(outsideWork).not.toBeNull()
+    expect(about).not.toBeNull()
+    expect(contact!.compareDocumentPosition(outsideWork!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(within(about as HTMLElement).queryByRole('list', { name: 'Interests' }))
+      .not.toBeInTheDocument()
+
+    const section = screen.getByRole('region', { name: 'Outside work' })
+    expect(within(section).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'Hiking',
+      'History',
+      'Travel',
+      'Scuba diving',
+      'Horse riding'
+    ])
+    expect(section).toHaveTextContent(
+      'Usually outside, underwater, on the road—or halfway down a history rabbit hole.'
+    )
+  })
+
   it('exposes every main section as a region labelled by its own visible heading', () => {
     render(<App />)
-    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 8)
+    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 9)
 
     const selectedWork = screen.getByRole('region', { name: 'Selected work' })
-    const disclosure = within(
-      within(selectedWork).getByRole('article', { name: 'Trail Pulse' })
-    ).getByRole('group', { name: 'What Trail Pulse does' })
-    expect(disclosure).toHaveAccessibleName('What Trail Pulse does')
+    const capabilities = within(
+      within(selectedWork).getByRole('article', { name: 'Omnichannel payments strategy' })
+    ).getByRole('group', { name: 'Omnichannel payments strategy capabilities' })
+    expect(capabilities).toHaveAccessibleName('Omnichannel payments strategy capabilities')
   })
 
   it('does not omit an unlabeled main section from semantic validation', () => {

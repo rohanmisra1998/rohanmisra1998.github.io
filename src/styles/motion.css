@@ -54,9 +54,7 @@
 .case-card__visual::after,
 .case-card__visual span,
 .case-card__open span:last-child,
-.selected-work__reveal,
-.case-dialog__bar button,
-.case-dialog__external {
+.case-dialog__bar button {
   transition-duration: 220ms;
   transition-property: background-color, border-color, box-shadow, color, transform;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
@@ -74,24 +72,13 @@
   transform: translate(var(--case-shift-x), var(--case-shift-y)) rotate(calc(var(--case-turn) + 4deg)) scale(1.02);
 }
 
-.case-card--builder:hover .case-card__visual::before,
-.case-card--builder:focus-within .case-card__visual::before {
-  transform: translate(-50%, -50%) translate(var(--case-shift-x), var(--case-shift-y)) rotate(calc(var(--case-turn) + 6deg)) scale(1.02);
-}
-
 .case-card__open:hover span:last-child,
-.case-card__open:focus-visible span:last-child,
-.case-dialog__external:hover span,
-.case-dialog__external:focus-visible span {
+.case-card__open:focus-visible span:last-child {
   transform: translate(0.15rem, -0.15rem);
 }
 
-.selected-work__reveal:hover,
-.selected-work__reveal:focus-visible,
 .case-dialog__bar button:hover,
-.case-dialog__bar button:focus-visible,
-.case-dialog__external:hover,
-.case-dialog__external:focus-visible {
+.case-dialog__bar button:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
 }

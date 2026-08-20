@@ -16,7 +16,7 @@ const portfolioPageIds = new Set([
   '#work',
   '#experience',
   '#expertise',
-  '#builder-lab',
+  '#personal-projects',
   '#writing',
   '#about',
   '#about-assistant',
@@ -26,8 +26,7 @@ const portfolioPageIds = new Set([
 const assistantCaseSlugs = new Set([
   'workforce-operations-transformation',
   'buy-side-commercial-diligence',
-  'omnichannel-payments-strategy',
-  'trail-pulse'
+  'omnichannel-payments-strategy'
 ])
 
 export function AssistantTranscript({

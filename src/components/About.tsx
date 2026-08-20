@@ -11,11 +11,6 @@ export function About({ content }: AboutProps) {
       </div>
       <div className="about__body">
         <p className="about__statement">{content.statement}</p>
-        <ul className="interest-list" aria-label="Interests">
-          {content.interests.map((interest) => (
-            <li key={interest}>{interest}</li>
-          ))}
-        </ul>
         <aside
           className="about__assistant"
           id="about-assistant"

@@ -7,12 +7,11 @@ interface WorkCardProps {
 
 export function WorkCard({ item, onOpen }: WorkCardProps) {
   const headingId = `work-${item.slug}-heading`
-  const isSecondary = item.slug === 'trail-pulse'
 
   return (
     <article
       className={`case-card case-card--${item.category}`}
-      data-emphasis={isSecondary ? 'secondary' : 'primary'}
+      data-emphasis="primary"
       aria-labelledby={headingId}
     >
       <div
@@ -26,19 +25,18 @@ export function WorkCard({ item, onOpen }: WorkCardProps) {
       </div>
       <div className="case-card__body">
         <p className="case-card__industry">{item.industry}</p>
-        <h3 id={headingId}>{item.title}</h3>
-        <p className="case-card__evidence">{item.evidence}</p>
+        <h4 id={headingId}>{item.title}</h4>
+        <p className="case-card__outcome">{item.outcome}</p>
         <div
           className="case-card__details"
           role="group"
-          aria-label={isSecondary ? 'What Trail Pulse does' : `${item.title} evidence`}
+          aria-label={`${item.title} capabilities`}
         >
           <ul className="case-card__capabilities" aria-label="Capabilities">
             {item.capabilities.slice(0, 3).map((capability) => (
               <li key={capability}>{capability}</li>
             ))}
           </ul>
-          {item.maturityNote && <p className="case-card__maturity">{item.maturityNote}</p>}
         </div>
         <button
           className="case-card__open"

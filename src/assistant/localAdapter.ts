@@ -2,9 +2,9 @@ import { defaultKnowledgeAccess, type KnowledgeAccess } from '../content/assista
 import { createRetriever, defaultPortfolioRetriever, normalize, type Retriever } from './retrieval'
 import type { AssistantAdapter, AssistantCitation, AssistantReply, AssistantRequest, ReadonlyAssistantCitation } from './types'
 
-const unsupportedText = 'I can only answer from approved public content on this portfolio. Try Work, Experience, Writing, or Builder Lab.'
+const unsupportedText = 'I can only answer from approved public content on this portfolio. Try Work, Experience, Writing, or Personal projects.'
 const privateDetailText = "That detail isn't part of the approved public profile."
-const allowedSectionIds = new Set(['#work', '#experience', '#expertise', '#builder-lab', '#writing', '#about', '#about-assistant', '#contact'])
+const allowedSectionIds = new Set(['#work', '#experience', '#expertise', '#personal-projects', '#writing', '#about', '#about-assistant', '#contact', '#outside-work'])
 const fallbackSuggestions = ['What operating transformations has Rohan led?', 'What is Rohan’s career path?', 'What does Rohan write about?', 'What is Trail Pulse, and how mature is it?']
 const unavailableCitations: AssistantCitation[] = [
   { sectionId: '#work', label: 'Work' },
