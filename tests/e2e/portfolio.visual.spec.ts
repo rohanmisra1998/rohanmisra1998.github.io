@@ -188,6 +188,50 @@ for (const viewport of viewports) {
   })
 }
 
+for (const viewport of [
+  { name: 'desktop', width: 1440, height: 1100 },
+  { name: 'mobile', width: 390, height: 844 }
+] as const) {
+  test(`${viewport.name} expanded profile disclosure has a reviewed baseline`, async ({ page }, testInfo) => {
+    skipOutsideReviewProject(testInfo)
+    const expectCleanBrowser = captureUnexpectedBrowserMessages(page)
+
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await waitForPortfolioToSettle(page)
+
+    const profile = page.getByRole('region', { name: 'Read more about me' })
+    const trigger = profile.getByRole('button', { name: 'Read more about me' })
+    await trigger.click()
+    await waitForRenderedState(page)
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await expect(profile.locator('.profile__details')).not.toHaveAttribute('aria-hidden')
+    const finalProof = profile.getByText(/\$210M\+ in value uplift and savings/i)
+    await expect(finalProof).toBeVisible()
+    const [profileBox, finalProofBox] = await Promise.all([
+      profile.boundingBox(),
+      finalProof.boundingBox()
+    ])
+    expect(profileBox, `${viewport.name} profile has no rendered box`).not.toBeNull()
+    expect(finalProofBox, `${viewport.name} final proof has no rendered box`).not.toBeNull()
+    expect(
+      finalProofBox!.y + finalProofBox!.height,
+      `${viewport.name} final proof escaped the profile disclosure`
+    ).toBeLessThanOrEqual(profileBox!.y + profileBox!.height)
+    await expectNoHorizontalOverflow(page, `${viewport.name} expanded profile`)
+    expectCleanBrowser()
+    await expect(profile).toHaveScreenshot(`${viewport.name}-profile-expanded.png`, {
+      animations: 'allow',
+      caret: 'hide',
+      maxDiffPixelRatio: 0,
+      maxDiffPixels: 0,
+      threshold: 0
+    })
+    expectCleanBrowser()
+  })
+}
+
 test('reduced motion keeps the first-view narrative and assistant action visible', async ({ page }, testInfo) => {
   skipOutsideReviewProject(testInfo)
   const expectCleanBrowser = captureUnexpectedBrowserMessages(page)

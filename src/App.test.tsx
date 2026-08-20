@@ -476,22 +476,40 @@ describe('App', () => {
     )
   })
 
-  it('moves the longer introduction and strongest proof points directly below the hero', () => {
+  it('keeps the longer introduction compact until the reader asks to expand it', async () => {
+    const user = userEvent.setup()
     render(<App />)
     const main = screen.getByRole('main')
     const hero = screen.getByRole('region', {
       name: 'I turn messy operations into scalable products and systems.'
     })
     const profile = screen.getByRole('region', { name: 'Read more about me' })
+    const trigger = within(profile).getByRole('button', { name: 'Read more about me' })
+    const panel = document.getElementById('profile-details')
+    const mark = profile.querySelector('.profile__toggle-mark')
 
     expect(hero.nextElementSibling).toBe(profile)
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).toHaveAttribute('aria-controls', 'profile-details')
+    expect(mark).toHaveTextContent('+')
+    expect(panel).toHaveAttribute('aria-hidden', 'true')
+
+    await user.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(mark).toHaveTextContent('×')
+    expect(panel).not.toHaveAttribute('aria-hidden')
     expect(within(profile).getByText(/problems with real operational texture/i)).toBeVisible()
     expect(within(profile).getByText(/five promotions in under four years/i)).toBeVisible()
     expect(within(profile).getByText(/youngest student in (?:my|the) Kellogg MBA class/i)).toBeVisible()
     expect(within(profile).getByText(/\$210M\+.*value uplift and savings/i)).toBeVisible()
     expect(within(main).queryByRole('region', { name: 'About' })).not.toBeInTheDocument()
-    expect(within(profile).queryByRole('button', { name: 'Read more about me' }))
-      .not.toBeInTheDocument()
+
+    await user.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(panel).toHaveAttribute('aria-hidden', 'true')
+    expect(trigger).toHaveFocus()
   })
 
   it('exposes every main section as a region labelled by its own visible heading', () => {
