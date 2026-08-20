@@ -38,6 +38,9 @@
   display: block;
   width: 48px;
   height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .ask-rohan-launcher__badge {

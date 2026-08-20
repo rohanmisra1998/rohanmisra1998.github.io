@@ -82,6 +82,83 @@ async function settleElementAnimations(locator: Locator) {
   })
 }
 
+function captureRohanImageRequests(page: Page) {
+  const paths: string[] = []
+  page.on('request', (request) => {
+    if (request.resourceType() !== 'image') return
+    const pathname = new URL(request.url()).pathname
+    if (/\/images\/rohan-(?:portrait|launcher)\./.test(pathname)) paths.push(pathname)
+  })
+  return paths
+}
+
+async function expectLauncherUsesLoadedPortrait(page: Page, requestPaths: string[]) {
+  const heroPortrait = page.locator('.hero__portrait img')
+  const launcherPortrait = page.locator('.ask-rohan-launcher__button img')
+  await Promise.all([
+    heroPortrait.evaluate(async (image) => (image as HTMLImageElement).decode()),
+    launcherPortrait.evaluate(async (image) => (image as HTMLImageElement).decode())
+  ])
+  const [heroSource, launcherSource] = await Promise.all([
+    heroPortrait.evaluate((image) => (image as HTMLImageElement).currentSrc),
+    launcherPortrait.evaluate((image) => (image as HTMLImageElement).currentSrc)
+  ])
+  expect(launcherSource, 'launcher must reuse the selected hero portrait resource').toBe(heroSource)
+  expect(requestPaths, 'launcher must not introduce another portrait URL or request').toEqual([
+    '/images/rohan-portrait.webp'
+  ])
+}
+
+test('launcher reuses the portrait after the hero image has loaded', async ({ page }, testInfo) => {
+  desktopOnly(testInfo)
+  const requestPaths = captureRohanImageRequests(page)
+
+  await page.goto('/')
+  await page.locator('.hero__portrait img').evaluate(async (image) => {
+    await (image as HTMLImageElement).decode()
+  })
+  await page.locator('.action--assistant').click()
+  await expect(page.getByRole('textbox', { name: 'Ask a question' })).toBeFocused()
+
+  await expectLauncherUsesLoadedPortrait(page, requestPaths)
+})
+
+test('launcher reuses the pending portrait when assistant opens before image load', async ({
+  page
+}, testInfo) => {
+  desktopOnly(testInfo)
+  const requestPaths = captureRohanImageRequests(page)
+  let releasePortrait!: () => void
+  let markPortraitStarted!: () => void
+  const portraitReleased = new Promise<void>((resolve) => { releasePortrait = resolve })
+  const portraitStarted = new Promise<void>((resolve) => { markPortraitStarted = resolve })
+  let released = false
+  const release = () => {
+    if (released) return
+    released = true
+    releasePortrait()
+  }
+  const portraitPattern = '**/images/rohan-portrait.webp'
+
+  await page.route(portraitPattern, async (route) => {
+    markPortraitStarted()
+    await portraitReleased
+    await route.continue()
+  })
+
+  try {
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
+    await portraitStarted
+    await page.locator('.action--assistant').click()
+    await expect(page.getByRole('textbox', { name: 'Ask a question' })).toBeFocused()
+    release()
+    await expectLauncherUsesLoadedPortrait(page, requestPaths)
+  } finally {
+    release()
+    await page.unroute(portraitPattern)
+  }
+})
+
 test('desktop assistant completes compact, expanded, minimized, closed, and reopen states', async ({ page }, testInfo) => {
   desktopOnly(testInfo)
 
@@ -544,6 +621,22 @@ test('390px assistant expands and collapses between distinct drawer geometries',
   expect(collapsedBox).not.toBeNull()
   expect(collapsedBox!.height).toBeCloseTo(compactBox!.height, 0)
   expect(collapsedBox!.y).toBeCloseTo(compactBox!.y, 0)
+})
+
+test('390px assistant transitions keep focus on the in-dialog composer', async ({ page }, testInfo) => {
+  mobileOnly(testInfo)
+
+  await page.goto('/')
+  const composer = await openAssistant(page)
+  const assistant = page.getByRole('dialog', { name: 'Ask Rohan AI' })
+
+  await assistant.getByRole('button', { name: 'Expand assistant' }).click()
+  await expect(assistant).toHaveClass(/ask-rohan--expanded/)
+  await expect(composer).toBeFocused()
+
+  await assistant.getByRole('button', { name: 'Collapse to compact assistant' }).click()
+  await expect(assistant).toHaveClass(/ask-rohan--compact/)
+  await expect(composer).toBeFocused()
 })
 
 test('reduced motion removes assistant arrival transforms and animations', async ({ page }, testInfo) => {

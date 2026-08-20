@@ -152,6 +152,10 @@ describe('AskRohan', () => {
     renderAssistant()
     const launcher = screen.getByRole('button', { name: 'Ask Rohan AI' })
     expect(launcher).toHaveStyle({ width: '56px', height: '56px' })
+    expect(launcher.querySelector('img')).toHaveAttribute(
+      'src',
+      '/images/rohan-portrait.webp'
+    )
     await user.click(launcher)
     expect(screen.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
@@ -299,12 +303,15 @@ describe('AskRohan', () => {
     expect(log).toHaveAttribute('aria-relevant', 'additions')
     expect(within(dialog).getByRole('button', { name: 'Close assistant panel' }))
       .toHaveStyle({ minWidth: '44px', minHeight: '44px' })
+    const composer = within(dialog).getByLabelText('Ask a question')
     await user.click(within(dialog).getByRole('button', { name: 'Expand assistant' }))
     expect(dialog).toHaveClass('ask-rohan--expanded', 'ask-rohan--mobile')
+    expect(composer).toHaveFocus()
     await user.click(within(dialog).getByRole('button', {
       name: 'Collapse to compact assistant'
     }))
     expect(dialog).toHaveClass('ask-rohan--compact', 'ask-rohan--mobile')
+    expect(composer).toHaveFocus()
     expect(document.body.style.overflow).toBe('hidden')
   })
 

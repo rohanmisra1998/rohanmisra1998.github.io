@@ -66,6 +66,7 @@ export const AskRohan = forwardRef<AskRohanHandle, AskRohanProps>(function AskRo
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const transcriptRef = useRef<HTMLDivElement>(null)
   const alignedMessageRef = useRef<string | null>(null)
+  const transitionFocusRef = useRef<'compact' | 'expanded' | null>(null)
   const [caseRequest, setCaseRequest] = useState<{
     slug: string
     trigger: HTMLButtonElement
@@ -192,6 +193,22 @@ export const AskRohan = forwardRef<AskRohanHandle, AskRohanProps>(function AskRo
     textareaRef.current?.focus()
   }, [assistant.clearConversation])
 
+  const expandPanel = useCallback(() => {
+    transitionFocusRef.current = 'expanded'
+    assistant.expand()
+  }, [assistant.expand])
+
+  const collapsePanel = useCallback(() => {
+    transitionFocusRef.current = 'compact'
+    assistant.collapseToCompact()
+  }, [assistant.collapseToCompact])
+
+  useLayoutEffect(() => {
+    if (transitionFocusRef.current !== state.view) return
+    transitionFocusRef.current = null
+    textareaRef.current?.focus()
+  }, [state.view])
+
   const requestCase = useCallback((slug: string, trigger: HTMLButtonElement) => {
     if (modal) suppressNextModalFocusRestore()
     setCaseRequest({ slug, trigger })
@@ -225,7 +242,7 @@ export const AskRohan = forwardRef<AskRohanHandle, AskRohanProps>(function AskRo
               type="button"
               aria-label="Expand assistant"
               title="Expand"
-              onClick={assistant.expand}
+              onClick={expandPanel}
               style={controlSize}
             >
               <span aria-hidden="true">↗</span>
@@ -236,7 +253,7 @@ export const AskRohan = forwardRef<AskRohanHandle, AskRohanProps>(function AskRo
               type="button"
               aria-label="Collapse to compact assistant"
               title="Collapse"
-              onClick={assistant.collapseToCompact}
+              onClick={collapsePanel}
               style={controlSize}
             >
               <span aria-hidden="true">↙</span>
@@ -300,7 +317,7 @@ export const AskRohan = forwardRef<AskRohanHandle, AskRohanProps>(function AskRo
           style={{ width: '56px', height: '56px' }}
         >
           <img
-            src={publicAsset('images/rohan-launcher.png')}
+            src={publicAsset('images/rohan-portrait.webp')}
             alt=""
             width="48"
             height="48"
