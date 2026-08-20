@@ -245,8 +245,14 @@
 
 .hero__portrait {
   position: relative;
+  isolation: isolate;
   width: min(100%, 29rem);
   margin-left: auto;
+}
+
+.hero__portrait-card {
+  position: relative;
+  z-index: 1;
   padding: 0.65rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-card) 9rem var(--radius-card) var(--radius-card);
@@ -256,12 +262,29 @@
 
 .hero__portrait::before {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: -1.25rem 1.75rem 1.25rem -1.25rem;
   border-radius: 3rem 10rem 3rem 3rem;
   background: color-mix(in srgb, var(--accent) 11%, transparent);
   content: '';
   transform: rotate(-2deg);
+}
+
+.hero__portrait::after {
+  position: absolute;
+  z-index: 2;
+  right: 1.35rem;
+  bottom: 3.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 0.35rem color-mix(in srgb, var(--signal) 18%, transparent);
+  content: '';
+  opacity: 0.42;
+  pointer-events: none;
+  transform: translate(-0.3rem, 0.3rem) scale(0.72);
 }
 
 .hero__portrait picture {
@@ -278,13 +301,50 @@
   object-position: center 36%;
 }
 
-.hero__portrait figcaption {
-  padding: 0.8rem 0.55rem 0.25rem;
-  color: var(--muted);
+.hero__portrait-caption {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  margin-top: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.85rem;
+  background: var(--ink);
+  color: var(--surface);
   font-family: var(--mono);
   font-size: 0.65rem;
   letter-spacing: 0.035em;
+  line-height: 1.5;
   text-transform: uppercase;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__portrait-card,
+  .hero__portrait picture,
+  .hero__portrait::before,
+  .hero__portrait::after {
+    transition-duration: 320ms;
+    transition-property: box-shadow, opacity, transform;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero__portrait:hover .hero__portrait-card {
+    box-shadow: 0 28px 64px rgb(11 31 51 / 20%);
+    transform: translateY(-5px) rotate(0.45deg) scale(1.008);
+  }
+
+  .hero__portrait:hover picture {
+    transform: translateY(-2px) scale(1.006);
+  }
+
+  .hero__portrait:hover::before {
+    box-shadow: 0 18px 42px color-mix(in srgb, var(--accent) 18%, transparent);
+    transform: translate(-6px, 6px) rotate(-3.25deg);
+  }
+
+  .hero__portrait:hover::after {
+    opacity: 1;
+    transform: translate(7px, -7px) scale(1);
+  }
 }
 
 .selected-work__header,
@@ -724,8 +784,13 @@
   line-height: 1.15;
 }
 
-.contact__actions > a,
-.contact__disabled {
+.contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.contact__action {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -740,13 +805,26 @@
   text-transform: uppercase;
 }
 
-.contact__actions > a {
+.contact__action--email {
   background: var(--canvas);
   color: var(--ink);
 }
 
-.contact__disabled {
-  color: color-mix(in srgb, var(--canvas) 58%, transparent);
+.contact__action--email > span {
+  font-size: 0.9rem;
+}
+
+.contact__action--linkedin {
+  background: transparent;
+  color: var(--canvas);
+}
+
+.contact__action--linkedin span {
+  transition: transform 180ms var(--ease-out);
+}
+
+.contact__action--linkedin:hover span {
+  transform: translate(2px, -2px);
 }
 
 footer {
@@ -872,6 +950,9 @@ footer p {
   .hero__portrait {
     width: calc(100% - 0.75rem);
     margin-right: 0.75rem;
+  }
+
+  .hero__portrait-card {
     border-radius: var(--radius-card) 7rem var(--radius-card) var(--radius-card);
   }
 
@@ -1221,7 +1302,7 @@ footer p {
 
 .case-card__industry,
 .case-card__capabilities,
-.case-card__disclosure,
+.case-card__maturity,
 .case-dialog__bar,
 .case-dialog__industry,
 .case-dialog__role > p:first-child,
@@ -1271,7 +1352,7 @@ footer p {
   color: var(--muted);
 }
 
-.case-card__disclosure {
+.case-card__maturity {
   margin-bottom: 1.2rem;
   padding-left: 0.7rem;
   border-left: 2px solid var(--line);
@@ -1481,7 +1562,7 @@ footer p {
   color: var(--success);
 }
 
-.case-dialog__disclosure {
+.case-dialog__maturity {
   margin: 0 0 2rem;
   padding: 1rem 1.15rem;
   border: 1px solid var(--line);
@@ -1492,7 +1573,7 @@ footer p {
   line-height: 1.55;
 }
 
-.case-dialog__disclosure p {
+.case-dialog__maturity p {
   margin: 0;
 }
 
@@ -1629,9 +1710,9 @@ footer p {
 
   .case-card__evidence,
   .case-card__capabilities li,
-  .case-card__disclosure,
+  .case-card__maturity,
   .case-dialog__capability-group li,
-  .case-dialog__disclosure {
+  .case-dialog__maturity {
     font-size: 1rem;
     line-height: 1.6;
   }

@@ -12,7 +12,7 @@ export interface WorkItem {
   challenge: string
   approach: string
   evidence: string
-  disclosure?: string
+  maturityNote?: string
   externalAction?: { label: string; href: string }
 }
 
@@ -59,7 +59,8 @@ export interface PublicResearchItem {
 
 export interface ContactConfig {
   linkedinHref: string
-  resumeHref: string | null
+  emailAddress: string
+  mailtoHref: string
 }
 
 export interface PortfolioContent {

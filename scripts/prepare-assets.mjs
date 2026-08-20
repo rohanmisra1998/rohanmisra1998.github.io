@@ -33,9 +33,9 @@ export async function createOgSvg() {
   return `
 <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="630" fill="#0B1F33"/>
-  <path d="M-24 474C136 344 242 540 404 418S679 170 856 282 1046 430 1224 136" fill="none" stroke="#4C6FFF" stroke-width="12" stroke-linecap="round"/>
-  <circle cx="404" cy="418" r="14" fill="#FFB000"/>
-  <circle cx="856" cy="282" r="14" fill="#FFB000"/>
+  <path d="M-24 500C136 390 242 560 404 468S679 315 856 402 1046 540 1224 342" fill="none" stroke="#4C6FFF" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="404" cy="468" r="14" fill="#FFB000"/>
+  <circle cx="856" cy="402" r="14" fill="#FFB000"/>
   <path d="${textPaths.title}" fill="#F6F7F2"/>
   <path d="${textPaths.subtitle}" fill="#DDE5E8"/>
 </svg>`

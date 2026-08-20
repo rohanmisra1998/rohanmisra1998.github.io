@@ -230,23 +230,41 @@ test('rejects a linked PDF below public without following its target', async (t)
   assert.equal(hasViolation(violations, 'linked-cv.pdf', 'unapproved-pdf'), true)
 })
 
-test('rejects direct contact links and email-shaped public copy', async () => {
+test('allows only the exact approved public address and exact mailto destination', async () => {
   const directory = await makeFixtureDirectory()
-  const fixtures = [
+  const approved = join(directory, 'approved-contact.html')
+  await writeFile(
+    approved,
+    '<a href="mailto:misrarohan619@gmail.com">misrarohan619@gmail.com</a>'
+  )
+  assert.deepEqual(await auditPaths([approved]), [])
+
+  const rejected = [
     ['email-link.html', '<a href="mailto:person@example.invalid">Write</a>'],
     ['phone-link.tsx', '<a href="tel:+15550100000">Call</a>'],
-    ['address.txt', 'Direct contact: person@example.invalid']
+    ['address.txt', 'Direct contact: person@example.invalid'],
+    ['mailto-query.html', '<a href="mailto:misrarohan619@gmail.com?subject=Hello">Write</a>'],
+    ['mailto-case.html', '<a href="MAILTO:misrarohan619@gmail.com">Write</a>'],
+    ['address-case.txt', 'MISRAROHAN619@GMAIL.COM'],
+    ['address-prefix.txt', 'xmisrarohan619@gmail.com'],
+    ['address-suffix.txt', 'misrarohan619@gmail.com.example'],
+    ['encoded-contact.html', '<a href="mailto%3Amisrarohan619%40gmail.com">Write</a>'],
+    ['entity-contact.html', '<a href="mailto&#58;misrarohan619&#64;gmail.com">Write</a>']
   ]
 
-  for (const [fileName, contents] of fixtures) {
+  for (const [fileName, contents] of rejected) {
     await writeFile(join(directory, fileName), contents)
   }
 
   const violations = await auditPaths([directory])
 
-  assert.equal(hasViolation(violations, 'email-link.html', 'forbidden-contact-link'), true)
-  assert.equal(hasViolation(violations, 'phone-link.tsx', 'forbidden-contact-link'), true)
-  assert.equal(hasViolation(violations, 'address.txt', 'forbidden-email-address'), true)
+  for (const [fileName] of rejected) {
+    assert.equal(
+      violations.some((violation) => violation.includes(`${fileName}:`)),
+      true,
+      `${fileName} should fail closed`
+    )
+  }
 })
 
 test('rejects phone-number-shaped public copy and the obsolete report URL', async () => {
@@ -306,7 +324,7 @@ test('allows only the narrow synthetic email explicitly reserved for audit fixtu
   assert.deepEqual(await auditPaths([fixture]), [])
 })
 
-test('email exemption compares complete tokens case-insensitively', async () => {
+test('email exemptions compare complete tokens with exact casing', async () => {
   const directory = await makeFixtureDirectory()
   const safeCase = join(directory, 'safe-case.txt')
   const prefixed = join(directory, 'prefixed.txt')
@@ -317,8 +335,7 @@ test('email exemption compares complete tokens case-insensitively', async () => 
   await writeFile(suffixed, 'Audit fixture: privacy-audit@example.invalid.example')
   await writeFile(adjacent, 'Audit fixtures: privacy-audit@example.invalid,person@example.invalid')
 
-  assert.deepEqual(await auditPaths([safeCase]), [])
-  for (const file of [prefixed, suffixed, adjacent]) {
+  for (const file of [safeCase, prefixed, suffixed, adjacent]) {
     assert.equal(hasViolation(await auditPaths([file]), file, 'forbidden-email-address'), true)
   }
 })
@@ -373,14 +390,17 @@ test('rejects contact-shaped basenames for every physical entry before extension
   const directory = await makeFixtureDirectory()
   const internalDirectory = join(directory, 'internal')
   const emailImage = 'portrait-person@example.invalid.png'
+  const approvedEmailFilename = 'misrarohan619@gmail.com'
   const phoneImage = 'portrait-415-555-0123.webp'
   await mkdir(internalDirectory)
   await writeFile(join(internalDirectory, emailImage), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+  await writeFile(join(internalDirectory, approvedEmailFilename), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
   await writeFile(join(internalDirectory, phoneImage), Buffer.from([0x52, 0x49, 0x46, 0x46]))
 
   const violations = await auditPaths([directory])
 
   assert.equal(hasViolation(violations, emailImage, 'forbidden-email-address'), true)
+  assert.equal(hasViolation(violations, approvedEmailFilename, 'forbidden-email-address'), true)
   assert.equal(hasViolation(violations, phoneImage, 'forbidden-phone-number'), true)
 })
 

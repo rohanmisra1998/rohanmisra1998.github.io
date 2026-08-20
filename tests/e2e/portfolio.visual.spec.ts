@@ -555,12 +555,15 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
     for (const title of await page.locator('.writing-row__body h3').all()) {
       expect(await title.evaluate((heading) => heading.scrollWidth <= heading.clientWidth + 1)).toBe(true)
     }
-    await expect(page.locator('#contact').getByText('CV · updating')).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    const emailAction = page.locator('#contact').getByRole('link', {
+      name: 'Email Rohan at misrarohan619@gmail.com',
+      exact: true
+    })
+    await expect(emailAction).toHaveAttribute('href', 'mailto:misrarohan619@gmail.com')
+    await expect(page.locator('#contact')).not.toContainText(/CV/i)
     await expect(page.locator('#contact').getByRole('link', { name: 'LinkedIn', exact: true }))
       .toBeVisible()
+    expect(await emailAction.evaluate((link) => link.scrollWidth <= link.clientWidth + 1)).toBe(true)
 
     const expectVisibleTargetsHaveRobustGeometry = async (state: string) => {
       const targets = await page.locator('a[href], button, summary').evaluateAll((elements) => (
@@ -616,6 +619,10 @@ test('hover and keyboard focus remain visible across light, dark, and green surf
     page.getByRole('link', { name: 'Explore selected work' }),
     page.getByRole('link', { name: 'Try Trail Pulse' }),
     page.locator('#contact').getByRole('link', { name: 'LinkedIn', exact: true }),
+    page.locator('#contact').getByRole('link', {
+      name: 'Email Rohan at misrarohan619@gmail.com',
+      exact: true
+    }),
     page.getByRole('region', { name: 'Selected work' })
       .getByRole('button', { name: 'Open case study: Trail Pulse' })
   ]

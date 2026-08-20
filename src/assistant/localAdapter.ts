@@ -13,7 +13,6 @@ const unavailableCitations: AssistantCitation[] = [
   { sectionId: '#contact', label: 'Contact' }
 ]
 const baseGuardGroups = [
-  ['email'],
   ['private', 'equity', 'target'],
   ['private', 'equity', 'recommendation'],
   ['confidential', 'project'],

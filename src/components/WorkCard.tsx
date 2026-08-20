@@ -38,7 +38,7 @@ export function WorkCard({ item, onOpen }: WorkCardProps) {
               <li key={capability}>{capability}</li>
             ))}
           </ul>
-          {item.disclosure && <p className="case-card__disclosure">{item.disclosure}</p>}
+          {item.maturityNote && <p className="case-card__maturity">{item.maturityNote}</p>}
         </div>
         <button
           className="case-card__open"

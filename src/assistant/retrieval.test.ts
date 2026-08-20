@@ -12,6 +12,7 @@ const supported = [
   ["What is Rohan's career path?", 'career-path'],
   ['What does Rohan write about?', 'writing'],
   ['How do I contact Rohan?', 'contact'],
+  ["What is Rohan's email address?", 'contact'],
   ['Is this assistant an LLM?', 'assistant-about']
 ] as const
 

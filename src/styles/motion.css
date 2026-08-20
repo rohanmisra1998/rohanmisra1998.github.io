@@ -117,4 +117,11 @@
   .reveal {
     opacity: 1;
   }
+
+  .hero__portrait-card,
+  .hero__portrait picture,
+  .hero__portrait::before,
+  .hero__portrait::after {
+    transition: none !important;
+  }
 }

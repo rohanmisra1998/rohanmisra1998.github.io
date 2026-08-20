@@ -31,6 +31,7 @@ const FORBIDDEN_SOURCE_FILE_PATTERN = /handoff|addendum/i
 const FORBIDDEN_SOURCE_FILE_REFERENCE_PATTERN =
   /\b(?:[\w.-]+[ \t]+)*[\w.-]*(?:handoff|addendum)[\w.-]*(?:[ \t]+[\w.-]+)*\.(?:md|markdown|txt|docx?|pdf)\b/i
 const CONTACT_LINK_PATTERN = /(?:mailto|tel)\s*:/i
+const ENCODED_CONTACT_LINK_PATTERN = /(?:mailto|tel)(?:%3a|&#(?:x0*3a|0*58);|\\u0*03a|\\x3a)/i
 const NON_CONTACT_PROTOCOL_KEY_PATTERN =
   /([,{](?:\s|\\[nrt])*)(?:mailto|tel)\s*:\s*(?:true|false|![01])(?=(?:\s|\\[nrt])*[,}])/gi
 const EMAIL_ADDRESS_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi
@@ -41,6 +42,10 @@ const INTERNATIONAL_PHONE_CANDIDATE_PATTERN =
 const OBSOLETE_REPORT_URL_PATTERN =
   /https?:\/\/(?:www\.)?laureatesandleaders\.org\/a-fair-share-for-children-preventing-the-loss-of-a-generation-to-covid-19\/?/i
 const SAFE_SYNTHETIC_EMAIL = 'privacy-audit@example.invalid'
+const APPROVED_PUBLIC_EMAIL = 'misrarohan619@gmail.com'
+const APPROVED_MAILTO_PATTERN =
+  /(?<![A-Za-z0-9%])mailto:misrarohan619@gmail\.com(?![A-Za-z0-9@._+?&#%=-])/g
+const ALLOWED_EMAILS = new Set([SAFE_SYNTHETIC_EMAIL, APPROVED_PUBLIC_EMAIL])
 const PUBLISHED_ROOT_NAMES = new Set(['public', 'dist'])
 const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true })
 const UTF16LE_DECODER = new TextDecoder('utf-16le', { fatal: true })
@@ -205,7 +210,7 @@ export async function auditPaths(paths) {
       addViolation(violations, filePath, 'forbidden-source-file')
     }
     const filenameEmails = physicalBasename.match(EMAIL_ADDRESS_PATTERN) ?? []
-    if (filenameEmails.some((email) => email.toLowerCase() !== SAFE_SYNTHETIC_EMAIL)) {
+    if (filenameEmails.length > 0) {
       addViolation(violations, filePath, 'forbidden-email-address')
     }
     if (containsPhoneNumber(physicalBasename)) {
@@ -242,13 +247,18 @@ export async function auditPaths(paths) {
     if (FORBIDDEN_SOURCE_FILE_REFERENCE_PATTERN.test(contents)) {
       addViolation(violations, filePath, 'forbidden-source-file')
     }
-    const contactSafeContents = contents.replace(NON_CONTACT_PROTOCOL_KEY_PATTERN, '$1')
-    if (CONTACT_LINK_PATTERN.test(contactSafeContents)) {
+    const contactSafeContents = contents
+      .replace(NON_CONTACT_PROTOCOL_KEY_PATTERN, '$1')
+      .replace(APPROVED_MAILTO_PATTERN, '')
+    if (
+      CONTACT_LINK_PATTERN.test(contactSafeContents)
+      || ENCODED_CONTACT_LINK_PATTERN.test(contents)
+    ) {
       addViolation(violations, filePath, 'forbidden-contact-link')
     }
 
     const emailAddresses = contents.match(EMAIL_ADDRESS_PATTERN) ?? []
-    if (emailAddresses.some((email) => email.toLowerCase() !== SAFE_SYNTHETIC_EMAIL)) {
+    if (emailAddresses.some((email) => !ALLOWED_EMAILS.has(email))) {
       addViolation(violations, filePath, 'forbidden-email-address')
     }
     if (containsPhoneNumber(contents)) {

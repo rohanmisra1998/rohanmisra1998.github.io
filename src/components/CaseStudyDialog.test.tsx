@@ -93,7 +93,7 @@ describe('CaseStudyDialog', () => {
       item.approach,
       'Evidence',
       item.evidence,
-      item.disclosure!
+      item.maturityNote!
     ]
     let lastPosition = -1
     for (const copy of orderedCopy) {
@@ -193,7 +193,7 @@ describe('CaseStudyDialog', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
-  it('labels builder maturity separately from diligence confidentiality', () => {
+  it('keeps builder maturity while omitting diligence process notes', () => {
     const builder = portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')!
     const diligence = portfolioContent.work.find(
       ({ slug }) => slug === 'buy-side-commercial-diligence'
@@ -206,7 +206,7 @@ describe('CaseStudyDialog', () => {
     )
 
     expect(screen.getByRole('complementary', { name: 'Maturity disclosure' }))
-      .toHaveTextContent(builder.disclosure!)
+      .toHaveTextContent(builder.maturityNote!)
 
     rerender(
       <>
@@ -215,8 +215,12 @@ describe('CaseStudyDialog', () => {
       </>
     )
 
-    expect(screen.getByRole('complementary', { name: 'Confidentiality disclosure' }))
-      .toHaveTextContent(diligence.disclosure!)
+    const dialog = screen.getByRole('dialog', { name: 'Buy-side commercial diligence' })
+    expect(within(dialog).getByText('B2B SaaS and logistics')).toBeVisible()
+    expect(within(dialog).getByText('Market assessment')).toBeVisible()
+    expect(dialog.querySelector('.case-dialog__disclosure')).not.toBeInTheDocument()
+    expect(dialog.querySelector('.case-dialog__maturity')).not.toBeInTheDocument()
+    expect(dialog).not.toHaveTextContent(/target identities|transaction detail is disclosed/i)
   })
 
   it('cleans the real modal layer before one handoff callback without restoring trigger focus', async () => {

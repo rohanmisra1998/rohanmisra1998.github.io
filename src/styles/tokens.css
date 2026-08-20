@@ -7,6 +7,7 @@
   --line: #dfe3ea;
   --accent: #315ee7;
   --accent-ink: #ffffff;
+  --signal: #ffb000;
   --success: #287a55;
   --shadow-soft: 0 16px 48px rgb(24 32 56 / 10%);
   --radius-capsule: 999px;
@@ -27,5 +28,6 @@
   --line: #2b3748;
   --accent: #7896ff;
   --accent-ink: #0c1220;
+  --signal: #ffc44d;
   --success: #6bc79a;
 }

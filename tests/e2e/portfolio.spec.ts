@@ -117,7 +117,7 @@ test('case query supports direct load, close, and browser Back', async ({ page }
   await expect(page).toHaveURL('/')
 })
 
-test('selected work exposes six approved cards, then all eight, with honest disclosures', async ({ page }) => {
+test('selected work exposes six approved cards, then all eight, without anonymization process notes', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
   const initialCards = selectedWork.getByRole('article')
@@ -128,12 +128,8 @@ test('selected work exposes six approved cards, then all eight, with honest disc
   await expect(initialCards.nth(5)).toHaveAttribute('data-emphasis', 'secondary')
   await expect(selectedWork.getByText('B2B SaaS and logistics')).toBeVisible()
   await expect(selectedWork.getByText('Life sciences', { exact: true })).toBeVisible()
-  await expect(selectedWork.getByText(
-    'Target identities, recommendations, conclusions, and transaction details remain private.'
-  )).toBeVisible()
-  await expect(selectedWork.getByText(
-    'No target, investor, conclusion, or transaction detail is disclosed.'
-  )).toBeVisible()
+  await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
+  await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
   await expect(selectedWork.getByText('Builder Lab · early AI-assisted, vibe-coded experiment'))
     .toBeVisible()
 
@@ -141,6 +137,14 @@ test('selected work exposes six approved cards, then all eight, with honest disc
   await expect(selectedWork.getByRole('article')).toHaveCount(8)
   await expect(selectedWork.getByText('Automotive services')).toBeVisible()
   await expect(selectedWork.getByText('Pharmaceuticals', { exact: true })).toBeVisible()
+
+  await selectedWork.getByRole('button', { name: 'Open case study: Buy-side commercial diligence' })
+    .click()
+  const diligenceDialog = page.getByRole('dialog', { name: 'Buy-side commercial diligence' })
+  await expect(diligenceDialog.getByText('B2B SaaS and logistics')).toBeVisible()
+  await expect(diligenceDialog.getByText('Market assessment')).toBeVisible()
+  await expect(diligenceDialog.locator('.case-dialog__disclosure')).toHaveCount(0)
+  await expect(diligenceDialog).not.toContainText(/target identities|transaction detail is disclosed/i)
 })
 
 test('Trail Pulse remains an honest secondary case and a Builder Lab experiment', async ({ page }) => {
@@ -182,79 +186,150 @@ test('writing, research, builder, and contact destinations are safe external lin
   await expect(linkedin).toHaveAttribute('href', 'https://www.linkedin.com/in/rohan-misra-mba/')
   await expect(linkedin).toHaveAttribute('target', '_blank')
   await expect(linkedin).toHaveAttribute('rel', /(?=.*noopener)(?=.*noreferrer)/)
-  const disabledCv = contact.getByText('CV · updating', { exact: true })
-  await expect(disabledCv).toHaveAttribute('aria-disabled', 'true')
-  await expect(contact.getByRole('link', { name: /CV/i })).toHaveCount(0)
-  await expect(contact.getByRole('button', { name: /CV/i })).toHaveCount(0)
-  await expect(contact.locator('a[href], button').filter({ hasText: /CV/i })).toHaveCount(0)
+  const email = contact.getByRole('link', {
+    name: 'Email Rohan at misrarohan619@gmail.com',
+    exact: true
+  })
+  await expect(email).toHaveAttribute('href', 'mailto:misrarohan619@gmail.com')
+  await expect(email).not.toHaveAttribute('target')
+  await expect(contact).not.toContainText(/CV/i)
 })
 
-test('disabled CV stays out of tab order and ignores pointer and keyboard activation', async ({
-  page,
-  context,
-}) => {
-  const loadContact = async () => {
+test('portrait caption stays inside one opaque high-contrast band at every supported width', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+    { width: 320, height: 720 }
+  ]) {
+    await page.setViewportSize(viewport)
     await page.goto('/')
-    const contact = page.getByRole('region', { name: 'Let’s talk.' })
-    const disabledCv = contact.getByText('CV · updating', { exact: true })
-    await expect(disabledCv).toBeVisible()
-    return { contact, disabledCv }
-  }
+    await settleHero(page)
 
-  const expectNoActivation = async (
-    interaction: string,
-    initialUrl: string,
-    initialPageCount: number,
-    openedNewPage: boolean,
-  ) => {
-    expect.soft(page.url(), `${interaction} changed the current URL`).toBe(initialUrl)
-    expect.soft(openedNewPage, `${interaction} opened a new page`).toBe(false)
-    expect.soft(context.pages().length, `${interaction} opened a new page`).toBe(initialPageCount)
-    await expect(page.getByText('CV · updating', { exact: true })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    )
-  }
+    const result = await page.locator('.hero__portrait-caption').evaluate((caption) => {
+      const captionBox = caption.getBoundingClientRect()
+      const range = document.createRange()
+      range.selectNodeContents(caption)
+      const textBox = range.getBoundingClientRect()
+      const style = getComputedStyle(caption)
+      const pictureBox = caption.previousElementSibling?.getBoundingClientRect()
+      return {
+        backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        color: style.color,
+        caption: { top: captionBox.top, right: captionBox.right, bottom: captionBox.bottom, left: captionBox.left },
+        pictureBottom: pictureBox?.bottom,
+        text: { top: textBox.top, right: textBox.right, bottom: textBox.bottom, left: textBox.left }
+      }
+    })
 
-  const { contact, disabledCv } = await loadContact()
+    expect(result.backgroundColor).toMatch(/^rgb\(/)
+    expect(result.backgroundImage).toBe('none')
+    expect(contrastRatio(result.color, result.backgroundColor)).toBeGreaterThanOrEqual(4.5)
+    expect(result.caption.top).toBeGreaterThanOrEqual(result.pictureBottom ?? 0)
+    expect(result.text.top).toBeGreaterThanOrEqual(result.caption.top)
+    expect(result.text.left).toBeGreaterThanOrEqual(result.caption.left)
+    expect(result.text.right).toBeLessThanOrEqual(result.caption.right)
+    expect(result.text.bottom).toBeLessThanOrEqual(result.caption.bottom)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth))
+      .toBeLessThanOrEqual(viewport.width)
+  }
+})
+
+test('fine-pointer portrait hover comes alive without changing document layout', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Desktop fine-pointer interaction')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  await settleHero(page)
+
+  const portrait = page.locator('.hero__portrait')
+  const card = portrait.locator('.hero__portrait-card')
+  const before = await portrait.evaluate((figure) => {
+    const card = figure.querySelector<HTMLElement>('.hero__portrait-card')!
+    const frame = getComputedStyle(figure, '::before')
+    const accent = getComputedStyle(figure, '::after')
+    return {
+      layout: {
+        height: card.offsetHeight,
+        width: card.offsetWidth,
+        nextOffset: (figure.closest('section')?.nextElementSibling as HTMLElement | null)?.offsetTop
+      },
+      cardTransform: getComputedStyle(card).transform,
+      cardShadow: getComputedStyle(card).boxShadow,
+      frameTransform: frame.transform,
+      accentOpacity: Number(accent.opacity),
+      accentBackground: accent.backgroundColor,
+      accentTransform: accent.transform
+    }
+  })
+
+  await portrait.hover()
+  await card.evaluate(async (element) => {
+    await Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished))
+  })
+
+  const after = await portrait.evaluate((figure) => {
+    const card = figure.querySelector<HTMLElement>('.hero__portrait-card')!
+    const frame = getComputedStyle(figure, '::before')
+    const accent = getComputedStyle(figure, '::after')
+    return {
+      layout: {
+        height: card.offsetHeight,
+        width: card.offsetWidth,
+        nextOffset: (figure.closest('section')?.nextElementSibling as HTMLElement | null)?.offsetTop
+      },
+      cardTransform: getComputedStyle(card).transform,
+      cardShadow: getComputedStyle(card).boxShadow,
+      frameTransform: frame.transform,
+      accentOpacity: Number(accent.opacity),
+      accentBackground: accent.backgroundColor,
+      accentTransform: accent.transform
+    }
+  })
+
+  expect(after.layout).toEqual(before.layout)
+  expect(after.cardTransform).not.toBe('none')
+  expect(after.cardShadow).not.toBe(before.cardShadow)
+  expect(after.frameTransform).not.toBe(before.frameTransform)
+  expect(after.accentOpacity).toBeGreaterThan(before.accentOpacity)
+  expect(after.accentBackground).not.toBe('rgba(0, 0, 0, 0)')
+  expect(after.accentTransform).not.toBe(before.accentTransform)
+})
+
+test('social preview metadata declares the reviewed 1200 by 630 image', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    'https://rohanmisra1998.github.io/images/og-rohan-misra.png'
+  )
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200')
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630')
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute(
+    'content',
+    'Rohan Misra — Tech-first operator · Strategy to systems'
+  )
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+    'content',
+    'https://rohanmisra1998.github.io/images/og-rohan-misra.png'
+  )
+})
+
+test('email action is keyboard reachable, exact, and leaves no CV control or copy', async ({ page }) => {
+  await page.goto('/')
+  const contact = page.getByRole('region', { name: 'Let’s talk.' })
   const linkedin = contact.getByRole('link', { name: 'LinkedIn', exact: true })
+  const email = contact.getByRole('link', {
+    name: 'Email Rohan at misrarohan619@gmail.com',
+    exact: true
+  })
+
   await linkedin.focus()
-  await page.keyboard.press('Tab')
-  expect.soft(await disabledCv.evaluate((element) => element === document.activeElement)).toBe(false)
-
-  for (const [interaction, key] of [
-    ['Clicking the disabled CV', null],
-    ['Pressing Enter on the disabled CV', 'Enter'],
-    ['Pressing Space on the disabled CV', ' '],
-  ] as const) {
-    const loaded = await loadContact()
-    const initialUrl = page.url()
-    const initialPageCount = context.pages().length
-    const newPage = context
-      .waitForEvent('page', { timeout: 500 })
-      .then(() => true)
-      .catch(() => false)
-
-    if (key === null) {
-      await loaded.disabledCv.click()
-    } else {
-      await loaded.disabledCv.dispatchEvent('keydown', {
-        key,
-        code: key === 'Enter' ? 'Enter' : 'Space',
-        bubbles: true,
-      })
-    }
-
-    await expectNoActivation(
-      interaction,
-      initialUrl,
-      initialPageCount,
-      await newPage,
-    )
-    for (const extraPage of context.pages().slice(initialPageCount)) {
-      await extraPage.close()
-    }
-  }
+  await page.keyboard.press('Shift+Tab')
+  await expect(email).toBeFocused()
+  await expect(email).toHaveAttribute('href', 'mailto:misrarohan619@gmail.com')
+  await expect(page.getByText(/CV · updating/i)).toHaveCount(0)
+  await expect(page.locator('a, button, [aria-disabled="true"]').filter({ hasText: /\bCV\b/i }))
+    .toHaveCount(0)
 })
 
 test('theme control cycles through and persists system, light, and dark states', async ({ page }) => {
@@ -488,7 +563,7 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.selected-work__header > div > p',
     '.case-card__evidence',
     '.case-card__capabilities li',
-    '.case-card__disclosure',
+    '.case-card__maturity',
     '.section-heading__note',
     '.builder-card__description',
     '.builder-card__honesty',
@@ -518,7 +593,7 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.case-dialog__role > p:last-child',
     '.case-dialog__capability-group li',
     '.case-dialog__narrative h3',
-    '.case-dialog__disclosure'
+    '.case-dialog__maturity'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered dialog copy`).toBeGreaterThan(0)
@@ -537,7 +612,19 @@ test('reduced motion removes translation and scale from animated interface state
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
   await expectNoMotionTransform(page.locator('.hero__copy'), 'hero copy')
-  await expectNoMotionTransform(page.locator('.hero__portrait'), 'hero portrait')
+  const portrait = page.locator('.hero__portrait')
+  await portrait.hover()
+  await expectNoMotionTransform(portrait, 'hero portrait')
+  await expectNoMotionTransform(portrait.locator('.hero__portrait-card'), 'hero portrait card')
+  await expectNoMotionTransform(portrait.locator('picture'), 'hero portrait image')
+  await expectNoMotionTransform(portrait, 'hero portrait frame', '::before')
+  await expectNoMotionTransform(portrait, 'hero portrait signal', '::after')
+  expect(await portrait.evaluate((figure) => [
+    getComputedStyle(figure.querySelector('.hero__portrait-card')!).transitionDuration,
+    getComputedStyle(figure.querySelector('picture')!).transitionDuration,
+    getComputedStyle(figure, '::before').transitionDuration,
+    getComputedStyle(figure, '::after').transitionDuration
+  ])).toEqual(['0s', '0s', '0s', '0s'])
 
   const firstCard = page.getByRole('region', { name: 'Selected work' }).getByRole('article').first()
   await firstCard.hover()

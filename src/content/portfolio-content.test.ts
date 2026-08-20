@@ -28,25 +28,33 @@ describe('approved public portfolio content', () => {
     }
   })
 
-  it('keeps diligence confidential and Trail Pulse honest', () => {
+  it('keeps diligence anonymized without process notes and Trail Pulse honest', () => {
     expect(portfolioContent.work.filter(({ category }) => category === 'diligence')
-      .every(({ disclosure }) => /private|disclosed/i.test(disclosure ?? ''))).toBe(true)
+      .every((item) => !('maturityNote' in item))).toBe(true)
     expect(portfolioContent.builderLab.find(({ slug }) => slug === 'trail-pulse')?.honestyNote)
       .toBe('An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.')
+    expect(portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')?.maturityNote)
+      .toBe('Builder Lab · early AI-assisted, vibe-coded experiment')
+    expect(serialized).not.toMatch(/No target|Target identities|transaction detail is disclosed/i)
     expect(portfolioContent.work.filter(({ homeVisible }) => homeVisible).at(-1)?.slug)
       .toBe('trail-pulse')
   })
 
-  it('contains only approved links and no private contact data', () => {
+  it('publishes only the approved direct email action and no private phone data', () => {
     expect(portfolioContent.publicResearch.href).toBe(
       'https://www.laureatesandleaders.org/_files/ugd/811759_44700bb3bf134c7fa1e15adade4daa51.pdf'
     )
     expect(serialized).not.toContain('laureatesandleaders.org/a-fair-share-for-children')
-    expect(serialized).not.toMatch(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/)
+    expect(serialized.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g)).toEqual([
+      'misrarohan619@gmail.com',
+      'misrarohan619@gmail.com'
+    ])
     expect(serialized).not.toMatch(/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}/)
     expect(portfolioContent.contact).toEqual({
       linkedinHref: 'https://www.linkedin.com/in/rohan-misra-mba/',
-      resumeHref: null
+      emailAddress: 'misrarohan619@gmail.com',
+      mailtoHref: 'mailto:misrarohan619@gmail.com'
     })
+    expect(serialized).not.toMatch(/resumeHref|CV · updating/i)
   })
 })

@@ -17,16 +17,21 @@ export function Contact({ config }: ContactProps) {
           systems behind products that scale.
         </p>
         <div className="contact__actions">
-          <a href={config.linkedinHref} target="_blank" rel="noopener noreferrer">
+          <a
+            className="contact__action contact__action--email"
+            href={config.mailtoHref}
+            aria-label={`Email Rohan at ${config.emailAddress}`}
+          >
+            <span aria-hidden="true">✉</span> Email me
+          </a>
+          <a
+            className="contact__action contact__action--linkedin"
+            href={config.linkedinHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             LinkedIn <span aria-hidden="true">↗</span>
           </a>
-          {config.resumeHref ? (
-            <a href={config.resumeHref}>CV</a>
-          ) : (
-            <span className="contact__disabled" aria-disabled="true">
-              CV · updating
-            </span>
-          )}
         </div>
       </div>
     </section>

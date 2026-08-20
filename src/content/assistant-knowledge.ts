@@ -62,7 +62,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['private equity diligence', 'buy side commercial diligence'],
       aliases: ['commercial diligence', 'buy side diligence', 'private equity', 'due diligence'],
       keywords: ['commercial', 'diligence', 'market assessment', 'competitive positioning', 'investment'],
-      answer: `Rohan has led ${diligence.evidence.toLowerCase()}. ${diligence.approach} ${diligence.disclosure}`,
+      answer: `Rohan has led ${diligence.evidence.toLowerCase()}. ${diligence.approach}`,
       citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
       caseSlug: diligence.slug,
       guardedTerms: ['target names', 'investment recommendation', 'transaction details']
@@ -143,11 +143,11 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
     },
     {
       id: 'contact',
-      canonicalQuestions: ['How do I contact Rohan?'],
-      entities: ['contact', 'linkedin'],
-      aliases: ['get in touch', 'reach rohan'],
-      keywords: ['contact', 'linkedin', 'reach'],
-      answer: 'LinkedIn is the only public direct-contact action.',
+      canonicalQuestions: ['How do I contact Rohan?', "What is Rohan's email address?"],
+      entities: ['contact', 'email address', 'linkedin'],
+      aliases: ['get in touch', 'reach rohan', 'email rohan'],
+      keywords: ['contact', 'email', 'address', 'linkedin', 'reach'],
+      answer: `Email Rohan directly at ${content.contact.emailAddress}, or connect with him on LinkedIn.`,
       citations: [section('#contact', 'Contact')]
     },
     {
@@ -156,7 +156,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['cv status', 'resume status'],
       aliases: ['cv', 'resume'],
       keywords: ['cv', 'resume', 'updating'],
-      answer: 'CV · updating remains disabled.',
+      answer: `The CV is no longer linked on this site; email Rohan directly at ${content.contact.emailAddress}.`,
       citations: [section('#contact', 'Contact')]
     },
     {

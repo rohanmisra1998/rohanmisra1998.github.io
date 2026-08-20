@@ -82,14 +82,12 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
               <p>Evidence</p>
               <h3>{item.evidence}</h3>
             </section>
-            {item.disclosure && (
+            {item.maturityNote && (
               <aside
-                className="case-dialog__disclosure"
-                aria-label={item.category === 'builder'
-                  ? 'Maturity disclosure'
-                  : 'Confidentiality disclosure'}
+                className="case-dialog__maturity"
+                aria-label="Maturity disclosure"
               >
-                <p>{item.disclosure}</p>
+                <p>{item.maturityNote}</p>
               </aside>
             )}
             {item.externalAction && (

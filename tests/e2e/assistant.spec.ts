@@ -250,8 +250,8 @@ test('assistant routes exact, paraphrased, ambiguous, unsupported, private, inje
       'What is the weather in San Jose?',
       'I can only answer from approved public content on this portfolio.'
     ],
-    ['What is his email address?', "That detail isn't part of the approved public profile."],
-    ['Is Rohan’s CV available?', 'CV · updating remains disabled.']
+    ["What is Rohan's email address?", 'misrarohan619@gmail.com'],
+    ['Is Rohan’s CV available?', 'email Rohan directly']
   ] as const) {
     await clearConversation(page)
     const answer = await submitPrompt(page, prompt)

@@ -327,9 +327,14 @@ describe('App', () => {
     render(<App />)
     expect(screen.queryByTestId('proofline')).not.toBeInTheDocument()
     expect(screen.getByRole('img', { name: /Rohan Misra/i })).toBeInTheDocument()
+    const caption = screen.getByText('Operator, strategist, and hands-on builder.')
+    expect(caption).toHaveClass('hero__portrait-caption')
+    expect(caption.closest('.hero__portrait-card')).toContainElement(
+      screen.getByRole('img', { name: /Rohan Misra/i })
+    )
   })
 
-  it('renders the corrected experience, verified essays, and safe contact state', () => {
+  it('renders the corrected experience, verified essays, and approved email contact', () => {
     render(<App />)
     expect(screen.getByText('Senior Manager, Strategy & Operations')).toBeInTheDocument()
     expect(screen.getByText('July 2025–present')).toBeInTheDocument()
@@ -337,12 +342,9 @@ describe('App', () => {
       'href',
       'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
     )
-    expect(
-      screen
-        .getAllByText('CV · updating')
-        .every((node) => node.getAttribute('aria-disabled') === 'true')
-    ).toBe(true)
-    expect(screen.queryByRole('link', { name: /email/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Email Rohan at misrarohan619@gmail.com' }))
+      .toHaveAttribute('href', 'mailto:misrarohan619@gmail.com')
+    expect(screen.queryByText(/CV/i)).not.toBeInTheDocument()
   })
 
   it('renders every verified essay as a named safe external link', () => {
@@ -391,13 +393,16 @@ describe('App', () => {
     )
   })
 
-  it('offers LinkedIn only and keeps the CV disabled', () => {
+  it('offers LinkedIn and a direct, accessible email action without a CV affordance', () => {
     render(<App />)
     expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
       'href', 'https://www.linkedin.com/in/rohan-misra-mba/'
     )
-    expect(screen.getByText('CV · updating')).toHaveAttribute('aria-disabled', 'true')
-    expect(screen.queryByRole('link', { name: /email/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Email Rohan at misrarohan619@gmail.com' }))
+      .toHaveAttribute('href', 'mailto:misrarohan619@gmail.com')
+    expect(screen.getByRole('link', { name: 'Email Rohan at misrarohan619@gmail.com' }))
+      .not.toHaveAttribute('target')
+    expect(screen.queryByText(/CV/i)).not.toBeInTheDocument()
   })
 
   it('exposes every main section as a region labelled by its own visible heading', () => {

@@ -32,16 +32,20 @@ export function Hero({ content, onOpenAssistant }: HeroProps) {
         </ul>
       </div>
       <figure className="hero__portrait reveal">
-        <picture>
-          <source srcSet={publicAsset('images/rohan-portrait.webp')} type="image/webp" />
-          <img
-            src={publicAsset('images/rohan-portrait.png')}
-            alt="Rohan Misra in a modern office setting"
-            width="920"
-            height="1150"
-          />
-        </picture>
-        <figcaption>Operator, strategist, and hands-on builder.</figcaption>
+        <div className="hero__portrait-card">
+          <picture>
+            <source srcSet={publicAsset('images/rohan-portrait.webp')} type="image/webp" />
+            <img
+              src={publicAsset('images/rohan-portrait.png')}
+              alt="Rohan Misra in a modern office setting"
+              width="920"
+              height="1150"
+            />
+          </picture>
+          <figcaption className="hero__portrait-caption">
+            Operator, strategist, and hands-on builder.
+          </figcaption>
+        </div>
       </figure>
     </section>
   )

@@ -29,7 +29,7 @@ describe('SelectedWork', () => {
     expect(cards.at(-1)).toHaveAttribute('data-emphasis', 'secondary')
   })
 
-  it('shows approved evidence, industries, capability limits, and diligence disclosures', () => {
+  it('shows evidence, industries, and skills without anonymization process notes', () => {
     render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
 
     const workforce = screen.getByRole('article', { name: 'Workforce operations transformation' })
@@ -38,10 +38,16 @@ describe('SelectedWork', () => {
     expect(within(workforce).getAllByRole('listitem')).toHaveLength(3)
 
     const diligence = screen.getByRole('article', { name: 'Buy-side commercial diligence' })
+    expect(within(diligence).getByText('B2B SaaS and logistics')).toBeVisible()
+    expect(within(diligence).getByText('Market assessment')).toBeVisible()
     expect(diligence).toHaveTextContent('3+ buy-side diligences informing investor decisions')
-    expect(diligence).toHaveTextContent(
-      'Target identities, recommendations, conclusions, and transaction details remain private.'
-    )
+    expect(diligence.querySelector('.case-card__disclosure')).not.toBeInTheDocument()
+    expect(diligence.querySelector('.case-card__maturity')).not.toBeInTheDocument()
+    expect(diligence).not.toHaveTextContent(/target identities|transaction detail is disclosed/i)
+
+    const trailPulse = screen.getByRole('article', { name: 'Trail Pulse' })
+    expect(trailPulse.querySelector('.case-card__maturity'))
+      .toHaveTextContent('Builder Lab · early AI-assisted, vibe-coded experiment')
   })
 
   it('exposes a unique slug-derived visual variant for every case', async () => {

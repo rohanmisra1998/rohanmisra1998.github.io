@@ -32,8 +32,7 @@ export const portfolioContent: PortfolioContent = {
       thesis: 'Assess whether prospective assets support credible investment theses.',
       challenge: 'Determine whether prospective assets supported credible investment theses.',
       approach: 'Lead 3+ commercial diligences, triangulating growth, competition, positioning, and risk.',
-      evidence: '3+ buy-side diligences informing investor decisions',
-      disclosure: 'Target identities, recommendations, conclusions, and transaction details remain private.'
+      evidence: '3+ buy-side diligences informing investor decisions'
     },
     {
       slug: 'omnichannel-payments-strategy', homeVisible: true, category: 'product',
@@ -60,8 +59,7 @@ export const portfolioContent: PortfolioContent = {
       thesis: 'Assess the Indian adult-vaccine market and acquisition-led value-creation pathways.',
       challenge: 'Understand the Indian adult-vaccine market and potential add-on pathways.',
       approach: 'Map the market and assess acquisition-led value-creation opportunities.',
-      evidence: 'Investor view on sector attractiveness and portfolio-growth pathways',
-      disclosure: 'No target, investor, conclusion, or transaction detail is disclosed.'
+      evidence: 'Investor view on sector attractiveness and portfolio-growth pathways'
     },
     {
       slug: 'trail-pulse', homeVisible: true, category: 'builder', title: 'Trail Pulse', industry: 'Consumer outdoors', role: 'Builder',
@@ -70,7 +68,7 @@ export const portfolioContent: PortfolioContent = {
       challenge: 'Help hikers choose a suitable trail and leave with reliable planning and navigation context.',
       approach: 'Build recommendation, practical trail-signal synthesis, logistics guidance, and GPX/KML export gated by geometry validation.',
       evidence: 'Working public experiment · shipped to learn',
-      disclosure: 'Builder Lab · early AI-assisted, vibe-coded experiment',
+      maturityNote: 'Builder Lab · early AI-assisted, vibe-coded experiment',
       externalAction: { label: 'Try Trail Pulse', href: 'https://trail-pulse-alpha.vercel.app/' }
     },
     {
@@ -139,5 +137,9 @@ export const portfolioContent: PortfolioContent = {
     statement: 'I like problems with real operational texture: fragmented markets, imperfect information, and teams that need a practical path from analysis to action. My toolkit was built in consulting, sharpened through operating work, and keeps expanding through hands-on building.',
     interests: ['Advanced open-water scuba', 'Hiking', 'Travel', 'Cooking']
   },
-  contact: { linkedinHref: 'https://www.linkedin.com/in/rohan-misra-mba/', resumeHref: null }
+  contact: {
+    linkedinHref: 'https://www.linkedin.com/in/rohan-misra-mba/',
+    emailAddress: 'misrarohan619@gmail.com',
+    mailtoHref: 'mailto:misrarohan619@gmail.com'
+  }
 }
