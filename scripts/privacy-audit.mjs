@@ -257,17 +257,38 @@ function quotedContexts(contents, targetIndex) {
   return contexts
 }
 
+function findMarkdownDestinationContext(contents, targetIndex) {
+  const destinationStart = contents.lastIndexOf('](', targetIndex)
+  if (destinationStart === -1) return undefined
+  const valueStart = destinationStart + 2
+  for (let valueEnd = valueStart; valueEnd < contents.length; valueEnd += 1) {
+    if (contents[valueEnd] !== ')' || isEscaped(contents, valueEnd)) continue
+    if (targetIndex >= valueStart && targetIndex < valueEnd) {
+      return {
+        kind: 'markdown-destination',
+        start: valueStart,
+        end: valueEnd,
+        value: contents.slice(valueStart, valueEnd)
+      }
+    }
+    return undefined
+  }
+  return undefined
+}
+
 function findBareContext(contents, targetIndex) {
   let start = targetIndex
-  while (start > 0 && !/[\s"'`<>=,;()[\]{}]/.test(contents[start - 1])) start -= 1
+  while (start > 0 && !/[\s"'`<>=]/.test(contents[start - 1])) start -= 1
   let end = targetIndex
-  while (end < contents.length && !/[\s"'`<>,;()[\]{}]/.test(contents[end])) end += 1
+  while (end < contents.length && !/[\s"'`<>]/.test(contents[end])) end += 1
   return { kind: 'bare', start, end, value: contents.slice(start, end) }
 }
 
 function findValueContext(contents, targetIndex) {
   const html = findHtmlHrefContext(contents, targetIndex)
   if (html) return html
+  const markdown = findMarkdownDestinationContext(contents, targetIndex)
+  if (markdown) return markdown
   const quoted = quotedContexts(contents, targetIndex)
     .sort((left, right) => (left.end - left.start) - (right.end - right.start))[0]
   return quoted ?? findBareContext(contents, targetIndex)
@@ -306,7 +327,6 @@ function hasForbiddenScheme(contents) {
   for (const match of matches) {
     if (ignoredRanges.some((range) => match.index >= range.start && match.index < range.end)) continue
     const index = match.index
-    const before = index === 0 ? undefined : contents[index - 1]
     if (
       match[0] === 'mailto:'
       && contents.startsWith(APPROVED_MAILTO, index)
@@ -344,7 +364,7 @@ function hasForbiddenEmailContactCandidate(contents) {
     const colonIndex = context.value.lastIndexOf(':', relativeEmailIndex)
     if (colonIndex === -1) continue
     const skeleton = schemeSkeleton(context.value.slice(0, colonIndex))
-    if (skeleton === 'mailto' || skeleton === 'tel') {
+    if (skeleton.includes('mailto') || skeleton === 'tel') {
       if (context.value !== APPROVED_MAILTO) return true
     }
   }

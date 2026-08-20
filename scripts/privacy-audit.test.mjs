@@ -499,6 +499,86 @@ test('accepts exact mailto values across escaped quote contexts and a true unquo
   assert.deepEqual(await auditPaths([directory]), [])
 })
 
+test('rejects punctuation suffixes in Markdown destinations and bare mailto tokens', async () => {
+  const directory = await makeFixtureDirectory()
+  const mailto = 'mailto:misrarohan619@gmail.com'
+  const fixtures = [
+    ['public/markdown-comma.md', `[Email](${mailto},extra)`],
+    ['public/markdown-bracket.md', `[Email](${mailto}]extra)`],
+    ['public/markdown-brace.md', `[Email](${mailto}}extra)`],
+    ['public/bare-paren.txt', `${mailto})extra`],
+    ['public/html-text.html', `<p>${mailto}]extra</p>`],
+    ['src/bare-brace.ts', `// ${mailto}}extra`],
+    ['dist/assets/bare.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`// ${mailto})extra`],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => !hasViolation(
+      violations,
+      relativePath.split('/').at(-1),
+      'forbidden-contact-link'
+    ))
+  assert.deepEqual(falsePasses, [], `suffixed mailto fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('accepts only an exact structurally closed Markdown mailto destination', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixture = join(directory, 'contact.md')
+  await writeFile(
+    fixture,
+    '[Email](mailto:misrarohan619@gmail.com) or write misrarohan619@gmail.com.'
+  )
+
+  assert.deepEqual(await auditPaths([fixture]), [])
+})
+
+test('rejects prefixed malformed mailto skeletons in HTML, JavaScript, and source maps', async () => {
+  const directory = await makeFixtureDirectory()
+  const address = 'misrarohan619@gmail.com'
+  const fixtures = [
+    ['public/prefixed.html', `<a href="prefixm%61il%ZZto:${address}">Email</a>`],
+    ['src/adjacent-prefix.js', `const href = 'xm%61il%ZZto:${address}'`],
+    ['src/hyphen-prefix.js', `const href = 'pre-m%61il%ZZto:${address}'`],
+    ['dist/assets/prefixed.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`const href = \`buildm%61il%ZZto:${address}\``],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => !hasViolation(
+      violations,
+      relativePath.split('/').at(-1),
+      'forbidden-contact-link'
+    ))
+  assert.deepEqual(falsePasses, [], `prefixed mailto fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
 test('rejects encoded contact bypasses across source, public, dist, and source-map content', async () => {
   const directory = await makeFixtureDirectory()
   const fixtures = [
