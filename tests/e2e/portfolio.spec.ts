@@ -229,6 +229,39 @@ test('adjacent narrative sections keep a deliberate compact rhythm', async ({ pa
   }
 })
 
+test('the promotions proof metric stays on one line without overflowing', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 1024, height: 900 },
+    { width: 768, height: 900 }
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Read more about me' }).click()
+
+    const metric = page.locator('.profile__proof strong').first()
+    const geometry = await metric.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const lineHeight = Number.parseFloat(getComputedStyle(element).lineHeight)
+      return {
+        height: box.height,
+        lineHeight,
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth
+      }
+    })
+
+    expect(
+      geometry.height,
+      `${viewport.width}px promotions metric wrapped onto multiple lines`
+    ).toBeLessThanOrEqual(geometry.lineHeight + 1)
+    expect(
+      geometry.scrollWidth,
+      `${viewport.width}px promotions metric overflowed its proof column`
+    ).toBeLessThanOrEqual(geometry.clientWidth + 1)
+  }
+})
+
 test('portrait omits the decorative signal dot', async ({ page }) => {
   await page.goto('/')
   const signalContent = await page.locator('.hero__portrait').evaluate((portrait) => (

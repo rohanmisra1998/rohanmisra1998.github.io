@@ -758,8 +758,10 @@
   margin-bottom: 0.6rem;
   color: var(--accent);
   font-family: var(--display);
-  font-size: clamp(1.6rem, 2.4vw, 2.45rem);
+  font-size: clamp(1rem, 2vw, 2rem);
   letter-spacing: -0.04em;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .profile__proof span {
@@ -1074,6 +1076,11 @@ footer p {
 
   .profile__proof {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile__proof strong {
+    font-size: 1.6rem;
+    line-height: 1.6;
   }
 
   .profile__proof li {
