@@ -20,7 +20,8 @@ const portfolioPageIds = new Set([
   '#writing',
   '#about',
   '#about-assistant',
-  '#contact'
+  '#contact',
+  '#outside-work'
 ])
 
 const assistantCaseSlugs = new Set([

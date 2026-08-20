@@ -209,6 +209,18 @@ describe('AskRohan', () => {
     expect(onRequestCase).not.toHaveBeenCalled()
   })
 
+  it('renders the supported Outside work citation for an interests answer', async () => {
+    const user = userEvent.setup()
+    renderAssistant()
+    await user.click(screen.getByRole('button', { name: 'Ask Rohan AI' }))
+    await user.type(screen.getByLabelText('Ask a question'), 'What are Rohan’s interests?')
+    await user.keyboard('{Enter}')
+
+    expect(await screen.findByText(/Hiking, History, Travel, Scuba diving, Horse riding/i)).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Outside work' }))
+      .toHaveAttribute('href', '#outside-work')
+  })
+
   it('presents clarification, fallback, and unavailable guidance as real transcript replies', async () => {
     const user = userEvent.setup()
     renderAssistant(fixedAdapter(

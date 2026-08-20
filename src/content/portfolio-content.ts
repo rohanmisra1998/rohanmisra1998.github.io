@@ -41,7 +41,7 @@ export const portfolioContent: PortfolioContent = {
       thesis: 'Use AI and workflow redesign to give recruiting teams back time for higher-value work.',
       challenge: 'Revamp a large-scale interview process burdened by manual effort and fragmented candidate workflows.',
       approach: 'Led a cross-functional team to redesign the interview process, improve AI-tool integrations such as Paradox, and build a multiyear talent-acquisition roadmap.',
-      outcome: 'Freed ~15,000 hours of recruiter and talent-team capacity annually.'
+      outcome: 'Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.'
     },
     {
       slug: 'workforce-operations-transformation', category: 'transformation', group: 'operations-transformations',
@@ -66,7 +66,7 @@ export const portfolioContent: PortfolioContent = {
       title: 'Pharma & life-sciences growth transformation', industry: 'Pharmaceuticals and life sciences · India',
       capabilities: ['Distribution transformation', 'Market entry', 'Sector mapping', 'Acquisition-led value creation'],
       thesis: 'Rewire commercial distribution while finding the next acquisition-led growth vectors.',
-      challenge: 'Improve distribution performance, accelerate geographic expansion, and assess acquisition-led growth in Indian pharma and life sciences.',
+      challenge: 'Across separate engagements, improve distribution performance, accelerate geographic expansion, and assess acquisition-led growth in Indian pharma and life sciences.',
       approach: 'Rationalized low-performing channel partners, analyzed market entry across 770+ counties, and mapped the adult-vaccine market and add-on acquisition opportunities.',
       outcome: 'Reduced the partner base by 30%+ and enabled expansion into 200+ counties.'
     }

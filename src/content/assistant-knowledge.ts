@@ -136,9 +136,9 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       canonicalQuestions: ['What are Rohan’s interests?'],
       entities: ['interests', 'outside work'],
       aliases: ['hobbies', 'personal interests'],
-      keywords: ['scuba', 'hiking', 'travel', 'cooking'],
+      keywords: ['hiking', 'history', 'travel', 'scuba', 'horse riding'],
       answer: `Rohan's interests include ${content.about.interests.join(', ')}.`,
-      citations: [section('#about', 'About')]
+      citations: [section('#outside-work', 'Outside work')]
     },
     {
       id: 'contact',

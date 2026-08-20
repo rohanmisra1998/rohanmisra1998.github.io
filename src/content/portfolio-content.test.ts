@@ -50,16 +50,17 @@ describe('approved public portfolio content', () => {
     const talent = portfolioContent.work[2] as unknown as { title: string; approach: string; outcome: string }
     const utilities = portfolioContent.work[3] as unknown as { outcome: string }
     const automotive = portfolioContent.work[4] as unknown as { outcome: string }
-    const pharma = portfolioContent.work[5] as unknown as { approach: string; outcome: string }
+    const pharma = portfolioContent.work[5] as unknown as { challenge: string; approach: string; outcome: string }
 
     expect(payments.industry).toContain("India's largest payments platform")
     expect(payments.outcome).toContain('$150M+')
     expect(talent.title).toBe('AI-powered recruiting transformation')
     expect(talent.approach).toMatch(/AI-tool integrations.*Paradox/i)
-    expect(talent.outcome).toMatch(/15,000 hours.*annually/i)
+    expect(talent.outcome).toBe('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')
     expect(utilities.outcome).toMatch(/\$20M\+.*8%\+/)
     expect(automotive.outcome).toContain('$40M+')
     expect(pharma.approach).toMatch(/770\+ counties.*adult-vaccine/i)
+    expect(pharma.challenge).toMatch(/^Across separate engagements,/i)
     expect(pharma.outcome).toMatch(/30%\+.*200\+ counties/i)
 
     expect(portfolioContent.work.filter(({ category }) => category === 'diligence')

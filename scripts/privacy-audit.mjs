@@ -411,6 +411,9 @@ function hasForbiddenContactForFile(filePath, contents) {
       return hasForbiddenContact(contents)
     }
 
+    if ('sourcesContent' in sourceMap && !Array.isArray(sourceMap.sourcesContent)) {
+      return true
+    }
     const sourcesContent = Array.isArray(sourceMap.sourcesContent)
       ? sourceMap.sourcesContent.filter((source) => typeof source === 'string')
       : []

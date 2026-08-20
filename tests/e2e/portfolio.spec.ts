@@ -131,7 +131,7 @@ test('selected work exposes six CV-grounded cases in two technology-first groups
   })).toBeVisible()
   await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
   await expect(selectedWork.getByText('Created a path to $150M+ in value uplift.')).toBeVisible()
-  await expect(selectedWork.getByText(/15,000 hours of recruiter and talent-team capacity/)).toBeVisible()
+  await expect(selectedWork.getByText('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')).toBeVisible()
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
   await expect(selectedWork.getByRole('button', { name: 'See all work' })).toHaveCount(0)

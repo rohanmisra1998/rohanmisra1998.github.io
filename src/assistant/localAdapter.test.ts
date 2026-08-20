@@ -54,6 +54,22 @@ const customKnowledge: KnowledgeAccess = Object.freeze({
 })
 
 describe('localAssistantAdapter', () => {
+  it('grounds interests in the final Outside work section', async () => {
+    const record = getAssistantKnowledgeRecord('interests')
+    const reply = await localAssistantAdapter.reply(
+      { input: 'What are Rohan’s interests?', history: [] },
+      new AbortController().signal
+    )
+
+    expect(record?.keywords).toEqual(expect.arrayContaining(['hiking', 'history', 'travel', 'scuba', 'horse riding']))
+    expect(record?.keywords).not.toContain('cooking')
+    expect(reply).toMatchObject({
+      kind: 'answer',
+      topicId: 'interests',
+      citations: [{ sectionId: '#outside-work', label: 'Outside work' }]
+    })
+  })
+
   it.each([
     'updating',
     'resume the conversation',

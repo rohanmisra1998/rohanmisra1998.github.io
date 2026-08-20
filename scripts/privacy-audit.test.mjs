@@ -699,6 +699,33 @@ test('scans web manifests, source maps, and XML as published text', async () => 
   assert.equal(hasViolation(violations, 'sitemap.xml', 'forbidden-private-topic'), true)
 })
 
+test('fails closed when source-map sourcesContent is not an array', async () => {
+  const directory = await makeFixtureDirectory()
+  const stringMap = join(directory, 'string-sources.js.map')
+  const objectMap = join(directory, 'object-sources.js.map')
+  const forbiddenContact = 'mailto:misrarohan619@gmail.com?subject=Portfolio'
+
+  await writeFile(stringMap, JSON.stringify({
+    version: 3,
+    sources: ['source.ts'],
+    sourcesContent: forbiddenContact,
+    names: [],
+    mappings: ''
+  }))
+  await writeFile(objectMap, JSON.stringify({
+    version: 3,
+    sources: ['source.ts'],
+    sourcesContent: { source: forbiddenContact },
+    names: [],
+    mappings: ''
+  }))
+
+  const violations = await auditPaths([directory])
+
+  assert.equal(hasViolation(violations, 'string-sources.js.map', 'forbidden-contact-link'), true)
+  assert.equal(hasViolation(violations, 'object-sources.js.map', 'forbidden-contact-link'), true)
+})
+
 test('rejects private source-document filenames embedded in decoded text', async () => {
   const directory = await makeFixtureDirectory()
   const sourceMap = join(directory, 'bundle.js.map')
