@@ -54,6 +54,7 @@ describe('approved public portfolio content', () => {
 
     expect(payments.industry).toContain("India's largest payments platform")
     expect(payments.outcome).toContain('$150M+')
+    expect(portfolioContent.work[1].outcome).toBe('Informed X buy-side investment theses.')
     expect(talent.title).toBe('AI-powered recruiting transformation')
     expect(talent.approach).toMatch(/AI-tool integrations.*Paradox/i)
     expect(talent.outcome).toBe('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')

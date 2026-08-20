@@ -16,7 +16,7 @@
   --body: 'DM Sans Variable', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
   --content: min(1240px, calc(100vw - 40px));
-  --space-section: clamp(5rem, 9vw, 8rem);
+  --space-section: clamp(3.25rem, 4.75vw, 4.5rem);
 }
 
 [data-theme='dark'] {

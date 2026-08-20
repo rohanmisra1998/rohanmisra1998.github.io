@@ -33,6 +33,19 @@ export function Contact({ config }: ContactProps) {
             LinkedIn <span aria-hidden="true">↗</span>
           </a>
         </div>
+        <aside
+          className="contact__assistant-note"
+          id="about-assistant"
+          aria-labelledby="about-assistant-heading"
+        >
+          <p className="section-label">Trust note</p>
+          <h3 id="about-assistant-heading">About this assistant</h3>
+          <p>
+            Ask Rohan AI uses deterministic retrieval from approved public portfolio content.
+            It is not a generative model or a virtual twin. Questions are processed locally and are
+            not sent over the network or saved in browser storage.
+          </p>
+        </aside>
       </div>
     </section>
   )

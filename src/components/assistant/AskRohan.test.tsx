@@ -100,7 +100,7 @@ describe('AskRohan', () => {
     renderAssistant()
     await user.click(screen.getByRole('button', { name: 'Ask Rohan AI' }))
     await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
-    expect(await screen.findByText(/3\+ buy-side investment theses/i)).toBeVisible()
+    expect(await screen.findByText(/X buy-side investment theses/i)).toBeVisible()
     const transcript = screen.getByRole('log')
     transcript.scrollTop = 137
     fireEvent.scroll(transcript)
@@ -108,7 +108,7 @@ describe('AskRohan', () => {
     await user.click(screen.getByRole('button', { name: 'Expand assistant' }))
     await user.click(screen.getByRole('button', { name: 'Collapse to compact assistant' }))
     expect(screen.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
-    expect(screen.getByText(/3\+ buy-side investment theses/i)).toBeVisible()
+    expect(screen.getByText(/X buy-side investment theses/i)).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: 'Close assistant panel' }))
     const reopen = screen.getByRole('button', { name: 'Reopen Ask Rohan AI' })
@@ -119,7 +119,7 @@ describe('AskRohan', () => {
 
     await user.click(reopen)
     expect(screen.getByRole('complementary', { name: 'Ask Rohan AI' })).toBeVisible()
-    expect(screen.getByText(/3\+ buy-side investment theses/i)).toBeVisible()
+    expect(screen.getByText(/X buy-side investment theses/i)).toBeVisible()
     expect(screen.getByRole('log').scrollTop).toBe(137)
 
     await user.click(screen.getByRole('button', { name: 'Clear conversation' }))
@@ -455,7 +455,7 @@ describe('AskRohan', () => {
     const launcher = screen.getByRole('button', { name: 'Ask Rohan AI' })
     await user.click(launcher)
     await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
-    expect(await screen.findByText(/3\+ buy-side investment theses/i)).toBeVisible()
+    expect(await screen.findByText(/X buy-side investment theses/i)).toBeVisible()
     if (!mobile) await user.click(screen.getByRole('button', { name: 'Expand assistant' }))
 
     const assistantDialog = screen.getByRole('dialog', { name: 'Ask Rohan AI' })

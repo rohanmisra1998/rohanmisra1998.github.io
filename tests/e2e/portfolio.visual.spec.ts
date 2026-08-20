@@ -292,7 +292,7 @@ test('assistant grounded answer has a reviewed baseline', async ({ page }, testI
   await page.locator('.action--assistant').click()
   await page.getByRole('button', { name: /private-equity diligence/i }).click()
   await expect(page.getByRole('article', { name: 'Grounded answer' })).toContainText(
-    '3+ buy-side investment theses'
+    'X buy-side investment theses'
   )
   await waitForRenderedState(page)
 

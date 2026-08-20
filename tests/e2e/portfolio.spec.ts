@@ -144,7 +144,7 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
   await expect(diligenceDialog.getByText('Technology investing · B2B SaaS and logistics')).toBeVisible()
   await expect(diligenceDialog.getByText('Market assessment')).toBeVisible()
   await expect(diligenceDialog.getByText('Outcome')).toBeVisible()
-  await expect(diligenceDialog.getByText('Informed 3+ buy-side investment theses.')).toBeVisible()
+  await expect(diligenceDialog.getByText('Informed X buy-side investment theses.')).toBeVisible()
   await expect(diligenceDialog.getByText('Role', { exact: true })).toHaveCount(0)
   await expect(diligenceDialog.getByText('Evidence', { exact: true })).toHaveCount(0)
   await expect(diligenceDialog.locator('.case-dialog__disclosure')).toHaveCount(0)
@@ -170,19 +170,63 @@ test('each professional case uses a distinct, case-specific geometric system', a
   const systems = await page.locator('.case-card__visual').evaluateAll((visuals) => (
     visuals.map((visual) => ({
       slug: (visual as HTMLElement).dataset.visualVariant,
-      system: getComputedStyle(visual).getPropertyValue('--visual-system').trim()
+      system: getComputedStyle(visual).getPropertyValue('--visual-system').trim(),
+      parts: Array.from(visual.querySelectorAll('[data-shape-role]'))
+        .map((part) => (part as HTMLElement).dataset.shapeRole)
     }))
   ))
 
   expect(systems).toEqual([
-    { slug: 'omnichannel-payments-strategy', system: 'payment-rails' },
-    { slug: 'buy-side-commercial-diligence', system: 'diligence-matrix' },
-    { slug: 'talent-acquisition-operating-model', system: 'ai-pipeline' },
-    { slug: 'workforce-operations-transformation', system: 'workforce-schedule' },
-    { slug: 'performance-and-value-realization-program', system: 'performance-dial' },
-    { slug: 'pharma-life-sciences-growth-transformation', system: 'molecular-network' }
+    {
+      slug: 'omnichannel-payments-strategy', system: 'payment-rails',
+      parts: ['online-channel', 'payment-hub', 'pos-channel']
+    },
+    {
+      slug: 'buy-side-commercial-diligence', system: 'diligence-filter',
+      parts: ['market-evidence', 'investment-filter', 'risk-evidence']
+    },
+    {
+      slug: 'talent-acquisition-operating-model', system: 'ai-recruiting-flow',
+      parts: ['candidate-flow', 'ai-orchestration', 'capacity-release']
+    },
+    {
+      slug: 'workforce-operations-transformation', system: 'crew-schedule',
+      parts: ['crew-one', 'crew-two', 'crew-three']
+    },
+    {
+      slug: 'performance-and-value-realization-program', system: 'regional-value-network',
+      parts: ['region-network', 'value-hub', 'savings-path']
+    },
+    {
+      slug: 'pharma-life-sciences-growth-transformation', system: 'pharma-distribution',
+      parts: ['therapy-product', 'distribution-hub', 'expansion-network']
+    }
   ])
   expect(new Set(systems.map(({ system }) => system))).toHaveProperty('size', 6)
+})
+
+test('adjacent narrative sections keep a deliberate compact rhythm', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+
+  const gaps = await page.locator('main').evaluate((main) => {
+    const ids = ['profile', 'work', 'experience', 'education', 'writing', 'outside-work', 'contact']
+    return ids.slice(0, -1).map((id, index) => {
+      const current = main.querySelector<HTMLElement>(`#${id}`)!
+      const next = main.querySelector<HTMLElement>(`#${ids[index + 1]}`)!
+      const currentContentBottom = Math.max(
+        ...Array.from(current.children).map((child) => child.getBoundingClientRect().bottom)
+      )
+      const nextContentTop = Math.min(
+        ...Array.from(next.children).map((child) => child.getBoundingClientRect().top)
+      )
+      return { from: id, to: ids[index + 1], gap: nextContentTop - currentContentBottom }
+    })
+  })
+
+  for (const { from, to, gap } of gaps) {
+    expect(gap, `${from} → ${to} has an oversized whitespace gap`).toBeLessThanOrEqual(144)
+  }
 })
 
 test('portrait omits the decorative signal dot', async ({ page }) => {
@@ -656,7 +700,7 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.education p',
     '.education__meta',
     '.writing-row__body > p',
-    '.about__statement',
+    '.profile__story > p',
     '.contact__body > p',
     '.outside-work__heading > p:last-child',
     '.outside-work__interests li'
@@ -809,7 +853,7 @@ test('assistant graph preloads for offline use and both case handoffs keep one s
   await expect(composer).toBeFocused()
   await page.getByRole('button', { name: /private-equity diligence/i }).click()
   await expect(page.getByRole('article', { name: 'Grounded answer' })).toContainText(
-    '3+ buy-side investment theses'
+    'X buy-side investment theses'
   )
   await page.getByRole('button', { name: 'View supporting case' }).click()
   await expect(page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })).toBeVisible()

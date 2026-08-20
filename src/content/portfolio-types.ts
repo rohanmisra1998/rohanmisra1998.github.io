@@ -73,6 +73,10 @@ export interface PortfolioContent {
   personalProjects: PersonalProjectItem[]
   writing: WritingItem[]
   publicResearch: PublicResearchItem
-  about: { statement: string; interests: string[] }
+  about: {
+    statement: string
+    achievements: Array<{ metric: string; detail: string }>
+    interests: string[]
+  }
   contact: ContactConfig
 }

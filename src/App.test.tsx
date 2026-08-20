@@ -48,8 +48,18 @@ describe('App', () => {
     expect(within(navigation).getAllByRole('link').map((link) => link.textContent)).toEqual([
       'Home',
       'Work',
-      'Experience'
+      'Experience',
+      'Contact',
+      'LinkedIn↗'
     ])
+    expect(within(navigation).getByRole('link', { name: 'Contact' })).toHaveAttribute(
+      'href',
+      '#contact'
+    )
+    expect(within(navigation).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/rohan-misra-mba/'
+    )
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'I turn messy operations into scalable products and systems.'
     )
@@ -132,7 +142,7 @@ describe('App', () => {
     await user.click(screen.getAllByRole('button', { name: 'Ask Rohan AI' })[0])
     await user.click(screen.getByRole('button', { name: /private-equity diligence/i }))
     expect(await screen.findByRole('article', { name: 'Grounded answer' }))
-      .toHaveTextContent(/3\+ buy-side investment theses/i)
+      .toHaveTextContent(/X buy-side investment theses/i)
     await user.click(screen.getByRole('button', { name: 'View supporting case' }))
 
     const caseDialog = screen.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
@@ -426,7 +436,12 @@ describe('App', () => {
 
   it('offers LinkedIn and a direct, accessible email action without a CV affordance', () => {
     render(<App />)
-    expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+    const navigation = screen.getByRole('navigation', { name: 'Primary' })
+    const contact = screen.getByRole('region', { name: 'Let’s talk.' })
+    expect(within(navigation).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+      'href', 'https://www.linkedin.com/in/rohan-misra-mba/'
+    )
+    expect(within(contact).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
       'href', 'https://www.linkedin.com/in/rohan-misra-mba/'
     )
     expect(screen.getByRole('link', { name: 'Email Rohan at misrarohan619@gmail.com' }))
@@ -436,19 +451,16 @@ describe('App', () => {
     expect(screen.queryByText(/CV/i)).not.toBeInTheDocument()
   })
 
-  it('ends the main narrative with a personable Outside work section', () => {
+  it('places Outside work immediately before the final Contact section', () => {
     render(<App />)
     const main = screen.getByRole('main')
     const contact = main.querySelector('#contact')
     const outsideWork = main.querySelector('#outside-work')
-    const about = main.querySelector('#about')
 
     expect(contact).not.toBeNull()
     expect(outsideWork).not.toBeNull()
-    expect(about).not.toBeNull()
-    expect(contact!.compareDocumentPosition(outsideWork!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(within(about as HTMLElement).queryByRole('list', { name: 'Interests' }))
-      .not.toBeInTheDocument()
+    expect(outsideWork!.nextElementSibling).toBe(contact)
+    expect(main.lastElementChild).toBe(contact)
 
     const section = screen.getByRole('region', { name: 'Outside work' })
     expect(section).toHaveTextContent('Beyond the résumé')
@@ -464,19 +476,22 @@ describe('App', () => {
     )
   })
 
-  it('keeps the About statement behind an explicit Read more disclosure', async () => {
-    const user = userEvent.setup()
+  it('moves the longer introduction and strongest proof points directly below the hero', () => {
     render(<App />)
-    const about = screen.getByRole('region', { name: 'About' })
-    const disclosure = within(about).getByRole('button', { name: 'Read more about me' })
+    const main = screen.getByRole('main')
+    const hero = screen.getByRole('region', {
+      name: 'I turn messy operations into scalable products and systems.'
+    })
+    const profile = screen.getByRole('region', { name: 'Read more about me' })
 
-    expect(disclosure).toHaveAttribute('aria-expanded', 'false')
-    expect(within(about).queryByText(/problems with real operational texture/i)).not.toBeVisible()
-
-    await user.click(disclosure)
-
-    expect(disclosure).toHaveAttribute('aria-expanded', 'true')
-    expect(within(about).getByText(/problems with real operational texture/i)).toBeVisible()
+    expect(hero.nextElementSibling).toBe(profile)
+    expect(within(profile).getByText(/problems with real operational texture/i)).toBeVisible()
+    expect(within(profile).getByText(/five promotions in under four years/i)).toBeVisible()
+    expect(within(profile).getByText(/youngest student in (?:my|the) Kellogg MBA class/i)).toBeVisible()
+    expect(within(profile).getByText(/\$210M\+.*value uplift and savings/i)).toBeVisible()
+    expect(within(main).queryByRole('region', { name: 'About' })).not.toBeInTheDocument()
+    expect(within(profile).queryByRole('button', { name: 'Read more about me' }))
+      .not.toBeInTheDocument()
   })
 
   it('exposes every main section as a region labelled by its own visible heading', () => {

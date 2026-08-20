@@ -32,7 +32,7 @@ export const portfolioContent: PortfolioContent = {
       thesis: 'Pressure-test whether fast-moving technology businesses can support a credible investment thesis.',
       challenge: 'Assess prospective B2B SaaS and logistics assets across market growth, right to win, competitive positioning, and risk.',
       approach: 'Led commercial diligence workstreams, triangulating primary research, market evidence, competitive dynamics, and downside risks.',
-      outcome: 'Informed 3+ buy-side investment theses.'
+      outcome: 'Informed X buy-side investment theses.'
     },
     {
       slug: 'talent-acquisition-operating-model', category: 'transformation', group: 'tech-ai-growth',
@@ -108,6 +108,20 @@ export const portfolioContent: PortfolioContent = {
   },
   about: {
     statement: 'I like problems with real operational texture: fragmented markets, imperfect information, and teams that need a practical path from analysis to action. My toolkit was built in consulting, sharpened through operating work, and keeps expanding through hands-on building.',
+    achievements: [
+      {
+        metric: '5 promotions',
+        detail: 'Five promotions in under four years at Bain on a top-rated, accelerated trajectory.'
+      },
+      {
+        metric: 'Youngest',
+        detail: 'Youngest student in my Kellogg MBA class.'
+      },
+      {
+        metric: '$210M+',
+        detail: '$210M+ in value uplift and savings identified or delivered across Bain engagements.'
+      }
+    ],
     interests: ['Hiking', 'History', 'Travel', 'Scuba diving', 'Horse riding']
   },
   contact: {

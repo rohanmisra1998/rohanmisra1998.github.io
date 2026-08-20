@@ -18,7 +18,7 @@ const portfolioPageIds = new Set([
   '#education',
   '#personal-projects',
   '#writing',
-  '#about',
+  '#profile',
   '#about-assistant',
   '#contact',
   '#outside-work'

@@ -46,7 +46,7 @@ describe('SelectedWork', () => {
     const diligence = screen.getByRole('article', { name: 'B2B SaaS & logistics investment diligence' })
     expect(within(diligence).getByText(/B2B SaaS and logistics/)).toBeVisible()
     expect(within(diligence).getByText('Market assessment')).toBeVisible()
-    expect(diligence).toHaveTextContent('3+ buy-side investment theses')
+    expect(diligence).toHaveTextContent('X buy-side investment theses')
 
     const pharma = screen.getByRole('article', { name: 'Pharma & life-sciences growth transformation' })
     expect(pharma).toHaveTextContent('30%+')

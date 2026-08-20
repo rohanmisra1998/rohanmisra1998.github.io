@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react'
-import { About } from './components/About'
 import { CaseStudyDialog } from './components/CaseStudyDialog'
 import { Contact } from './components/Contact'
 import { Education } from './components/Education'
 import { Experience } from './components/Experience'
 import { Hero } from './components/Hero'
 import { OutsideWork } from './components/OutsideWork'
+import { Profile } from './components/Profile'
 import { SelectedWork } from './components/SelectedWork'
 import { SiteHeader } from './components/SiteHeader'
 import { Writing } from './components/Writing'
@@ -25,12 +25,13 @@ export default function App() {
     <>
       <div id="page-shell">
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader />
+        <SiteHeader linkedinHref={portfolioContent.contact.linkedinHref} />
         <main id="main-content" tabIndex={-1}>
           <Hero
             content={portfolioContent.hero}
             onOpenAssistant={layers.openAssistant}
           />
+          <Profile content={portfolioContent.about} />
           <SelectedWork
             items={portfolioContent.work}
             projects={portfolioContent.personalProjects}
@@ -42,9 +43,8 @@ export default function App() {
             items={portfolioContent.writing}
             publicResearch={portfolioContent.publicResearch}
           />
-          <About content={portfolioContent.about} />
-          <Contact config={portfolioContent.contact} />
           <OutsideWork interests={portfolioContent.about.interests} />
+          <Contact config={portfolioContent.contact} />
         </main>
         <footer>
           <p>Built with curiosity and a bias to ship.</p>

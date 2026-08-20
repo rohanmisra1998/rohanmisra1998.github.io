@@ -55,10 +55,6 @@ main > section:not(.hero) {
   padding-block: var(--space-section);
 }
 
-main > #experience {
-  padding-top: calc(var(--space-section) * 1.15);
-}
-
 main > #personal-projects {
   padding-block: clamp(3.5rem, 7vw, 6rem);
 }
@@ -115,7 +111,7 @@ footer {
   }
 
   main > section:not(.hero) {
-    padding-block: clamp(4rem, 18vw, 6rem);
+    padding-block: clamp(3rem, 12vw, 4.5rem);
   }
 
   main > #personal-projects {

@@ -5,8 +5,18 @@ interface WorkCardProps {
   onOpen: (slug: string, trigger: HTMLButtonElement) => void
 }
 
+const visualParts: Record<string, readonly [string, string, string]> = {
+  'omnichannel-payments-strategy': ['online-channel', 'payment-hub', 'pos-channel'],
+  'buy-side-commercial-diligence': ['market-evidence', 'investment-filter', 'risk-evidence'],
+  'talent-acquisition-operating-model': ['candidate-flow', 'ai-orchestration', 'capacity-release'],
+  'workforce-operations-transformation': ['crew-one', 'crew-two', 'crew-three'],
+  'performance-and-value-realization-program': ['region-network', 'value-hub', 'savings-path'],
+  'pharma-life-sciences-growth-transformation': ['therapy-product', 'distribution-hub', 'expansion-network']
+}
+
 export function WorkCard({ item, onOpen }: WorkCardProps) {
   const headingId = `work-${item.slug}-heading`
+  const parts = visualParts[item.slug]
 
   return (
     <article
@@ -19,9 +29,7 @@ export function WorkCard({ item, onOpen }: WorkCardProps) {
         data-visual-variant={item.slug}
         aria-hidden="true"
       >
-        <span />
-        <span />
-        <span />
+        {parts.map((part) => <span data-shape-role={part} key={part} />)}
       </div>
       <div className="case-card__body">
         <p className="case-card__industry">{item.industry}</p>

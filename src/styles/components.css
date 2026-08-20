@@ -90,6 +90,25 @@
   color: var(--ink);
 }
 
+.site-header nav .site-header__external {
+  gap: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.site-header__external span {
+  transition: transform 180ms var(--ease-out);
+}
+
+.site-header__external:hover span,
+.site-header__external:focus-visible span {
+  transform: translate(2px, -2px);
+}
+
 .theme-toggle {
   display: grid;
   flex: 0 0 auto;
@@ -334,7 +353,7 @@
 
 .selected-work__header h2,
 .section-heading h2,
-.about h2,
+.profile h2,
 .contact h2,
 .outside-work h2 {
   margin: 0;
@@ -598,112 +617,78 @@
   max-width: 58ch;
 }
 
-.about,
+.profile,
 .contact {
   display: grid;
-  grid-template-columns: minmax(10rem, 3fr) minmax(0, 9fr);
-  gap: clamp(2rem, 7vw, 7rem);
+  grid-template-columns: minmax(14rem, 4fr) minmax(0, 8fr);
+  gap: clamp(2rem, 5vw, 5rem);
 }
 
-.about {
-  border-top: 0.5rem solid var(--accent);
+.profile {
+  align-items: start;
+  padding-block: clamp(2.75rem, 4.5vw, 4.5rem) !important;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.about__heading .section-label,
+.profile__intro .section-label,
 .contact__heading .section-label {
   margin-bottom: 1rem;
 }
 
-.about__body {
-  display: grid;
-  gap: clamp(1.25rem, 3vw, 2rem);
+.profile__intro h2 {
+  margin-bottom: 1.2rem;
 }
 
-.about__disclosure {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  min-height: 58px;
-  padding: 1rem 1.2rem;
-  border: 0;
-  border-top: 2px solid var(--ink);
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  font-family: var(--display);
-  font-size: clamp(1.2rem, 2vw, 1.65rem);
-  font-weight: 650;
-  text-align: left;
-}
-
-.about__disclosure:hover,
-.about__disclosure:focus-visible {
-  color: var(--accent);
-}
-
-.about__disclosure span {
-  display: grid;
-  flex: 0 0 2rem;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid currentcolor;
-  border-radius: 50%;
-  font-family: var(--mono);
-  font-size: 1rem;
-  place-items: center;
-}
-
-.about__reveal {
-  padding: clamp(1.25rem, 3vw, 2.25rem);
-  border-left: 0.3rem solid var(--success);
-  background: color-mix(in srgb, var(--success) 5%, var(--surface));
-}
-
-.about__reveal[hidden] {
-  display: none;
-}
-
-.about__statement {
-  max-width: 36ch;
-  margin: 0;
-  font-family: var(--display);
-  font-size: clamp(1.7rem, 3.1vw, 3rem);
-  font-weight: 560;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
-.about__assistant {
-  max-width: 42rem;
-  padding: 1.15rem 1.25rem 1.25rem;
-  border: 1px solid var(--line);
-  border-left: 0.3rem solid var(--accent);
-  border-radius: 0 var(--radius-card) var(--radius-card) 0;
-  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
-}
-
-.about__assistant .section-label {
-  margin-bottom: 0.55rem;
-}
-
-.about__assistant h3 {
-  margin-bottom: 0.5rem;
-  font-size: clamp(1.3rem, 2vw, 1.8rem);
-}
-
-.about__assistant > p:last-child {
-  max-width: 62ch;
+.profile__story > p {
+  max-width: 66ch;
   margin: 0;
   color: var(--muted);
-  font-size: 0.96rem;
-  line-height: 1.6;
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+  line-height: 1.45;
+}
+
+.profile__proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: clamp(1.75rem, 3vw, 2.75rem) 0 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+  list-style: none;
+}
+
+.profile__proof li {
+  min-width: 0;
+  padding: clamp(1.15rem, 2.5vw, 1.8rem);
+  border-right: 1px solid var(--line);
+}
+
+.profile__proof li:last-child {
+  border-right: 0;
+}
+
+.profile__proof strong,
+.profile__proof span {
+  display: block;
+}
+
+.profile__proof strong {
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.profile__proof span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 
 .contact {
-  margin-bottom: var(--space-section);
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
   padding-inline: clamp(2rem, 5vw, 4.5rem);
   border-radius: var(--radius-card);
   background: var(--ink);
@@ -728,6 +713,31 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+
+.contact__assistant-note {
+  max-width: 42rem;
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--canvas) 22%, transparent);
+}
+
+.contact__assistant-note .section-label {
+  margin-bottom: 0.45rem;
+  color: color-mix(in srgb, var(--canvas) 72%, transparent);
+}
+
+.contact__assistant-note h3 {
+  margin-bottom: 0.45rem;
+  font-size: 1.1rem;
+}
+
+.contact__assistant-note > p:last-child {
+  max-width: 64ch;
+  margin: 0;
+  color: color-mix(in srgb, var(--canvas) 72%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 .outside-work {
@@ -941,7 +951,7 @@ footer p {
 
   .selected-work__header,
   .section-heading,
-  .about,
+  .profile,
   .contact {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
@@ -954,7 +964,7 @@ footer p {
 
   .selected-work__header h2,
   .section-heading h2,
-  .about h2,
+  .profile h2,
   .contact h2 {
     font-size: clamp(2.6rem, 13vw, 3.75rem);
   }
@@ -965,6 +975,19 @@ footer p {
 
   .contact {
     padding-inline: 1.5rem;
+  }
+
+  .profile__proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile__proof li {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .profile__proof li:last-child {
+    border-bottom: 0;
   }
 
   .experience-row {
@@ -1028,7 +1051,7 @@ footer p {
 }
 
 .selected-work__group + .selected-work__group {
-  margin-top: clamp(4rem, 9vw, 8rem);
+  margin-top: clamp(3rem, 6vw, 5rem);
 }
 
 .selected-work__group-heading {
@@ -1098,14 +1121,12 @@ footer p {
 
 .case-card__visual[data-visual-variant='workforce-operations-transformation'] {
   --case-grid: 2.25rem;
-  --case-turn: -3deg;
-  --visual-system: workforce-schedule;
+  --visual-system: crew-schedule;
 }
 
 .case-card__visual[data-visual-variant='buy-side-commercial-diligence'] {
-  --case-grid: 2.6rem;
-  --case-turn: 45deg;
-  --visual-system: diligence-matrix;
+  --case-grid: 2rem;
+  --visual-system: diligence-filter;
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy'] {
@@ -1116,20 +1137,17 @@ footer p {
 
 .case-card__visual[data-visual-variant='talent-acquisition-operating-model'] {
   --case-grid: 1.5rem;
-  --case-turn: 0deg;
-  --visual-system: ai-pipeline;
+  --visual-system: ai-recruiting-flow;
 }
 
 .case-card__visual[data-visual-variant='performance-and-value-realization-program'] {
-  --case-grid: 3rem;
-  --case-turn: -25deg;
-  --visual-system: performance-dial;
+  --case-grid: 2.5rem;
+  --visual-system: regional-value-network;
 }
 
 .case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] {
   --case-grid: 1.8rem;
-  --case-turn: 35deg;
-  --visual-system: molecular-network;
+  --visual-system: pharma-distribution;
 }
 
 .case-card__visual::before,
@@ -1141,146 +1159,195 @@ footer p {
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy']::before {
-  inset: 20% 14% 25% 13%;
+  top: 50%;
+  left: 50%;
+  width: min(68%, 9rem);
+  height: min(60%, 11rem);
   border: 2px solid color-mix(in srgb, var(--accent) 76%, transparent);
-  border-radius: 1.4rem;
-  background: color-mix(in srgb, var(--accent) 4%, transparent);
-  transform: rotate(var(--case-turn));
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 50% 14% / 54% 0.35rem no-repeat,
+    color-mix(in srgb, var(--accent) 4%, transparent);
+  box-shadow: inset 0 -1.2rem 0 color-mix(in srgb, var(--accent) 7%, transparent);
+  transform: translate(-50%, -50%);
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy']::after {
-  right: 8%;
-  bottom: 12%;
-  width: 4.6rem;
+  top: 50%;
+  right: 4%;
+  width: min(34%, 4.5rem);
   aspect-ratio: 1;
   border: 2px solid var(--accent);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
   border-left-color: transparent;
   border-radius: 50%;
-  box-shadow: 0 0 0 0.6rem color-mix(in srgb, var(--accent) 10%, transparent);
-  transform: rotate(-28deg);
+  box-shadow:
+    inset 0 0 0 0.65rem color-mix(in srgb, var(--accent) 5%, transparent),
+    0 0 0 0.55rem color-mix(in srgb, var(--accent) 8%, transparent);
+  transform: translateY(-50%);
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy'] span:nth-child(1) {
   top: 31%;
-  left: 24%;
-  width: 2.2rem;
-  height: 1.65rem;
-  border: 2px solid var(--accent);
-  border-radius: 0.35rem;
-  background: color-mix(in srgb, var(--signal) 32%, var(--surface));
-}
-
-.case-card__visual[data-visual-variant='omnichannel-payments-strategy'] span:nth-child(2),
-.case-card__visual[data-visual-variant='omnichannel-payments-strategy'] span:nth-child(3) {
-  height: 0.45rem;
+  left: 50%;
+  width: min(38%, 4.8rem);
+  height: 0.42rem;
   border-radius: var(--radius-capsule);
   background: var(--accent);
+  transform: translateX(-50%);
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy'] span:nth-child(2) {
-  top: 52%;
-  right: 40%;
-  left: 20%;
+  top: 48%;
+  left: 50%;
+  width: 2.25rem;
+  height: 1.65rem;
+  border: 2px solid var(--accent);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--signal) 34%, var(--surface));
+  transform: translate(-50%, -50%);
 }
 
 .case-card__visual[data-visual-variant='omnichannel-payments-strategy'] span:nth-child(3) {
-  right: 22%;
-  bottom: 30%;
-  left: 38%;
-}
-
-.case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before,
-.case-card__visual[data-visual-variant='buy-side-commercial-diligence']::after {
+  bottom: 29%;
   left: 50%;
-  aspect-ratio: 1;
-  border: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
-  border-radius: 1.15rem;
-  transform: translateX(-50%) rotate(var(--case-turn));
+  width: min(44%, 5.4rem);
+  height: 0.42rem;
+  border-radius: var(--radius-capsule);
+  background: var(--accent);
+  transform: translateX(-50%);
 }
 
 .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before {
-  top: 18%;
-  width: 62%;
+  top: 50%;
+  left: 43%;
+  width: min(66%, 8.6rem);
+  height: min(62%, 10rem);
+  border: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  box-shadow: inset 0 1.35rem 0 color-mix(in srgb, var(--accent) 11%, transparent);
+  transform: translate(-50%, -50%);
 }
 
 .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::after {
-  top: 29%;
-  width: 40%;
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  right: 7%;
+  bottom: 16%;
+  width: min(31%, 4.2rem);
+  aspect-ratio: 1;
+  border: 0.42rem solid var(--accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span {
-  left: 28%;
-  height: 0.45rem;
+  left: 21%;
+  height: 0.4rem;
   border-radius: var(--radius-capsule);
   background: var(--accent);
 }
 
 .case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span:nth-child(1) {
-  top: 35%;
-  width: 44%;
-}
-
-.case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span:nth-child(2) {
-  top: 50%;
-  width: 32%;
-}
-
-.case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span:nth-child(3) {
-  top: 65%;
+  top: 38%;
   width: 39%;
 }
 
+.case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span:nth-child(2) {
+  right: 5%;
+  bottom: 12%;
+  left: auto;
+  width: min(25%, 3.5rem);
+  height: 0.5rem;
+  transform: rotate(45deg);
+  transform-origin: right center;
+}
+
+.case-card__visual[data-visual-variant='buy-side-commercial-diligence'] span:nth-child(3) {
+  top: 51%;
+  width: 30%;
+}
+
 .case-card__visual[data-visual-variant='talent-acquisition-operating-model']::before {
-  inset: 18% 12%;
+  inset: 20% 12%;
   background-image:
-    linear-gradient(24deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%),
-    linear-gradient(-24deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%);
+    linear-gradient(19deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%),
+    linear-gradient(90deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%),
+    linear-gradient(-19deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%);
+  clip-path: polygon(0 0, 58% 34%, 58% 66%, 0 100%, 0 0, 100% 0, 100% 100%, 58% 66%, 58% 34%);
 }
 
 .case-card__visual[data-visual-variant='talent-acquisition-operating-model']::after {
-  top: 36%;
-  right: 16%;
-  width: 27%;
+  top: 50%;
+  left: 56%;
+  width: min(30%, 4rem);
   aspect-ratio: 1;
-  border: 2px solid var(--accent);
-  border-radius: 0.8rem;
-  background: color-mix(in srgb, var(--signal) 22%, var(--surface));
+  background: color-mix(in srgb, var(--signal) 42%, var(--surface));
+  clip-path: polygon(50% 0, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0 50%, 39% 35%);
   box-shadow: 0 0 0 0.65rem color-mix(in srgb, var(--accent) 10%, transparent);
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%);
 }
 
-.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span {
+.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(1) {
+  top: 50%;
+  left: 12%;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 3px solid var(--surface-raised);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 -2.5rem 0 -3px var(--surface-raised),
+    0 -2.5rem 0 0 var(--accent),
+    0 2.5rem 0 -3px var(--surface-raised),
+    0 2.5rem 0 0 var(--accent);
+  transform: translateY(-50%);
+}
+
+.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(2) {
+  top: 50%;
+  left: 56%;
   width: 1rem;
   height: 1rem;
   border: 3px solid var(--surface-raised);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  transform: translate(-50%, -50%);
 }
 
-.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(1) { top: 26%; left: 13%; }
-.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(2) { bottom: 26%; left: 13%; }
-.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(3) { top: calc(50% - 0.5rem); right: 22%; }
+.case-card__visual[data-visual-variant='talent-acquisition-operating-model'] span:nth-child(3) {
+  top: 50%;
+  right: 7%;
+  width: min(24%, 3.25rem);
+  height: 0.48rem;
+  border-radius: var(--radius-capsule);
+  background: var(--accent);
+  box-shadow: 0 -0.95rem 0 color-mix(in srgb, var(--accent) 58%, transparent), 0 0.95rem 0 color-mix(in srgb, var(--accent) 58%, transparent);
+  transform: translateY(-50%);
+}
 
 .case-card__visual[data-visual-variant='workforce-operations-transformation']::before {
-  inset: 15% 12%;
+  top: 50%;
+  left: 50%;
+  width: min(76%, 9.5rem);
+  height: min(70%, 11rem);
   border: 1px solid color-mix(in srgb, var(--accent) 72%, transparent);
   border-radius: 0.8rem;
   background-image:
     linear-gradient(color-mix(in srgb, var(--accent) 28%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--accent) 28%, transparent) 1px, transparent 1px);
   background-size: 33.333% 25%;
-  transform: rotate(var(--case-turn));
+  transform: translate(-50%, -50%);
 }
 
 .case-card__visual[data-visual-variant='workforce-operations-transformation']::after {
-  top: 53%;
-  right: 9%;
-  left: 9%;
-  height: 2px;
+  top: 19%;
+  right: 19%;
+  left: 19%;
+  height: 0.7rem;
+  border-radius: 0.25rem 0.25rem 0 0;
   background: var(--accent);
-  transform: rotate(-12deg);
 }
 
 .case-card__visual[data-visual-variant='workforce-operations-transformation'] span {
@@ -1291,83 +1358,127 @@ footer p {
   box-shadow: 0 0 0 1px var(--accent);
 }
 
-.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(1) { top: 24%; right: 33%; left: 20%; }
-.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(2) { top: 48%; right: 16%; left: 48%; }
-.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(3) { right: 43%; bottom: 22%; left: 18%; }
+.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(1) { top: 33%; right: 34%; left: 22%; }
+.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(2) { top: 50%; right: 19%; left: 47%; }
+.case-card__visual[data-visual-variant='workforce-operations-transformation'] span:nth-child(3) { right: 42%; bottom: 26%; left: 20%; }
 
 .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before,
 .case-card__visual[data-visual-variant='performance-and-value-realization-program']::after {
+  top: 50%;
   left: 50%;
+  width: min(72%, 9rem);
   aspect-ratio: 1;
   border-radius: 50%;
-  transform: translateX(-50%) rotate(var(--case-turn));
+  transform: translate(-50%, -50%);
 }
 
 .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before {
-  top: 18%;
-  width: 66%;
   border: 2px solid var(--accent);
-  border-right-width: 0.55rem;
+  background: radial-gradient(circle, color-mix(in srgb, var(--signal) 26%, var(--surface)) 0 16%, transparent 17%);
 }
 
 .case-card__visual[data-visual-variant='performance-and-value-realization-program']::after {
-  top: 32%;
-  width: 38%;
-  border: 1px dashed color-mix(in srgb, var(--accent) 72%, transparent);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  background: repeating-conic-gradient(from -18deg, var(--accent) 0 1.2deg, transparent 1.2deg 72deg);
+  opacity: 0.65;
+  mask: radial-gradient(circle, transparent 0 18%, #000 19% 100%);
 }
 
 .case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(1) {
-  top: 50%;
+  top: calc(50% - min(36%, 4.5rem));
   left: 50%;
-  width: 34%;
-  height: 2px;
-  background: var(--accent);
-  transform: rotate(-36deg);
-  transform-origin: left center;
-}
-
-.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(2),
-.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(3) {
-  width: 1rem;
-  height: 1rem;
+  width: 0.82rem;
+  height: 0.82rem;
   border: 3px solid var(--surface-raised);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  box-shadow:
+    3.45rem 2.45rem 0 -3px var(--surface-raised), 3.45rem 2.45rem 0 0 var(--accent),
+    2.15rem 6.05rem 0 -3px var(--surface-raised), 2.15rem 6.05rem 0 0 var(--accent),
+    -2.15rem 6.05rem 0 -3px var(--surface-raised), -2.15rem 6.05rem 0 0 var(--accent),
+    -3.45rem 2.45rem 0 -3px var(--surface-raised), -3.45rem 2.45rem 0 0 var(--accent);
+  transform: translateX(-50%);
 }
 
-.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(2) { top: calc(50% - 0.5rem); left: calc(50% - 0.5rem); }
-.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(3) { top: 29%; right: 17%; }
+.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(2) {
+  top: 50%;
+  left: 50%;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--signal) 32%, var(--surface));
+  transform: translate(-50%, -50%);
+}
+
+.case-card__visual[data-visual-variant='performance-and-value-realization-program'] span:nth-child(3) {
+  top: 50%;
+  left: 50%;
+  width: min(82%, 10.2rem);
+  aspect-ratio: 1;
+  border: 0.42rem solid transparent;
+  border-right-color: var(--accent);
+  border-bottom-color: var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+}
 
 .case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation']::before {
-  inset: 17% 18% 19%;
+  top: 24%;
+  left: 50%;
+  width: min(70%, 9rem);
+  height: 3.2rem;
   border: 2px solid color-mix(in srgb, var(--accent) 76%, transparent);
-  border-radius: 5rem;
+  border-radius: var(--radius-capsule);
   background: linear-gradient(90deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%);
-  transform: rotate(var(--case-turn));
+  transform: translateX(-50%) rotate(-8deg);
 }
 
 .case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation']::after {
-  inset: 14%;
+  top: 48%;
+  left: 50%;
+  width: min(76%, 9.5rem);
+  height: 37%;
   background-image:
-    linear-gradient(31deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%),
-    linear-gradient(-27deg, transparent 49%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 51%);
+    linear-gradient(90deg, transparent 49.5%, var(--accent) 49.5%, var(--accent) 50.5%, transparent 50.5%),
+    linear-gradient(0deg, transparent 62%, var(--accent) 62%, var(--accent) 64%, transparent 64%);
   opacity: 0.7;
+  transform: translateX(-50%);
 }
 
-.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span {
+.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(1) {
+  top: calc(24% + 0.45rem);
+  left: 50%;
+  width: 2px;
+  height: 2.3rem;
+  background: var(--accent);
+  transform: translateX(-50%) rotate(-8deg);
+}
+
+.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(2) {
+  top: 53%;
+  left: 50%;
   width: 1.15rem;
   height: 1.15rem;
   border: 3px solid var(--surface-raised);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 0.28rem color-mix(in srgb, var(--signal) 24%, transparent), 0 0 0 1px var(--accent);
+  box-shadow: 0 0 0 0.28rem color-mix(in srgb, var(--signal) 24%, transparent);
+  transform: translate(-50%, -50%);
 }
 
-.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(1) { top: 22%; left: 25%; }
-.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(2) { top: 48%; right: 14%; }
-.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(3) { bottom: 18%; left: 21%; }
+.case-card__visual[data-visual-variant='pharma-life-sciences-growth-transformation'] span:nth-child(3) {
+  bottom: 16%;
+  left: 50%;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 3px solid var(--surface-raised);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    3.25rem 0 0 -3px var(--surface-raised), 3.25rem 0 0 0 var(--accent),
+    -3.25rem 0 0 -3px var(--surface-raised), -3.25rem 0 0 0 var(--accent);
+  transform: translateX(-50%);
+}
 
 .case-card__body {
   display: flex;
@@ -1459,8 +1570,9 @@ footer p {
   display: grid;
   padding: 1.5rem;
   overflow-y: auto;
-  background: rgb(9 14 24 / 68%);
-  backdrop-filter: blur(14px);
+  background:
+    radial-gradient(circle at 12% 14%, rgb(89 101 126 / 58%), transparent 34%),
+    rgb(37 42 52);
   place-items: center;
 }
 
@@ -1727,10 +1839,6 @@ footer p {
   .case-dialog__outcome {
     margin-bottom: 1rem;
     padding: 0.85rem 0.95rem;
-  }
-
-  .about__assistant > p:last-child {
-    font-size: 1rem;
   }
 
   .case-dialog__narrative {
