@@ -184,11 +184,35 @@ function countExactToken(contents, token, validBefore, validAfter) {
 }
 
 const isMailtoPrefixBoundary = (value) => value === undefined || /[\s"'`=([{>,]/.test(value)
-const isMailtoSuffixBoundary = (value) => value === undefined || /[\s"'`<>\])},]/.test(value)
 const isEmailBoundary = (value) => value === undefined || !/[A-Za-z0-9@._%+-]/.test(value)
 
+function isUnquotedHtmlHrefTerminator(contents, mailtoIndex) {
+  const tagStart = contents.lastIndexOf('<', mailtoIndex)
+  const priorTagEnd = contents.lastIndexOf('>', mailtoIndex)
+  if (tagStart <= priorTagEnd) return false
+  return /\bhref\s*=\s*$/i.test(contents.slice(tagStart, mailtoIndex))
+}
+
+function hasExactMailtoTermination(contents, mailtoIndex) {
+  const afterIndex = mailtoIndex + APPROVED_MAILTO.length
+  if (afterIndex === contents.length) return true
+  const after = contents[afterIndex]
+  if (/[\s"'`]/.test(after)) return true
+  if (after === '>' && isUnquotedHtmlHrefTerminator(contents, mailtoIndex)) return true
+  return after === '<' && contents.startsWith('</', afterIndex)
+}
+
 function exactMailtoCount(contents) {
-  return countExactToken(contents, APPROVED_MAILTO, isMailtoPrefixBoundary, isMailtoSuffixBoundary)
+  let count = 0
+  let start = 0
+  while (start < contents.length) {
+    const index = contents.indexOf(APPROVED_MAILTO, start)
+    if (index === -1) break
+    const before = index === 0 ? undefined : contents[index - 1]
+    if (isMailtoPrefixBoundary(before) && hasExactMailtoTermination(contents, index)) count += 1
+    start = index + APPROVED_MAILTO.length
+  }
+  return count
 }
 
 function exactEmailCount(contents) {
@@ -209,13 +233,11 @@ function hasForbiddenScheme(contents) {
     if (ignoredRanges.some((range) => match.index >= range.start && match.index < range.end)) continue
     const index = match.index
     const before = index === 0 ? undefined : contents[index - 1]
-    const afterIndex = index + APPROVED_MAILTO.length
-    const after = afterIndex === contents.length ? undefined : contents[afterIndex]
     if (
       match[0] === 'mailto:'
       && contents.startsWith(APPROVED_MAILTO, index)
       && isMailtoPrefixBoundary(before)
-      && isMailtoSuffixBoundary(after)
+      && hasExactMailtoTermination(contents, index)
     ) continue
     return true
   }
@@ -233,24 +255,31 @@ function looksLikeMalformedContact(contents) {
 function analyzeContactEncoding(contents) {
   let normalized = contents
   let changed = false
+  const layers = [contents]
   for (let pass = 0; pass < CONTACT_DECODE_LIMIT; pass += 1) {
     const decoded = decodeContactLayer(normalized)
-    if (decoded === normalized) return { normalized, changed, overnested: false }
+    if (decoded === normalized) return { normalized, changed, layers, overnested: false }
     normalized = decoded
+    layers.push(normalized)
     changed = true
   }
-  const changesAgain = decodeContactLayer(normalized) !== normalized
-  const contactish = /(?:mailto|tel|ilto|misrarohan619|gmail\.com)/i.test(normalized)
-  return { normalized, changed, overnested: changesAgain && contactish }
+  const decodedAgain = decodeContactLayer(normalized)
+  const changesAgain = decodedAgain !== normalized
+  const contactish = /(?:mailto|tel|ilto|misrarohan619|gmail\.com)/i.test(`${normalized}\n${decodedAgain}`)
+  return { normalized, changed, layers, overnested: changesAgain && contactish }
 }
 
 function hasForbiddenContact(contents) {
   const analysis = analyzeContactEncoding(contents)
-  if (analysis.overnested || looksLikeMalformedContact(contents)) return true
-  if (hasForbiddenScheme(contents) || hasForbiddenScheme(analysis.normalized)) return true
-  if (analysis.changed) {
-    if (exactMailtoCount(analysis.normalized) > exactMailtoCount(contents)) return true
-    if (exactEmailCount(analysis.normalized) > exactEmailCount(contents)) return true
+  if (analysis.overnested) return true
+  for (const layer of analysis.layers) {
+    if (looksLikeMalformedContact(layer) || hasForbiddenScheme(layer)) return true
+  }
+  for (let index = 1; index < analysis.layers.length; index += 1) {
+    const previous = analysis.layers[index - 1]
+    const decoded = analysis.layers[index]
+    if (exactMailtoCount(decoded) > exactMailtoCount(previous)) return true
+    if (exactEmailCount(decoded) > exactEmailCount(previous)) return true
   }
   return false
 }

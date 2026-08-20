@@ -254,6 +254,9 @@ test('assistant routes exact, paraphrased, ambiguous, unsupported, private, inje
     ['Is Rohan’s CV available?', 'email Rohan directly'],
     ['resume status', 'email Rohan directly'],
     ['Where can I get his résumé?', 'email Rohan directly'],
+    ['Please share his resume', 'email Rohan directly'],
+    ['Please share his CV', 'email Rohan directly'],
+    ['Share a copy of his resume', 'email Rohan directly'],
     ['Please resume', 'I can only answer from approved public content on this portfolio.'],
     ['updating', 'I can only answer from approved public content on this portfolio.']
   ] as const) {

@@ -31,6 +31,7 @@ const combiningMarks = /\p{M}+/gu
 const whitespace = /\s+/g
 const explicitFollowUps = new Set(['tell me more', 'what else', 'how so'])
 const followUpBonus = 0.18
+const defaultCvRecordId = 'cv-status'
 const cvDocumentSignals = new Set([
   'access', 'availability', 'available', 'copy', 'document', 'download', 'get', 'link',
   'obtain', 'pdf', 'send', 'share', 'status', 'view', 'where'
@@ -152,9 +153,6 @@ export function createRetriever(records: readonly ReadonlyKnowledgeRecord[]): Re
     const inputTokens = new Set(tokens(normalizedInput))
     const maximumWeight = bestPossibleWeight(records, normalizedInput, inputTokens)
     const scored = records.map((record) => {
-      if (record.id === 'cv-status' && !hasExplicitCvIntent(normalizedInput)) {
-        return { id: record.id, score: 0 }
-      }
       const result = scoreRecord(record, normalizedInput, inputTokens)
       return { id: record.id, score: maximumWeight === 0 || !result.hasSignal ? 0 : result.matched / maximumWeight }
     })
@@ -171,10 +169,7 @@ export function createRetriever(records: readonly ReadonlyKnowledgeRecord[]): Re
     const normalizedInput = normalize(input)
     if (!normalizedInput) return { kind: 'fallback' }
     for (const record of records) {
-      if (
-        record.canonicalQuestions.some((question) => normalize(question) === normalizedInput)
-        && (record.id !== 'cv-status' || hasExplicitCvIntent(normalizedInput))
-      ) {
+      if (record.canonicalQuestions.some((question) => normalize(question) === normalizedInput)) {
         return { kind: 'match', recordId: record.id, score: 1 }
       }
     }
@@ -184,7 +179,28 @@ export function createRetriever(records: readonly ReadonlyKnowledgeRecord[]): Re
   return Object.freeze({ retrieve: retrieveFromRecords, scoreCandidates })
 }
 
-const defaultRetriever = createRetriever(assistantKnowledge)
+const defaultCvRecord = assistantKnowledge.find((record) => record.id === defaultCvRecordId)
+if (!defaultCvRecord) throw new Error('Approved CV status record is missing')
 
-export const scoreRetrievalCandidates = (input: string, history: AssistantHistoryItem[]): RetrievalCandidate[] => defaultRetriever.scoreCandidates(input, history)
-export const retrieve = (input: string, history: AssistantHistoryItem[]): RetrievalResult => defaultRetriever.retrieve(input, history)
+const defaultGenericRetriever = createRetriever(
+  assistantKnowledge.filter((record) => record.id !== defaultCvRecordId)
+)
+
+export const defaultPortfolioRetriever = Object.freeze({
+  retrieve: (input: string, history: AssistantHistoryItem[]): RetrievalResult => {
+    const normalizedInput = normalize(input)
+    if (hasExplicitCvIntent(normalizedInput)) {
+      return { kind: 'match', recordId: defaultCvRecordId, score: 1 }
+    }
+    return defaultGenericRetriever.retrieve(input, history)
+  },
+  scoreCandidates: (input: string, history: AssistantHistoryItem[]): RetrievalCandidate[] => {
+    const candidates = defaultGenericRetriever.scoreCandidates(input, history)
+    return hasExplicitCvIntent(normalize(input))
+      ? [{ id: defaultCvRecordId, score: 1 }, ...candidates]
+      : candidates
+  }
+}) satisfies Retriever
+
+export const scoreRetrievalCandidates = (input: string, history: AssistantHistoryItem[]): RetrievalCandidate[] => defaultPortfolioRetriever.scoreCandidates(input, history)
+export const retrieve = (input: string, history: AssistantHistoryItem[]): RetrievalResult => defaultPortfolioRetriever.retrieve(input, history)

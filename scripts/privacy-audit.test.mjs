@@ -85,6 +85,20 @@ function utf16BigEndian(contents) {
   return littleEndian
 }
 
+function encodeJsHexLayer(contents) {
+  return [...contents].map((character) => `\\x${character.codePointAt(0).toString(16).padStart(2, '0')}`).join('')
+}
+
+function encodeNumericEntityLayer(contents) {
+  return [...contents].map((character) => `&#${character.codePointAt(0)};`).join('')
+}
+
+function encodeLayers(contents, encode, count) {
+  let encoded = contents
+  for (let layer = 0; layer < count; layer += 1) encoded = encode(encoded)
+  return encoded
+}
+
 afterEach(async () => {
   await Promise.all(
     temporaryDirectories.splice(0).map((directory) =>
@@ -241,6 +255,10 @@ test('allows only the exact approved public address and exact mailto destination
     ['mailto-fragment.html', '<a href="mailto:misrarohan619@gmail.com#compose">Write</a>'],
     ['mailto-path.html', '<a href="mailto:misrarohan619@gmail.com/extra">Write</a>'],
     ['mailto-semicolon.html', '<a href="mailto:misrarohan619@gmail.com;extra">Write</a>'],
+    ['mailto-comma.html', '<a href="mailto:misrarohan619@gmail.com,extra">Write</a>'],
+    ['mailto-paren.html', '<a href="mailto:misrarohan619@gmail.com)extra">Write</a>'],
+    ['mailto-bracket.html', '<a href="mailto:misrarohan619@gmail.com]extra">Write</a>'],
+    ['mailto-brace.html', '<a href="mailto:misrarohan619@gmail.com}extra">Write</a>'],
     ['mailto-case.html', '<a href="MAILTO:misrarohan619@gmail.com">Write</a>'],
     ['mailto-prefix.html', '<a href="xmailto:misrarohan619@gmail.com">Write</a>'],
     ['address-case.txt', 'MISRAROHAN619@GMAIL.COM'],
@@ -259,6 +277,8 @@ test('allows only the exact approved public address and exact mailto destination
     ['whitespace-contact.html', '<a href="m a i l t o : misrarohan619@gmail.com">Write</a>'],
     ['control-contact.html', '<a href="mai\tlto:\nmisrarohan619@gmail.com">Write</a>'],
     ['malformed-contact.html', '<a href="m%ZZailto:misrarohan619@gmail.com">Write</a>'],
+    ['mixed-malformed-a.html', '<a href="m%ZZ%61ilto:misrarohan619@gmail.com">Write</a>'],
+    ['mixed-malformed-i.html', '<a href="m%ZZa%69lto:misrarohan619@gmail.com">Write</a>'],
     ['overnested-contact.html', '<a href="m%2525252525252561ilto%252525252525253Amisrarohan619%2525252525252540gmail.com">Write</a>']
   ]
 
@@ -268,13 +288,73 @@ test('allows only the exact approved public address and exact mailto destination
 
   const violations = await auditPaths([directory])
 
-  for (const [fileName] of rejected) {
-    assert.equal(
-      violations.some((violation) => violation.includes(`${fileName}:`)),
-      true,
-      `${fileName} should fail closed`
-    )
+  const falsePasses = rejected
+    .map(([fileName]) => fileName)
+    .filter((fileName) => !violations.some((violation) => violation.includes(`${fileName}:`)))
+  assert.deepEqual(falsePasses, [], `contact fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('rejects malformed, overnested, and suffixed mailto candidates in HTML, JS, and source maps', async () => {
+  const directory = await makeFixtureDirectory()
+  const approvedMailto = 'mailto:misrarohan619@gmail.com'
+  const sevenLayerJs = encodeLayers(approvedMailto, encodeJsHexLayer, 7)
+  const sevenLayerEntities = encodeLayers(approvedMailto, encodeNumericEntityLayer, 7)
+  const fixtures = [
+    ['public/double-quoted.html', '<a href="m%ZZ%61ilto:misrarohan619@gmail.com">Write</a>'],
+    ['public/single-quoted.html', "<a href='m%ZZa%69lto:misrarohan619@gmail.com'>Write</a>"],
+    ['public/unquoted.html', '<a href=mailto:misrarohan619@gmail.com,extra>Write</a>'],
+    ['src/contact.js', `const first = "${sevenLayerJs}"; const second = '${approvedMailto})extra'`],
+    ['src/context-contact.js', `const bad = '${approvedMailto}>extra'`],
+    ['dist/assets/contact.js', `const first='${sevenLayerEntities}',second='${approvedMailto}]extra'`],
+    ['dist/assets/contact.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`const contact = "${sevenLayerJs}"; const bad = "${approvedMailto}}extra"`],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
   }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => {
+      const fileName = relativePath.split('/').at(-1)
+      return !hasViolation(violations, fileName, 'forbidden-contact-link')
+    })
+  assert.deepEqual(falsePasses, [], `contact fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('accepts exact current contact forms in source, built JavaScript, HTML, and source maps', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixtures = [
+    ['src/contact.ts', "export const contact = { email: 'misrarohan619@gmail.com', href: 'mailto:misrarohan619@gmail.com' }"],
+    ['public/double-quoted.html', '<a href="mailto:misrarohan619@gmail.com">Email</a>'],
+    ['public/single-quoted.html', "<a href='mailto:misrarohan619@gmail.com'>Email</a>"],
+    ['public/unquoted.html', '<a href=mailto:misrarohan619@gmail.com>Email</a>'],
+    ['dist/assets/contact.js', 'const c={email:"misrarohan619@gmail.com",href:"mailto:misrarohan619@gmail.com"};'],
+    ['dist/assets/contact.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: ["export const href = 'mailto:misrarohan619@gmail.com';"],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  assert.deepEqual(await auditPaths([directory]), [])
 })
 
 test('rejects encoded contact bypasses across source, public, dist, and source-map content', async () => {

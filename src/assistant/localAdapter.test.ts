@@ -80,6 +80,51 @@ describe('localAssistantAdapter', () => {
     }
   )
 
+  it.each(['Please share his resume', 'Please share his CV', 'Share a copy of his resume'])(
+    'routes explicit CV sharing intent directly to the grounded default card: %s',
+    async (input) => {
+      const reply = await localAssistantAdapter.reply({ input, history: [
+        { id: '1', role: 'assistant', text: 'Earlier writing answer', topicId: 'writing' }
+      ] }, new AbortController().signal)
+
+      expect(reply).toMatchObject({
+        kind: 'answer',
+        topicId: 'cv-status',
+        citations: [{ sectionId: '#contact', label: 'Contact' }]
+      })
+    }
+  )
+
+  it('treats a custom cv-status record as ordinary injected corpus data', async () => {
+    const releaseRecord: ReadonlyKnowledgeRecord = Object.freeze({
+      id: 'cv-status',
+      canonicalQuestions: Object.freeze(['What is the release status?']),
+      entities: Object.freeze(['release status']),
+      aliases: Object.freeze(['shipping status']),
+      keywords: Object.freeze(['release', 'status']),
+      answer: 'The release is ready.',
+      citations: Object.freeze([Object.freeze({ sectionId: '#about', label: 'About' })])
+    })
+    const releaseKnowledge: KnowledgeAccess = Object.freeze({
+      records: Object.freeze([releaseRecord]),
+      getRecord: (id: string) => id === 'cv-status' ? {
+        id: releaseRecord.id,
+        canonicalQuestions: [...releaseRecord.canonicalQuestions],
+        entities: [...releaseRecord.entities],
+        aliases: [...releaseRecord.aliases],
+        keywords: [...releaseRecord.keywords],
+        answer: releaseRecord.answer,
+        citations: releaseRecord.citations.map((citation) => ({ ...citation }))
+      } : undefined
+    })
+
+    const reply = await createLocalAssistantAdapter(releaseKnowledge).reply(
+      { input: 'What is the release status?', history: [] },
+      new AbortController().signal
+    )
+    expect(reply).toMatchObject({ kind: 'answer', topicId: 'cv-status', text: 'The release is ready.' })
+  })
+
   it('routes a custom access canonical question to its custom answer and citation', async () => {
     const reply = await createLocalAssistantAdapter(customKnowledge).reply(
       { input: 'What is the custom brief?', history: [] },

@@ -1,5 +1,5 @@
 import { defaultKnowledgeAccess, type KnowledgeAccess } from '../content/assistant-knowledge'
-import { createRetriever, normalize } from './retrieval'
+import { createRetriever, defaultPortfolioRetriever, normalize, type Retriever } from './retrieval'
 import type { AssistantAdapter, AssistantCitation, AssistantReply, AssistantRequest, ReadonlyAssistantCitation } from './types'
 
 const unsupportedText = 'I can only answer from approved public content on this portfolio. Try Work, Experience, Writing, or Builder Lab.'
@@ -42,9 +42,7 @@ const assertGrounded = (citations: readonly ReadonlyAssistantCitation[]): void =
   }
 }
 
-const createReply = (knowledge: KnowledgeAccess) => {
-  const retriever = createRetriever(knowledge.records)
-
+const createReply = (knowledge: KnowledgeAccess, retriever: Retriever = createRetriever(knowledge.records)) => {
   return async (request: AssistantRequest, _signal: AbortSignal): Promise<AssistantReply> => {
     try {
       if (knowledge.initializationError) throw knowledge.initializationError
@@ -88,5 +86,5 @@ export const createLocalAssistantAdapter = (knowledge: KnowledgeAccess): Assista
 export const localAssistantAdapter = {
   capabilities: { generative: false, network: false, persistent: false },
   disclosure: 'Grounded locally in approved public portfolio content.',
-  reply: createReply(defaultKnowledgeAccess)
+  reply: createReply(defaultKnowledgeAccess, defaultPortfolioRetriever)
 } as const satisfies AssistantAdapter

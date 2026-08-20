@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { containsNormalizedPhrase, normalize, retrieve, scoreRetrievalCandidates, selectRetrievalResult } from './retrieval'
-import type { AssistantHistoryItem } from './types'
+import { containsNormalizedPhrase, createRetriever, normalize, retrieve, scoreRetrievalCandidates, selectRetrievalResult } from './retrieval'
+import type { AssistantHistoryItem, ReadonlyKnowledgeRecord } from './types'
 
 const supported = [
   ['What operating transformations has Rohan led?', 'operating-transformations'],
@@ -16,6 +16,11 @@ const supported = [
   ['CV', 'cv-status'],
   ['resume status', 'cv-status'],
   ['Where can I get his résumé?', 'cv-status'],
+  ['Please share his resume', 'cv-status'],
+  ['Please share his CV', 'cv-status'],
+  ['Share a copy of his resume', 'cv-status'],
+  ['Where is his resume link?', 'cv-status'],
+  ['Can I download his résumé?', 'cv-status'],
   ["Is Rohan's CV available?", 'cv-status'],
   ['Is this assistant an LLM?', 'assistant-about']
 ] as const
@@ -95,6 +100,32 @@ describe('retrieve', () => {
     'Can you update me on his work?'
   ])('does not mistake ordinary update or resume language for a CV request: %s', (prompt) => {
     expect(retrieve(prompt, [])).not.toMatchObject({ kind: 'match', recordId: 'cv-status' })
+  })
+
+  it('routes explicit CV intent directly even when history points to another topic', () => {
+    expect(retrieve('Please share his resume', [
+      { id: '1', role: 'assistant', text: 'Writing answer', topicId: 'writing' }
+    ])).toEqual({ kind: 'match', recordId: 'cv-status', score: 1 })
+  })
+
+  it('excludes the default CV card from generic candidate scoring without explicit intent', () => {
+    expect(scoreRetrievalCandidates('Please resume the conversation', []))
+      .not.toContainEqual(expect.objectContaining({ id: 'cv-status' }))
+  })
+
+  it('keeps createRetriever generic when a custom record happens to use the cv-status id', () => {
+    const releaseStatus: ReadonlyKnowledgeRecord = Object.freeze({
+      id: 'cv-status',
+      canonicalQuestions: Object.freeze(['What is the release status?']),
+      entities: Object.freeze(['release status']),
+      aliases: Object.freeze(['shipping status']),
+      keywords: Object.freeze(['release', 'status']),
+      answer: 'The release is ready.',
+      citations: Object.freeze([Object.freeze({ sectionId: '#about', label: 'About' })])
+    })
+
+    expect(createRetriever([releaseStatus]).retrieve('What is the release status?', []))
+      .toEqual({ kind: 'match', recordId: 'cv-status', score: 1 })
   })
 
   it('is deeply deterministic across one hundred repetitions of every kernel fixture', () => {
