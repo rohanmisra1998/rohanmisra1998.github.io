@@ -154,8 +154,8 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       id: 'cv-status',
       canonicalQuestions: ['Is Rohan’s CV available?'],
       entities: ['cv status', 'resume status'],
-      aliases: ['cv', 'resume'],
-      keywords: ['cv', 'resume', 'updating'],
+      aliases: ['cv link', 'resume link', 'resume document', 'download cv', 'download resume'],
+      keywords: ['cv', 'resume', 'status', 'available', 'download'],
       answer: `The CV is no longer linked on this site; email Rohan directly at ${content.contact.emailAddress}.`,
       citations: [section('#contact', 'Contact')]
     },

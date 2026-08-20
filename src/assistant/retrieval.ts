@@ -31,6 +31,10 @@ const combiningMarks = /\p{M}+/gu
 const whitespace = /\s+/g
 const explicitFollowUps = new Set(['tell me more', 'what else', 'how so'])
 const followUpBonus = 0.18
+const cvDocumentSignals = new Set([
+  'access', 'availability', 'available', 'copy', 'document', 'download', 'get', 'link',
+  'obtain', 'pdf', 'send', 'share', 'status', 'view', 'where'
+])
 
 export function normalize(input: string): string {
   let normalized = input.normalize('NFKD').toLowerCase().replace(combiningMarks, '')
@@ -40,6 +44,13 @@ export function normalize(input: string): string {
 }
 
 const tokens = (normalizedValue: string): string[] => normalizedValue.split(' ').filter(Boolean)
+
+const hasExplicitCvIntent = (normalizedInput: string): boolean => {
+  const inputTokens = new Set(tokens(normalizedInput))
+  if (inputTokens.has('cv')) return true
+  if (!inputTokens.has('resume')) return false
+  return [...cvDocumentSignals].some((signal) => inputTokens.has(signal))
+}
 
 export const containsNormalizedPhrase = (normalizedInput: string, normalizedPhrase: string): boolean => {
   const inputTokens = tokens(normalizedInput)
@@ -141,6 +152,9 @@ export function createRetriever(records: readonly ReadonlyKnowledgeRecord[]): Re
     const inputTokens = new Set(tokens(normalizedInput))
     const maximumWeight = bestPossibleWeight(records, normalizedInput, inputTokens)
     const scored = records.map((record) => {
+      if (record.id === 'cv-status' && !hasExplicitCvIntent(normalizedInput)) {
+        return { id: record.id, score: 0 }
+      }
       const result = scoreRecord(record, normalizedInput, inputTokens)
       return { id: record.id, score: maximumWeight === 0 || !result.hasSignal ? 0 : result.matched / maximumWeight }
     })
@@ -157,7 +171,10 @@ export function createRetriever(records: readonly ReadonlyKnowledgeRecord[]): Re
     const normalizedInput = normalize(input)
     if (!normalizedInput) return { kind: 'fallback' }
     for (const record of records) {
-      if (record.canonicalQuestions.some((question) => normalize(question) === normalizedInput)) {
+      if (
+        record.canonicalQuestions.some((question) => normalize(question) === normalizedInput)
+        && (record.id !== 'cv-status' || hasExplicitCvIntent(normalizedInput))
+      ) {
         return { kind: 'match', recordId: record.id, score: 1 }
       }
     }

@@ -32,7 +32,7 @@ The surface has explicit closed, compact, expanded, and history-retaining minimi
 
 ## Privacy boundary
 
-The published site exposes approved portfolio copy, allowlisted HTTPS destinations, and one exact direct-email action: `mailto:misrarohan619@gmail.com`. The privacy audit recursively scans `src`, `public`, `index.html`, and `dist`; it permits only that exact public address and mail destination while rejecting other email addresses, contact protocols, mailto query variants, phone patterns, encoded contact links, contact-shaped filenames, private-topic markers, source-document names, the obsolete public-report URL, unapproved published PDFs, malformed text, and symbolic links. No CV control or artifact is published.
+The published site exposes approved portfolio copy, allowlisted HTTPS destinations, and one exact direct-email action: `mailto:misrarohan619@gmail.com`. The privacy audit recursively scans `src`, `public`, `index.html`, and `dist`; it permits only that exact public address and bare mail destination while rejecting other email addresses, contact protocols, mailto suffixes or query variants, normalized encoded contact links, contact-shaped filenames, phone patterns, private-topic markers, source-document names, the obsolete public-report URL, every published PDF regardless of environment, malformed text, and symbolic links. No CV control or artifact is published.
 
 Production builds are gated by a hash-based meta CSP with `connect-src 'none'`, a secured-dist real-browser test, the recursive privacy audit, and an assistant lazy-chunk budget. The CSP check proves the final HTML still loads its hashed inline boot code, module, styles, fonts, and same-origin images without violations while blocking connections.
 

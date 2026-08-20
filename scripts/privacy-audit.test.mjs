@@ -135,7 +135,7 @@ test('rejects each private-topic phrase in recursively scanned text', async () =
   }
 })
 
-test('rejects PDFs anywhere below public unless the explicit CV gate is enabled', async () => {
+test('rejects PDFs anywhere below public even when a legacy CV bypass environment variable is present', async () => {
   const directory = await makeFixtureDirectory()
   const publicDirectory = join(directory, 'public', 'documents')
   const pdf = join(publicDirectory, 'synthetic-cv.pdf')
@@ -143,22 +143,19 @@ test('rejects PDFs anywhere below public unless the explicit CV gate is enabled'
   await writeFile(pdf, 'synthetic pdf fixture')
 
   const previousGate = process.env.ALLOW_PUBLIC_CV
-  delete process.env.ALLOW_PUBLIC_CV
   try {
+    process.env.ALLOW_PUBLIC_CV = 'true'
     const blocked = await auditPaths([join(directory, 'public')])
     assert.equal(hasViolation(blocked, 'synthetic-cv.pdf', 'unapproved-pdf'), true)
     const directBlocked = await auditPaths([pdf])
     assert.equal(hasViolation(directBlocked, 'synthetic-cv.pdf', 'unapproved-pdf'), true)
-
-    process.env.ALLOW_PUBLIC_CV = 'true'
-    assert.deepEqual(await auditPaths([pdf]), [])
   } finally {
     if (previousGate === undefined) delete process.env.ALLOW_PUBLIC_CV
     else process.env.ALLOW_PUBLIC_CV = previousGate
   }
 })
 
-test('rejects nested and individual PDFs below the deployment dist root', async () => {
+test('rejects nested and individual PDFs below dist regardless of environment', async () => {
   const directory = await makeFixtureDirectory()
   const distDirectory = join(directory, 'dist', 'documents')
   const pdf = join(distDirectory, 'published-cv.pdf')
@@ -166,8 +163,8 @@ test('rejects nested and individual PDFs below the deployment dist root', async 
   await writeFile(pdf, 'synthetic pdf fixture')
 
   const previousGate = process.env.ALLOW_PUBLIC_CV
-  delete process.env.ALLOW_PUBLIC_CV
   try {
+    process.env.ALLOW_PUBLIC_CV = 'true'
     assert.equal(
       hasViolation(await auditPaths([join(directory, 'dist')]), 'published-cv.pdf', 'unapproved-pdf'),
       true
@@ -176,9 +173,6 @@ test('rejects nested and individual PDFs below the deployment dist root', async 
       hasViolation(await auditPaths([pdf]), 'published-cv.pdf', 'unapproved-pdf'),
       true
     )
-
-    process.env.ALLOW_PUBLIC_CV = 'true'
-    assert.deepEqual(await auditPaths([pdf]), [])
   } finally {
     if (previousGate === undefined) delete process.env.ALLOW_PUBLIC_CV
     else process.env.ALLOW_PUBLIC_CV = previousGate
@@ -244,12 +238,28 @@ test('allows only the exact approved public address and exact mailto destination
     ['phone-link.tsx', '<a href="tel:+15550100000">Call</a>'],
     ['address.txt', 'Direct contact: person@example.invalid'],
     ['mailto-query.html', '<a href="mailto:misrarohan619@gmail.com?subject=Hello">Write</a>'],
+    ['mailto-fragment.html', '<a href="mailto:misrarohan619@gmail.com#compose">Write</a>'],
+    ['mailto-path.html', '<a href="mailto:misrarohan619@gmail.com/extra">Write</a>'],
+    ['mailto-semicolon.html', '<a href="mailto:misrarohan619@gmail.com;extra">Write</a>'],
     ['mailto-case.html', '<a href="MAILTO:misrarohan619@gmail.com">Write</a>'],
+    ['mailto-prefix.html', '<a href="xmailto:misrarohan619@gmail.com">Write</a>'],
     ['address-case.txt', 'MISRAROHAN619@GMAIL.COM'],
     ['address-prefix.txt', 'xmisrarohan619@gmail.com'],
     ['address-suffix.txt', 'misrarohan619@gmail.com.example'],
     ['encoded-contact.html', '<a href="mailto%3Amisrarohan619%40gmail.com">Write</a>'],
-    ['entity-contact.html', '<a href="mailto&#58;misrarohan619&#64;gmail.com">Write</a>']
+    ['percent-obfuscated.html', '<a href="m%61ilto%3Amisrarohan619%40gmail.com">Write</a>'],
+    ['double-percent.html', '<a href="m%2561ilto%253Amisrarohan619%2540gmail.com">Write</a>'],
+    ['mixed-encoding.html', '<a href="m%26%23x61%3Bilto&#58;misrarohan619%40gmail.com">Write</a>'],
+    ['entity-contact.html', '<a href="mailto&#58;misrarohan619&#64;gmail.com">Write</a>'],
+    ['split-entity-contact.html', '<a href="m&#97;ilto:misrarohan619&#64;gmail.com">Write</a>'],
+    ['hex-entity-contact.html', '<a href="m&#x61;ilto&#x3a;misrarohan619&#x40;gmail.com">Write</a>'],
+    ['js-hex-contact.js', 'const href = "\\x6d\\x61ilto\\x3amisrarohan619\\x40gmail.com"'],
+    ['js-unicode-contact.js', 'const href = "\\u006d\\u0061ilto\\u003amisrarohan619\\u0040gmail.com"'],
+    ['js-codepoint-contact.js', 'const href = "\\u{6d}\\u{61}ilto\\u{3a}misrarohan619\\u{40}gmail.com"'],
+    ['whitespace-contact.html', '<a href="m a i l t o : misrarohan619@gmail.com">Write</a>'],
+    ['control-contact.html', '<a href="mai\tlto:\nmisrarohan619@gmail.com">Write</a>'],
+    ['malformed-contact.html', '<a href="m%ZZailto:misrarohan619@gmail.com">Write</a>'],
+    ['overnested-contact.html', '<a href="m%2525252525252561ilto%252525252525253Amisrarohan619%2525252525252540gmail.com">Write</a>']
   ]
 
   for (const [fileName, contents] of rejected) {
@@ -264,6 +274,34 @@ test('allows only the exact approved public address and exact mailto destination
       true,
       `${fileName} should fail closed`
     )
+  }
+})
+
+test('rejects encoded contact bypasses across source, public, dist, and source-map content', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixtures = [
+    ['src/contact.ts', 'export const contact = "m%61ilto%3Amisrarohan619%40gmail.com"'],
+    ['public/contact.html', '<a href="m&#97;ilto:misrarohan619&#64;gmail.com">Write</a>'],
+    ['dist/assets/contact.js', 'const contact="m%2561ilto%253Amisrarohan619%2540gmail.com"'],
+    ['dist/assets/contact.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: ['const contact="\\u{6d}\\u{61}ilto\\u{3a}misrarohan619\\u{40}gmail.com"'],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  for (const [relativePath] of fixtures) {
+    const fileName = relativePath.split('/').at(-1)
+    assert.equal(hasViolation(violations, fileName, 'forbidden-contact-link'), true, relativePath)
   }
 })
 
@@ -316,12 +354,12 @@ test('does not mistake dates, CSS values, hashes, URLs, or ordinary metrics for 
   }
 })
 
-test('allows only the narrow synthetic email explicitly reserved for audit fixtures', async () => {
+test('rejects the legacy synthetic email without a global allowlist exception', async () => {
   const directory = await makeFixtureDirectory()
   const fixture = join(directory, 'allowlisted.txt')
   await writeFile(fixture, 'Audit fixture: privacy-audit@example.invalid')
 
-  assert.deepEqual(await auditPaths([fixture]), [])
+  assert.equal(hasViolation(await auditPaths([fixture]), 'allowlisted.txt', 'forbidden-email-address'), true)
 })
 
 test('email exemptions compare complete tokens with exact casing', async () => {

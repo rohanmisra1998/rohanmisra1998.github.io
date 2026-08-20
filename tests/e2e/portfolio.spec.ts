@@ -332,6 +332,47 @@ test('email action is keyboard reachable, exact, and leaves no CV control or cop
     .toHaveCount(0)
 })
 
+test('email action has a visible fine-pointer hover response without layout shift', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Desktop fine-pointer interaction')
+  await page.goto('/')
+  const email = page.getByRole('link', {
+    name: 'Email Rohan at misrarohan619@gmail.com',
+    exact: true
+  })
+  await email.scrollIntoViewIfNeeded()
+
+  const before = await email.evaluate((element) => {
+    const style = getComputedStyle(element)
+    const htmlElement = element as HTMLElement
+    return {
+      layout: [htmlElement.offsetLeft, htmlElement.offsetTop, htmlElement.offsetWidth, htmlElement.offsetHeight],
+      transform: style.transform,
+      shadow: style.boxShadow,
+      background: style.backgroundColor
+    }
+  })
+  await email.hover()
+  await settleAnimations(email)
+  const after = await email.evaluate((element) => {
+    const style = getComputedStyle(element)
+    const htmlElement = element as HTMLElement
+    return {
+      layout: [htmlElement.offsetLeft, htmlElement.offsetTop, htmlElement.offsetWidth, htmlElement.offsetHeight],
+      transform: style.transform,
+      shadow: style.boxShadow,
+      background: style.backgroundColor
+    }
+  })
+
+  expect(after.layout).toEqual(before.layout)
+  expect(after.transform).not.toBe(before.transform)
+  expect(after.shadow).not.toBe(before.shadow)
+  expect(after.background).not.toBe(before.background)
+  const hoverScreenshotPath = testInfo.outputPath('email-hover.png')
+  await page.screenshot({ path: hoverScreenshotPath })
+  await testInfo.attach('email-hover', { path: hoverScreenshotPath, contentType: 'image/png' })
+})
+
 test('theme control cycles through and persists system, light, and dark states', async ({ page }) => {
   await page.goto('/')
   const toggle = page.getByRole('button', { name: 'Theme: system' })
@@ -630,6 +671,13 @@ test('reduced motion removes translation and scale from animated interface state
   await firstCard.hover()
   await expectNoMotionTransform(firstCard, 'work card')
   await expectNoMotionTransform(firstCard.locator('.case-card__visual'), 'work-card visual', '::before')
+
+  const email = page.getByRole('link', {
+    name: 'Email Rohan at misrarohan619@gmail.com',
+    exact: true
+  })
+  await email.hover()
+  await expectNoMotionTransform(email, 'email action')
 
   await page.getByRole('button', { name: 'Open navigation' }).click()
   for (const menuLine of await page.locator('.site-header__menu span').all()) {

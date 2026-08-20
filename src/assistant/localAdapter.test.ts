@@ -54,6 +54,32 @@ const customKnowledge: KnowledgeAccess = Object.freeze({
 })
 
 describe('localAssistantAdapter', () => {
+  it.each([
+    'updating',
+    'resume the conversation',
+    'Please resume',
+    'Please resume the earlier discussion'
+  ])('does not answer the CV topic for ordinary resume/update language: %s', async (input) => {
+    const reply = await localAssistantAdapter.reply({ input, history: [] }, new AbortController().signal)
+
+    expect(reply).toMatchObject({ kind: 'fallback' })
+    expect(reply.text).not.toMatch(/CV is no longer linked|email Rohan directly/i)
+  })
+
+  it.each(['CV', 'resume status', 'Where can I get his résumé?', "Is Rohan's CV available?"])(
+    'answers the bounded CV redirect for explicit document intent: %s',
+    async (input) => {
+      const reply = await localAssistantAdapter.reply({ input, history: [] }, new AbortController().signal)
+
+      expect(reply).toMatchObject({
+        kind: 'answer',
+        topicId: 'cv-status',
+        citations: [{ sectionId: '#contact', label: 'Contact' }]
+      })
+      expect(reply.text).toMatch(/CV is no longer linked|email Rohan directly/i)
+    }
+  )
+
   it('routes a custom access canonical question to its custom answer and citation', async () => {
     const reply = await createLocalAssistantAdapter(customKnowledge).reply(
       { input: 'What is the custom brief?', history: [] },

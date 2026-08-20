@@ -658,5 +658,21 @@ test('hover and keyboard focus remain visible across light, dark, and green surf
   })
   expect(await builderArrow.evaluate((element) => getComputedStyle(element).transform))
     .not.toBe(builderArrowBefore)
+
+  const emailAction = controls[3]
+  const emailBefore = await emailAction.evaluate((element) => ({
+    transform: getComputedStyle(element).transform,
+    shadow: getComputedStyle(element).boxShadow
+  }))
+  await emailAction.hover()
+  await emailAction.evaluate(async (element) => {
+    await Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished))
+  })
+  const emailAfter = await emailAction.evaluate((element) => ({
+    transform: getComputedStyle(element).transform,
+    shadow: getComputedStyle(element).boxShadow
+  }))
+  expect(emailAfter.transform).not.toBe(emailBefore.transform)
+  expect(emailAfter.shadow).not.toBe(emailBefore.shadow)
   expectCleanBrowser()
 })

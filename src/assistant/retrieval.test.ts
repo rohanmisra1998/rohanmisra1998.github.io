@@ -13,6 +13,10 @@ const supported = [
   ['What does Rohan write about?', 'writing'],
   ['How do I contact Rohan?', 'contact'],
   ["What is Rohan's email address?", 'contact'],
+  ['CV', 'cv-status'],
+  ['resume status', 'cv-status'],
+  ['Where can I get his résumé?', 'cv-status'],
+  ["Is Rohan's CV available?", 'cv-status'],
   ['Is this assistant an LLM?', 'assistant-about']
 ] as const
 
@@ -81,6 +85,16 @@ describe('retrieve', () => {
 
   it('returns fallback for low-confidence input', () => {
     expect(retrieve('What is the weather in San Jose?', [])).toEqual({ kind: 'fallback' })
+  })
+
+  it.each([
+    'updating',
+    'resume the conversation',
+    'Please resume',
+    'Please resume the earlier discussion',
+    'Can you update me on his work?'
+  ])('does not mistake ordinary update or resume language for a CV request: %s', (prompt) => {
+    expect(retrieve(prompt, [])).not.toMatchObject({ kind: 'match', recordId: 'cv-status' })
   })
 
   it('is deeply deterministic across one hundred repetitions of every kernel fixture', () => {

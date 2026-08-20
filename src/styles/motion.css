@@ -12,6 +12,8 @@
 .site-header nav a,
 .theme-toggle,
 .action,
+.contact__action,
+.contact__action--email > span,
 .builder-card a span,
 .writing-row__action span,
 .skip-link {
@@ -23,6 +25,18 @@
 .action:hover,
 .action:focus-visible {
   transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact__action--email:hover {
+    background: color-mix(in srgb, var(--canvas) 90%, var(--signal));
+    box-shadow: 0 8px 0 rgb(11 31 51 / 18%);
+    transform: translateY(-2px);
+  }
+
+  .contact__action--email:hover > span {
+    transform: translate(1px, -1px) rotate(-5deg);
+  }
 }
 
 .writing-row:hover .writing-row__action span,
