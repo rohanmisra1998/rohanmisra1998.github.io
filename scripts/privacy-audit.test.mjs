@@ -99,6 +99,24 @@ function encodeLayers(contents, encode, count) {
   return encoded
 }
 
+function encodeNestedJsHex(contents, count) {
+  let encoded = encodeJsHexLayer(contents)
+  for (let layer = 1; layer < count; layer += 1) encoded = encoded.replaceAll('\\', '\\x5c')
+  return encoded
+}
+
+function encodeNestedNumericEntities(contents, count) {
+  let encoded = encodeNumericEntityLayer(contents)
+  for (let layer = 1; layer < count; layer += 1) encoded = encoded.replaceAll('&', '&#38;')
+  return encoded
+}
+
+function encodeNestedPercent(contents, count) {
+  let encoded = [...contents].map((character) => `%${character.codePointAt(0).toString(16).padStart(2, '0')}`).join('')
+  for (let layer = 1; layer < count; layer += 1) encoded = encoded.replaceAll('%', '%25')
+  return encoded
+}
+
 afterEach(async () => {
   await Promise.all(
     temporaryDirectories.splice(0).map((directory) =>
@@ -346,6 +364,130 @@ test('accepts exact current contact forms in source, built JavaScript, HTML, and
       names: [],
       mappings: ''
     })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  assert.deepEqual(await auditPaths([directory]), [])
+})
+
+test('rejects whitespace suffixes inside quoted strings, HTML attributes, and source-map sources', async () => {
+  const directory = await makeFixtureDirectory()
+  const mailto = 'mailto:misrarohan619@gmail.com'
+  const fixtures = [
+    ['src/double.js', `const href = "${mailto} extra"`],
+    ['src/single.js', `const href = '${mailto}\textra'`],
+    ['src/template.js', `const href = \`${mailto}\nextra\``],
+    ['public/double.html', `<a href="${mailto} extra">Email</a>`],
+    ['public/single.html', `<a href='${mailto}\textra'>Email</a>`],
+    ['public/newline.html', `<a href="${mailto}\nextra">Email</a>`],
+    ['dist/assets/contact.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`const href = '${mailto} extra'`],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => !hasViolation(
+      violations,
+      relativePath.split('/').at(-1),
+      'forbidden-contact-link'
+    ))
+  assert.deepEqual(falsePasses, [], `quoted whitespace fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('rejects eight-layer encoded contact values and fails closed beyond the decode cap', async () => {
+  const directory = await makeFixtureDirectory()
+  const mailto = 'mailto:misrarohan619@gmail.com'
+  const jsEight = encodeNestedJsHex(mailto, 8)
+  const entitiesEight = encodeNestedNumericEntities(mailto, 8)
+  const beyondCap = encodeNestedPercent(mailto, 33)
+  const fixtures = [
+    ['src/eight-js.js', `const href = "${jsEight}"`],
+    ['dist/assets/eight-entities.js', `const href = "${entitiesEight}"`],
+    ['dist/assets/eight-layer.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`const first = "${jsEight}"; const second = "${entitiesEight}"`],
+      names: [],
+      mappings: ''
+    })],
+    ['public/beyond-cap.html', `<a href="${beyondCap}">Email</a>`]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => !hasViolation(
+      violations,
+      relativePath.split('/').at(-1),
+      'forbidden-contact-link'
+    ))
+  assert.deepEqual(falsePasses, [], `deep encoding fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('rejects malformed escapes inside a contact-like scheme in HTML, JavaScript, and source maps', async () => {
+  const directory = await makeFixtureDirectory()
+  const malformed = 'm%61il%ZZto:misrarohan619@gmail.com'
+  const fixtures = [
+    ['public/malformed.html', `<a href="${malformed}">Email</a>`],
+    ['public/malformed-prose.html', `<a href="${malformed} extra">Email</a>`],
+    ['src/malformed.js', `const href = '${malformed}'`],
+    ['dist/assets/malformed.js.map', JSON.stringify({
+      version: 3,
+      sources: ['../../src/contact.ts'],
+      sourcesContent: [`const href = \`${malformed} extra\``],
+      names: [],
+      mappings: ''
+    })]
+  ]
+
+  for (const [relativePath, contents] of fixtures) {
+    const fixture = join(directory, ...relativePath.split('/'))
+    await mkdir(join(fixture, '..'), { recursive: true })
+    await writeFile(fixture, contents)
+  }
+
+  const violations = await auditPaths([directory])
+  const falsePasses = fixtures
+    .map(([relativePath]) => relativePath)
+    .filter((relativePath) => !hasViolation(
+      violations,
+      relativePath.split('/').at(-1),
+      'forbidden-contact-link'
+    ))
+  assert.deepEqual(falsePasses, [], `malformed scheme fixtures passed unexpectedly: ${falsePasses.join(', ')}`)
+})
+
+test('accepts exact mailto values across escaped quote contexts and a true unquoted next attribute', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixtures = [
+    ['src/escaped.js', 'const note = "say \\\"hello\\\""; const href = "mailto:misrarohan619@gmail.com";'],
+    ['src/template.js', 'const note = `say \\`hello\\``; const href = `mailto:misrarohan619@gmail.com`;'],
+    ['public/unquoted-next-attribute.html', '<a href=mailto:misrarohan619@gmail.com data-kind=direct>Email</a>'],
+    ['public/quoted-next-attribute.html', '<a href="mailto:misrarohan619@gmail.com" data-kind="direct">Email</a>'],
+    ['public/prose.txt', 'Email misrarohan619@gmail.com, or use the contact section.']
   ]
 
   for (const [relativePath, contents] of fixtures) {

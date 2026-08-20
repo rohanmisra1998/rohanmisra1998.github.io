@@ -42,8 +42,7 @@ const OBSOLETE_REPORT_URL_PATTERN =
 const APPROVED_PUBLIC_EMAIL = 'misrarohan619@gmail.com'
 const APPROVED_MAILTO = `mailto:${APPROVED_PUBLIC_EMAIL}`
 const CONTACT_SCHEME_PATTERN = /(?:m[\s\u0000-\u001f\u007f]*a[\s\u0000-\u001f\u007f]*i[\s\u0000-\u001f\u007f]*l[\s\u0000-\u001f\u007f]*t[\s\u0000-\u001f\u007f]*o|t[\s\u0000-\u001f\u007f]*e[\s\u0000-\u001f\u007f]*l)[\s\u0000-\u001f\u007f]*:/gi
-const MALFORMED_CONTACT_PREFIX_PATTERN = /(?:m|t)[^\s"'`<>]{0,40}(?:ailto|el)\s*:\s*$/i
-const CONTACT_DECODE_LIMIT = 6
+const CONTACT_DECODE_LIMIT = 32
 const PUBLISHED_ROOT_NAMES = new Set(['public', 'dist'])
 const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true })
 const UTF16LE_DECODER = new TextDecoder('utf-16le', { fatal: true })
@@ -183,23 +182,99 @@ function countExactToken(contents, token, validBefore, validAfter) {
   return count
 }
 
-const isMailtoPrefixBoundary = (value) => value === undefined || /[\s"'`=([{>,]/.test(value)
 const isEmailBoundary = (value) => value === undefined || !/[A-Za-z0-9@._%+-]/.test(value)
 
-function isUnquotedHtmlHrefTerminator(contents, mailtoIndex) {
-  const tagStart = contents.lastIndexOf('<', mailtoIndex)
-  const priorTagEnd = contents.lastIndexOf('>', mailtoIndex)
-  if (tagStart <= priorTagEnd) return false
-  return /\bhref\s*=\s*$/i.test(contents.slice(tagStart, mailtoIndex))
+function isEscaped(contents, index) {
+  let slashes = 0
+  for (let cursor = index - 1; cursor >= 0 && contents[cursor] === '\\'; cursor -= 1) slashes += 1
+  return slashes % 2 === 1
 }
 
-function hasExactMailtoTermination(contents, mailtoIndex) {
-  const afterIndex = mailtoIndex + APPROVED_MAILTO.length
-  if (afterIndex === contents.length) return true
-  const after = contents[afterIndex]
-  if (/[\s"'`]/.test(after)) return true
-  if (after === '>' && isUnquotedHtmlHrefTerminator(contents, mailtoIndex)) return true
-  return after === '<' && contents.startsWith('</', afterIndex)
+function findClosingQuote(contents, start, quote, escapedDelimiter = false) {
+  for (let index = start + 1; index < contents.length; index += 1) {
+    if (contents[index] === quote && isEscaped(contents, index) === escapedDelimiter) return index
+  }
+  return -1
+}
+
+function findHtmlHrefContext(contents, targetIndex) {
+  const tagStart = contents.lastIndexOf('<', targetIndex)
+  if (tagStart === -1 || contents.lastIndexOf('>', targetIndex) > tagStart) return undefined
+  const prefix = contents.slice(tagStart, targetIndex + 1)
+  const pattern = /\bhref\s*=\s*/gi
+  for (const match of prefix.matchAll(pattern)) {
+    const valueStart = tagStart + match.index + match[0].length
+    const quote = contents[valueStart]
+    if (quote === '"' || quote === "'" || quote === '`') {
+      const valueEnd = findClosingQuote(contents, valueStart, quote)
+      if (valueEnd !== -1 && targetIndex > valueStart && targetIndex < valueEnd) {
+        return {
+          kind: 'html-quoted',
+          start: valueStart + 1,
+          end: valueEnd,
+          value: contents.slice(valueStart + 1, valueEnd)
+        }
+      }
+      continue
+    }
+    let valueEnd = valueStart
+    while (valueEnd < contents.length && !/[\s>]/.test(contents[valueEnd])) valueEnd += 1
+    if (targetIndex >= valueStart && targetIndex < valueEnd) {
+      return {
+        kind: 'html-unquoted',
+        start: valueStart,
+        end: valueEnd,
+        value: contents.slice(valueStart, valueEnd)
+      }
+    }
+  }
+  return undefined
+}
+
+function quotedContexts(contents, targetIndex) {
+  const contexts = []
+  for (const quote of ['"', "'", '`']) {
+    for (const escapedDelimiter of [false, true]) {
+      let open = -1
+      for (let index = 0; index < contents.length; index += 1) {
+        if (contents[index] !== quote || isEscaped(contents, index) !== escapedDelimiter) continue
+        if (open === -1) {
+          open = index
+          continue
+        }
+        if (targetIndex > open && targetIndex < index) {
+          contexts.push({
+            kind: 'quoted',
+            start: open + 1,
+            end: index,
+            value: contents.slice(open + 1, index)
+          })
+        }
+        open = -1
+      }
+    }
+  }
+  return contexts
+}
+
+function findBareContext(contents, targetIndex) {
+  let start = targetIndex
+  while (start > 0 && !/[\s"'`<>=,;()[\]{}]/.test(contents[start - 1])) start -= 1
+  let end = targetIndex
+  while (end < contents.length && !/[\s"'`<>,;()[\]{}]/.test(contents[end])) end += 1
+  return { kind: 'bare', start, end, value: contents.slice(start, end) }
+}
+
+function findValueContext(contents, targetIndex) {
+  const html = findHtmlHrefContext(contents, targetIndex)
+  if (html) return html
+  const quoted = quotedContexts(contents, targetIndex)
+    .sort((left, right) => (left.end - left.start) - (right.end - right.start))[0]
+  return quoted ?? findBareContext(contents, targetIndex)
+}
+
+function isApprovedMailtoOccurrence(contents, mailtoIndex) {
+  return findValueContext(contents, mailtoIndex).value === APPROVED_MAILTO
 }
 
 function exactMailtoCount(contents) {
@@ -208,8 +283,7 @@ function exactMailtoCount(contents) {
   while (start < contents.length) {
     const index = contents.indexOf(APPROVED_MAILTO, start)
     if (index === -1) break
-    const before = index === 0 ? undefined : contents[index - 1]
-    if (isMailtoPrefixBoundary(before) && hasExactMailtoTermination(contents, index)) count += 1
+    if (isApprovedMailtoOccurrence(contents, index)) count += 1
     start = index + APPROVED_MAILTO.length
   }
   return count
@@ -236,44 +310,68 @@ function hasForbiddenScheme(contents) {
     if (
       match[0] === 'mailto:'
       && contents.startsWith(APPROVED_MAILTO, index)
-      && isMailtoPrefixBoundary(before)
-      && hasExactMailtoTermination(contents, index)
+      && isApprovedMailtoOccurrence(contents, index)
     ) continue
     return true
   }
   return false
 }
 
-function looksLikeMalformedContact(contents) {
-  for (const match of contents.matchAll(new RegExp(APPROVED_PUBLIC_EMAIL.replace('.', '\\.'), 'g'))) {
-    const prefix = contents.slice(Math.max(0, match.index - 64), match.index)
-    if (MALFORMED_CONTACT_PREFIX_PATTERN.test(prefix) && /%|&#|\\(?:x|u)/i.test(prefix)) return true
+function schemeSkeleton(prefix) {
+  let normalized = prefix
+  for (let pass = 0; pass < CONTACT_DECODE_LIMIT; pass += 1) {
+    const decoded = decodeContactLayer(normalized)
+    if (decoded === normalized) break
+    normalized = decoded
+  }
+  normalized = normalized
+    .replace(/%[^\s"'`<>:]{0,2}/g, '')
+    .replace(/\\(?:x[^\s"'`<>:]{0,2}|u(?:\{[^}]*\}|[^\s"'`<>:]{0,6}))/gi, '')
+    .replace(/&#[^;\s"'`<>:]*;?/g, '')
+  return normalized.toLowerCase().replace(/[^a-z]/g, '')
+}
+
+function hasForbiddenEmailContactCandidate(contents) {
+  const emailPattern = new RegExp(APPROVED_PUBLIC_EMAIL.replace('.', '\\.'), 'g')
+  for (const match of contents.matchAll(emailPattern)) {
+    const before = match.index === 0 ? undefined : contents[match.index - 1]
+    const afterIndex = match.index + APPROVED_PUBLIC_EMAIL.length
+    const after = afterIndex === contents.length ? undefined : contents[afterIndex]
+    if (!isEmailBoundary(before) || !isEmailBoundary(after)) continue
+
+    const context = findValueContext(contents, match.index)
+    const relativeEmailIndex = match.index - context.start
+    const colonIndex = context.value.lastIndexOf(':', relativeEmailIndex)
+    if (colonIndex === -1) continue
+    const skeleton = schemeSkeleton(context.value.slice(0, colonIndex))
+    if (skeleton === 'mailto' || skeleton === 'tel') {
+      if (context.value !== APPROVED_MAILTO) return true
+    }
   }
   return false
 }
 
 function analyzeContactEncoding(contents) {
   let normalized = contents
-  let changed = false
   const layers = [contents]
   for (let pass = 0; pass < CONTACT_DECODE_LIMIT; pass += 1) {
     const decoded = decodeContactLayer(normalized)
-    if (decoded === normalized) return { normalized, changed, layers, overnested: false }
+    if (decoded === normalized) return { normalized, layers, exhausted: false }
     normalized = decoded
     layers.push(normalized)
-    changed = true
   }
-  const decodedAgain = decodeContactLayer(normalized)
-  const changesAgain = decodedAgain !== normalized
-  const contactish = /(?:mailto|tel|ilto|misrarohan619|gmail\.com)/i.test(`${normalized}\n${decodedAgain}`)
-  return { normalized, changed, layers, overnested: changesAgain && contactish }
+  return {
+    normalized,
+    layers,
+    exhausted: decodeContactLayer(normalized) !== normalized
+  }
 }
 
 function hasForbiddenContact(contents) {
   const analysis = analyzeContactEncoding(contents)
-  if (analysis.overnested) return true
+  if (analysis.exhausted) return true
   for (const layer of analysis.layers) {
-    if (looksLikeMalformedContact(layer) || hasForbiddenScheme(layer)) return true
+    if (hasForbiddenScheme(layer) || hasForbiddenEmailContactCandidate(layer)) return true
   }
   for (let index = 1; index < analysis.layers.length; index += 1) {
     const previous = analysis.layers[index - 1]
