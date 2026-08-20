@@ -157,17 +157,17 @@ async function expectNoHorizontalOverflow(page: Page, label: string) {
 }
 
 async function expectIntentionalSectionRhythm(page: Page, viewportHeight: number, label: string) {
-  const [personalProjects, expertise] = await Promise.all([
-    page.getByRole('region', { name: 'Personal projects' }).boundingBox(),
-    page.getByRole('region', { name: 'Expertise' }).boundingBox()
+  const [selectedWork, experience] = await Promise.all([
+    page.getByRole('region', { name: 'Selected work' }).boundingBox(),
+    page.getByRole('region', { name: 'Experience' }).boundingBox()
   ])
-  expect(personalProjects, `${label} Personal projects has no box`).not.toBeNull()
-  expect(expertise, `${label} Expertise has no box`).not.toBeNull()
+  expect(selectedWork, `${label} Selected work has no box`).not.toBeNull()
+  expect(experience, `${label} Experience has no box`).not.toBeNull()
 
-  const gap = expertise!.y - (personalProjects!.y + personalProjects!.height)
+  const gap = experience!.y - (selectedWork!.y + selectedWork!.height)
   expect(
     gap,
-    `${label} has ${Math.round(gap)}px of dead space between Personal projects and Expertise.`
+    `${label} has ${Math.round(gap)}px of dead space between Selected work and Experience.`
   ).toBeLessThanOrEqual(Math.round(viewportHeight * 0.2))
 }
 
@@ -545,7 +545,8 @@ test('responsive boundary contracts preserve navigation, reading, and contact st
     await page.goto('/')
     await waitForPortfolioToSettle(page)
 
-    const trailPulse = page.getByRole('region', { name: 'Personal projects' })
+    const trailPulse = page.getByRole('region', { name: 'Selected work' })
+      .getByRole('group', { name: 'Personal projects' })
       .getByRole('article', { name: 'Trail Pulse' })
     await expect(trailPulse.getByRole('list', { name: 'Trail Pulse capabilities' })).toBeVisible()
     await expectNoHorizontalOverflow(page, `${width}px Trail Pulse project card`)

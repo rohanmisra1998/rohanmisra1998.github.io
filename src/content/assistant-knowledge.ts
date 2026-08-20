@@ -53,7 +53,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['utility workforce', 'workforce operations', 'operating transformation', 'strategy and operations'],
       keywords: ['utilities', 'workforce', 'pilots', 'implementation', 'process redesign', 'operations'],
       answer: `Rohan's ${workforce.title} work: ${workforce.approach} ${workforce.outcome}`,
-      citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
+      citations: [section('#work', 'Work')],
       caseSlug: workforce.slug
     },
     {
@@ -63,7 +63,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['commercial diligence', 'buy side diligence', 'private equity', 'due diligence'],
       keywords: ['commercial', 'diligence', 'market assessment', 'competitive positioning', 'investment'],
       answer: `Rohan's ${diligence.title} work: ${diligence.approach} ${diligence.outcome}`,
-      citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
+      citations: [section('#work', 'Work')],
       caseSlug: diligence.slug,
       guardedTerms: ['target names', 'investment recommendation', 'transaction details']
     },
@@ -74,7 +74,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['product gtm', 'go to market', 'product strategy', 'strategy and operations'],
       keywords: ['product', 'strategy', 'gtm', 'roadmap', 'partnerships', 'sales'],
       answer: `Rohan's ${payments.title} work for ${payments.industry.toLowerCase()}: ${payments.approach} ${payments.outcome}`,
-      citations: [section('#work', 'Work'), section('#expertise', 'Expertise')],
+      citations: [section('#work', 'Work')],
       caseSlug: payments.slug
     },
     {
@@ -84,7 +84,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['ebay marketplace', 'marketplace work'],
       keywords: ['marketplace', 'ebay', 'operator'],
       answer: `Rohan is a ${content.hero.chips[0].toLowerCase()} and is currently ${content.hero.current}.`,
-      citations: [section('#experience', 'Experience'), section('#expertise', 'Expertise')]
+      citations: [section('#experience', 'Experience'), section('#work', 'Work')]
     },
     {
       id: 'trail-pulse',
@@ -111,7 +111,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       aliases: ['school', 'university', 'mba'],
       keywords: ['kellogg', 'hindu college', 'education', 'degree'],
       answer: `Rohan studied at ${content.education.map((item) => `${item.institution} — ${item.credential}, ${item.distinction} (${item.year})`).join('; ')}.`,
-      citations: [section('#experience', 'Experience')]
+      citations: [section('#education', 'Education')]
     },
     {
       id: 'writing',

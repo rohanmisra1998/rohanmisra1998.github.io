@@ -6,8 +6,8 @@ import { SelectedWork } from './SelectedWork'
 afterEach(cleanup)
 
 describe('SelectedWork', () => {
-  it('shows the six approved cases in two explicit technology-first groups', () => {
-    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
+  it('shows six approved cases followed by Personal projects inside Selected work', () => {
+    render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
 
     expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(6)
     expect(screen.queryByRole('button', { name: 'See all work' })).not.toBeInTheDocument()
@@ -16,6 +16,7 @@ describe('SelectedWork', () => {
     const operations = screen.getByRole('group', {
       name: 'Operations × Large-scale transformations'
     })
+    const projects = screen.getByRole('group', { name: 'Personal projects' })
     expect(within(tech).getAllByRole('article').map((card) => card.getAttribute('aria-labelledby')))
       .toEqual([
         'work-omnichannel-payments-strategy-heading',
@@ -28,10 +29,11 @@ describe('SelectedWork', () => {
         'work-performance-and-value-realization-program-heading',
         'work-pharma-life-sciences-growth-transformation-heading'
       ])
+    expect(within(projects).getAllByRole('article')).toHaveLength(2)
   })
 
   it('leads with CV-grounded outcomes, industries, and technical transformation skills', () => {
-    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
+    render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
 
     const payments = screen.getByRole('article', { name: 'Omnichannel payments strategy' })
     expect(within(payments).getByText(/India's largest payments platform/)).toBeVisible()
@@ -49,12 +51,13 @@ describe('SelectedWork', () => {
     const pharma = screen.getByRole('article', { name: 'Pharma & life-sciences growth transformation' })
     expect(pharma).toHaveTextContent('30%+')
     expect(pharma).toHaveTextContent('200+ counties')
-    expect(screen.queryByRole('article', { name: 'Trail Pulse' })).not.toBeInTheDocument()
+    expect(within(screen.getByRole('group', { name: 'Personal projects' }))
+      .getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
   })
 
   it('exposes a unique slug-derived visual variant for every case', () => {
     const { container } = render(
-      <SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />
+      <SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />
     )
 
     const variants = [...container.querySelectorAll<HTMLElement>('.case-card__visual')]

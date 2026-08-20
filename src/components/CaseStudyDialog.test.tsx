@@ -67,7 +67,7 @@ afterEach(() => {
 })
 
 describe('CaseStudyDialog', () => {
-  it('portals outside the shell and presents challenge, approach, and quantified outcome without role', () => {
+  it('portals outside the shell and leads with quantified outcome before challenge and approach', () => {
     const item = portfolioContent.work.find(({ slug }) => slug === 'omnichannel-payments-strategy')!
     render(
       <>
@@ -85,13 +85,13 @@ describe('CaseStudyDialog', () => {
     const orderedCopy = [
       item.title,
       item.industry,
+      'Outcome',
+      '$150M+ in value uplift',
       item.thesis,
       'Challenge',
       item.challenge,
       'Approach',
-      item.approach,
-      'Outcome',
-      '$150M+ in value uplift'
+      item.approach
     ]
     let lastPosition = -1
     for (const copy of orderedCopy) {

@@ -101,7 +101,8 @@ try {
     `Rendered images were not observed as project-base requests: ${imageRequests.join(', ')}`
   )
 
-  const personalProjects = page.getByRole('region', { name: 'Personal projects' })
+  const personalProjects = page.getByRole('region', { name: 'Selected work' })
+    .getByRole('group', { name: 'Personal projects' })
   const trailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
   assert.equal(await trailPulse.isVisible(), true, 'Trail Pulse is not visible in Personal projects')
   const honestyNote = trailPulse.getByText(

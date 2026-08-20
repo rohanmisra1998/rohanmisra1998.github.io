@@ -1,12 +1,14 @@
-import type { WorkGroup, WorkItem } from '../content/portfolio-types'
+import type { PersonalProjectItem, WorkGroup, WorkItem } from '../content/portfolio-types'
+import { PersonalProjects } from './PersonalProjects'
 import { WorkCard } from './WorkCard'
 
 interface SelectedWorkProps {
   items: WorkItem[]
+  projects: PersonalProjectItem[]
   onOpenCase: (slug: string, trigger: HTMLButtonElement) => void
 }
 
-export function SelectedWork({ items, onOpenCase }: SelectedWorkProps) {
+export function SelectedWork({ items, projects, onOpenCase }: SelectedWorkProps) {
   const groups: ReadonlyArray<{ id: WorkGroup; label: string }> = [
     { id: 'tech-ai-growth', label: 'Tech × AI × Growth' },
     { id: 'operations-transformations', label: 'Operations × Large-scale transformations' }
@@ -39,6 +41,7 @@ export function SelectedWork({ items, onOpenCase }: SelectedWorkProps) {
           </div>
         )
       })}
+      <PersonalProjects items={projects} />
     </section>
   )
 }

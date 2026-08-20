@@ -72,6 +72,13 @@
   transform: translate(var(--case-shift-x), var(--case-shift-y)) rotate(calc(var(--case-turn) + 4deg)) scale(1.02);
 }
 
+.case-card:hover .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before,
+.case-card:focus-within .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before,
+.case-card:hover .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before,
+.case-card:focus-within .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before {
+  transform: translateX(-50%) rotate(calc(var(--case-turn) + 4deg)) scale(1.02);
+}
+
 .case-card__open:hover span:last-child,
 .case-card__open:focus-visible span:last-child {
   transform: translate(0.15rem, -0.15rem);
@@ -121,8 +128,7 @@
 
   .hero__portrait-card,
   .hero__portrait picture,
-  .hero__portrait::before,
-  .hero__portrait::after {
+  .hero__portrait::before {
     transition: none !important;
   }
 }

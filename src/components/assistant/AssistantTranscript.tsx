@@ -15,7 +15,7 @@ interface AssistantTranscriptProps {
 const portfolioPageIds = new Set([
   '#work',
   '#experience',
-  '#expertise',
+  '#education',
   '#personal-projects',
   '#writing',
   '#about',

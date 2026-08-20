@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { ThemeToggle } from './ThemeToggle'
 
-interface SiteHeaderProps {
-  linkedinHref: string
-}
-
 const navigationLinks = [
   { href: '#overview', label: 'Home' },
   { href: '#work', label: 'Work' },
-  { href: '#experience', label: 'Experience' },
-  { href: '#writing', label: 'Writing' },
-  { href: '#about', label: 'About' }
+  { href: '#experience', label: 'Experience' }
 ]
 
 const mobileNavigationQuery = '(max-width: 900px)'
@@ -21,7 +15,7 @@ function getIsMobileNavigation() {
     && window.matchMedia(mobileNavigationQuery).matches
 }
 
-export function SiteHeader({ linkedinHref }: SiteHeaderProps) {
+export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobileNavigation, setIsMobileNavigation] = useState(getIsMobileNavigation)
   const [currentSection, setCurrentSection] = useState('overview')
@@ -121,16 +115,6 @@ export function SiteHeader({ linkedinHref }: SiteHeaderProps) {
             {label}
           </a>
         ))}
-        <a
-          className="site-header__linkedin"
-          href={linkedinHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn, opens in a new tab"
-          onClick={() => closeMenu()}
-        >
-          LinkedIn <span aria-hidden="true">↗</span>
-        </a>
       </nav>
       <ThemeToggle />
     </header>

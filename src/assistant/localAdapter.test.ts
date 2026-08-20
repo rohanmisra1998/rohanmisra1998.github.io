@@ -54,6 +54,14 @@ const customKnowledge: KnowledgeAccess = Object.freeze({
 })
 
 describe('localAssistantAdapter', () => {
+  it('grounds every default answer in a section that remains on the consolidated page', () => {
+    expect(assistantKnowledge.flatMap((record) => record.citations))
+      .not.toContainEqual(expect.objectContaining({ sectionId: '#expertise' }))
+    expect(getAssistantKnowledgeRecord('education')?.citations).toEqual([
+      { sectionId: '#education', label: 'Education' }
+    ])
+  })
+
   it('grounds interests in the final Outside work section', async () => {
     const record = getAssistantKnowledgeRecord('interests')
     const reply = await localAssistantAdapter.reply(

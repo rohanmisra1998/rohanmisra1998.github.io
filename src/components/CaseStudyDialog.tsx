@@ -56,6 +56,10 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
           <aside className="case-dialog__rail">
             <h2 id={titleId} ref={titleRef} tabIndex={-1}>{item.title}</h2>
             <p className="case-dialog__industry">{item.industry}</p>
+            <section className="case-dialog__outcome">
+              <p>Outcome</p>
+              <h3>{item.outcome}</h3>
+            </section>
             <p className="case-dialog__thesis" id={thesisId}>{item.thesis}</p>
             <div className="case-dialog__capability-group">
               <p>Capabilities</p>
@@ -73,10 +77,6 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
             <section>
               <p>Approach</p>
               <h3>{item.approach}</h3>
-            </section>
-            <section className="case-dialog__outcome">
-              <p>Outcome</p>
-              <h3>{item.outcome}</h3>
             </section>
             {hasAssistantTopic && onOpenAssistant && (
               <button

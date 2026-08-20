@@ -29,8 +29,6 @@ export interface EducationItem {
   year: string
 }
 
-export interface ExpertiseGroup { title: string; items: string[] }
-
 export interface PersonalProjectItem {
   slug: 'portfolio' | 'trail-pulse'
   title: string
@@ -72,7 +70,6 @@ export interface PortfolioContent {
   work: WorkItem[]
   experience: ExperienceItem[]
   education: EducationItem[]
-  expertise: ExpertiseGroup[]
   personalProjects: PersonalProjectItem[]
   writing: WritingItem[]
   publicResearch: PublicResearchItem

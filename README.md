@@ -14,7 +14,7 @@ A privacy-conscious React and TypeScript portfolio for an operator, strategist, 
 - `src/lib/publicAsset.ts` resolves same-origin public assets through Vite's configured base path.
 - `scripts/` contains asset preparation, privacy auditing, script-test orchestration, and the rendered project-base smoke.
 
-The selected-work collection has six CV-grounded professional cases, arranged under `Tech × AI × Growth` and `Operations × Large-scale transformations`. Personal builds live separately under `Personal projects`, where the portfolio and Trail Pulse demonstrate hands-on technical curiosity without presenting Trail Pulse as professional client work.
+The selected-work collection combines six CV-grounded professional cases and a third `Personal projects` group. The three groups—`Tech × AI × Growth`, `Operations × Large-scale transformations`, and `Personal projects`—show professional impact alongside hands-on technical curiosity without presenting Trail Pulse as professional client work.
 
 ## Browser contracts
 

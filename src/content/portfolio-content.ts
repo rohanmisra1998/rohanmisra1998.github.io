@@ -4,14 +4,14 @@ export const portfolioContent: PortfolioContent = {
   hero: {
     eyebrow: 'Strategy & operations · Marketplaces · Applied AI',
     headline: 'I turn messy operations into scalable products and systems.',
-    subhead: "I'm Rohan Misra, a tech-first strategy and operations leader. I turn complex operating problems into practical pilots, product roadmaps, and systems that can scale—across marketplaces, transformation, and applied AI.",
+    subhead: "I'm Rohan Misra, a high agency tech-first strategy and operations leader. I turn complex operating problems into practical pilots, product roadmaps, and systems that can scale—across marketplaces, transformation, and applied AI.",
     current: 'Senior Manager, Strategy & Operations at eBay · San Jose, CA',
     chips: [
-      'Marketplace operator',
-      'Strategy & operations',
+      'Marketplace & product strategy',
       'Operating transformation',
-      'Product & GTM strategy',
+      'Growth & commercial strategy',
       'Private-equity diligence',
+      'Cross-functional leadership',
       'Applied-AI builder'
     ]
   },
@@ -75,19 +75,11 @@ export const portfolioContent: PortfolioContent = {
     { organization: 'eBay', role: 'Senior Manager, Strategy & Operations', location: 'San Jose, CA', period: 'July 2025–present', summary: 'Supporting strategy and operations in a global marketplace business.' },
     { organization: 'Bain & Company', role: 'Consultant', location: 'Chicago, IL', period: '2024–July 2025', summary: 'Led cross-functional strategy, transformation, and diligence work across multiple industries.' },
     { organization: 'Legacy Pursuit', role: 'Summer Intern', location: 'Chicago, IL', period: 'Summer 2024', summary: 'Developed an industrial-repair investment thesis and conducted anonymized expert and financial diligence.' },
-    { organization: 'Bain & Company', role: 'Progressive consulting roles', location: 'Mumbai, India', period: '2019–2023', summary: 'Worked across product strategy, commercial growth, operating transformation, and private-equity diligence.' }
+    { organization: 'Bain & Company', role: 'Progressive consulting roles', location: 'Mumbai, India', period: '2019–2023', summary: 'Earned five promotions in under four years on a top-rated, accelerated trajectory—while delivering product strategy, commercial growth, operating transformation, and private-equity diligence.' }
   ],
   education: [
     { institution: 'Kellogg School of Management', credential: 'MBA', distinction: "Dean's List", year: '2024' },
     { institution: 'Hindu College, University of Delhi', credential: 'BSc Mathematics with Economics minor', distinction: 'First Class Honors', year: '2019' }
-  ],
-  expertise: [
-    { title: 'Marketplace and product strategy', items: ['marketplace dynamics', 'product roadmaps', 'GTM models', 'partner strategy', 'applied-AI experiments'] },
-    { title: 'Operating transformation', items: ['workflow redesign', 'operating models', 'workforce operations', 'pilots', 'implementation systems'] },
-    { title: 'Growth and commercial strategy', items: ['market entry', 'sales acceleration', 'distribution', 'omnichannel payments', 'prioritization'] },
-    { title: 'Investment diligence', items: ['commercial diligence', 'sector scans', 'market growth', 'competitive positioning', 'right to win', 'value creation'] },
-    { title: 'Executive problem solving', items: ['cross-functional leadership', 'executive workshops', 'evidence synthesis', 'multiyear roadmaps'] },
-    { title: 'Building with', items: ['React', 'TypeScript', 'Node.js', 'Playwright', 'public data integrations', 'AI-assisted development'] }
   ],
   personalProjects: [
     {
@@ -110,8 +102,8 @@ export const portfolioContent: PortfolioContent = {
   ],
   publicResearch: {
     title: 'A Fair Share for Children: Preventing the Loss of a Generation to COVID-19',
-    role: 'co-author and researcher', industry: 'social impact and public policy',
-    summary: 'Public research on preventing the loss of a generation to COVID-19.',
+    role: "co-author alongside Nobel Peace Prize laureate Kailash Satyarthi and Bain India's Managing Director", industry: 'social impact and public policy',
+    summary: 'A flagship report on protecting children from the generational impact of COVID-19.',
     href: 'https://www.laureatesandleaders.org/_files/ugd/811759_44700bb3bf134c7fa1e15adade4daa51.pdf'
   },
   about: {

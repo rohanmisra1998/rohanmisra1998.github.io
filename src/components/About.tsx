@@ -1,16 +1,31 @@
+import { useState } from 'react'
 import type { PortfolioContent } from '../content/portfolio-types'
 
 interface AboutProps { content: PortfolioContent['about'] }
 
 export function About({ content }: AboutProps) {
+  const [expanded, setExpanded] = useState(false)
+
   return (
     <section className="about" id="about" aria-labelledby="about-heading">
       <div className="about__heading">
-        <p className="section-label">Beyond the résumé</p>
+        <p className="section-label">The longer version</p>
         <h2 id="about-heading">About</h2>
       </div>
       <div className="about__body">
-        <p className="about__statement">{content.statement}</p>
+        <button
+          className="about__disclosure"
+          type="button"
+          aria-expanded={expanded}
+          aria-controls="about-more"
+          onClick={() => setExpanded((isExpanded) => !isExpanded)}
+        >
+          Read more about me
+          <span aria-hidden="true">{expanded ? '−' : '+'}</span>
+        </button>
+        <div className="about__reveal" id="about-more" hidden={!expanded}>
+          <p className="about__statement">{content.statement}</p>
+        </div>
         <aside
           className="about__assistant"
           id="about-assistant"

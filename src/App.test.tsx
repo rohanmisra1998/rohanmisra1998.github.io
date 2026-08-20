@@ -43,7 +43,13 @@ function expectMainSectionsToBeLabelledRegions(main: HTMLElement, expectedSectio
 describe('App', () => {
   it('renders the capsule navigation and approved hero', () => {
     render(<App />)
-    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeVisible()
+    const navigation = screen.getByRole('navigation', { name: 'Primary' })
+    expect(navigation).toBeVisible()
+    expect(within(navigation).getAllByRole('link').map((link) => link.textContent)).toEqual([
+      'Home',
+      'Work',
+      'Experience'
+    ])
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'I turn messy operations into scalable products and systems.'
     )
@@ -336,8 +342,12 @@ describe('App', () => {
 
   it('renders the corrected experience, verified essays, and approved email contact', () => {
     render(<App />)
+    expect(screen.getByText(/I'm Rohan Misra, a high agency tech-first strategy and operations leader/i))
+      .toBeInTheDocument()
     expect(screen.getByText('Senior Manager, Strategy & Operations')).toBeInTheDocument()
     expect(screen.getByText('July 2025–present')).toBeInTheDocument()
+    expect(screen.getByText(/five promotions in under four years on a top-rated, accelerated trajectory/i))
+      .toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Financialisation of Housing/i })).toHaveAttribute(
       'href',
       'https://www.linkedin.com/pulse/financialisation-housing-imbroglio-decoded-rohan-misra/'
@@ -374,37 +384,44 @@ describe('App', () => {
     }
   })
 
-  it('renders the approved career, education, and expertise sections', () => {
-    render(<App />)
-    expect(screen.getByText('Legacy Pursuit')).toBeVisible()
-    expect(screen.getByText('Kellogg School of Management')).toBeVisible()
-    expect(screen.getByRole('region', { name: 'Expertise' })).toBeVisible()
-    expect(screen.getByText('Private-equity diligence')).toBeVisible()
-  })
-
-  it('places Personal projects directly after Experience and before Expertise', () => {
+  it('renders Education as a standalone section directly after Experience', () => {
     render(<App />)
     const main = screen.getByRole('main')
-    const experience = main.querySelector('#experience')
-    const personalProjects = main.querySelector('#personal-projects')
-    const expertise = main.querySelector('#expertise')
+    const experience = screen.getByRole('region', { name: 'Experience' })
+    const education = screen.getByRole('region', { name: 'Education' })
 
-    expect(experience).not.toBeNull()
-    expect(personalProjects).not.toBeNull()
-    expect(expertise).not.toBeNull()
-    expect(experience!.nextElementSibling).toBe(personalProjects)
-    expect(personalProjects!.nextElementSibling).toBe(expertise)
+    expect(screen.getByText('Legacy Pursuit')).toBeVisible()
+    expect(screen.getByText('Kellogg School of Management')).toBeVisible()
+    expect(experience.nextElementSibling).toBe(education)
+    expect(within(experience).queryByRole('heading', { name: 'Education' })).not.toBeInTheDocument()
+    expect(within(main).queryByRole('region', { name: 'Expertise' })).not.toBeInTheDocument()
+  })
+
+  it('places Personal projects inside Selected work as its third group', () => {
+    render(<App />)
+    const selectedWork = screen.getByRole('region', { name: 'Selected work' })
+    const groups = within(selectedWork).getAllByRole('group')
+    const personalProjects = within(selectedWork).getByRole('group', { name: 'Personal projects' })
+
+    expect(groups.at(-1)).toBe(personalProjects)
+    expect(within(personalProjects).getByRole('article', { name: 'This portfolio' })).toBeVisible()
+    expect(within(personalProjects).getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
+    expect(screen.queryByRole('region', { name: 'Personal projects' })).not.toBeInTheDocument()
   })
 
   it('keeps Personal projects honest and repairs the public report link', () => {
     render(<App />)
-    const personalProjects = screen.getByRole('region', { name: 'Personal projects' })
+    const personalProjects = within(
+      screen.getByRole('region', { name: 'Selected work' })
+    ).getByRole('group', { name: 'Personal projects' })
     const trailPulse = within(personalProjects).getByRole('article', { name: 'Trail Pulse' })
     expect(trailPulse).toHaveTextContent('not a flagship product')
     expect(screen.getByRole('link', { name: /A Fair Share for Children/i })).toHaveAttribute(
       'href',
       'https://www.laureatesandleaders.org/_files/ugd/811759_44700bb3bf134c7fa1e15adade4daa51.pdf'
     )
+    expect(screen.getByText(/Nobel Peace Prize laureate Kailash Satyarthi and Bain India's Managing Director/i))
+      .toBeInTheDocument()
   })
 
   it('offers LinkedIn and a direct, accessible email action without a CV affordance', () => {
@@ -434,6 +451,7 @@ describe('App', () => {
       .not.toBeInTheDocument()
 
     const section = screen.getByRole('region', { name: 'Outside work' })
+    expect(section).toHaveTextContent('Beyond the résumé')
     expect(within(section).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
       'Hiking',
       'History',
@@ -446,9 +464,24 @@ describe('App', () => {
     )
   })
 
+  it('keeps the About statement behind an explicit Read more disclosure', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const about = screen.getByRole('region', { name: 'About' })
+    const disclosure = within(about).getByRole('button', { name: 'Read more about me' })
+
+    expect(disclosure).toHaveAttribute('aria-expanded', 'false')
+    expect(within(about).queryByText(/problems with real operational texture/i)).not.toBeVisible()
+
+    await user.click(disclosure)
+
+    expect(disclosure).toHaveAttribute('aria-expanded', 'true')
+    expect(within(about).getByText(/problems with real operational texture/i)).toBeVisible()
+  })
+
   it('exposes every main section as a region labelled by its own visible heading', () => {
     render(<App />)
-    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 9)
+    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 8)
 
     const selectedWork = screen.getByRole('region', { name: 'Selected work' })
     const capabilities = within(

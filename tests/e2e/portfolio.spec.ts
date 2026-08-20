@@ -117,25 +117,26 @@ test('case query supports direct load, close, and browser Back', async ({ page }
   await expect(page).toHaveURL('/')
 })
 
-test('selected work exposes six CV-grounded cases in two technology-first groups', async ({ page }) => {
+test('selected work exposes six CV-grounded cases and Personal projects in three groups', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
   const initialCards = selectedWork.getByRole('article')
 
-  await expect(initialCards).toHaveCount(6)
+  await expect(initialCards).toHaveCount(8)
   await expect(initialCards.nth(0)).toHaveAccessibleName('Omnichannel payments strategy')
-  await expect(initialCards.nth(5)).toHaveAccessibleName('Pharma & life-sciences growth transformation')
+  await expect(initialCards.nth(7)).toHaveAccessibleName('Trail Pulse')
   await expect(selectedWork.getByRole('group', { name: 'Tech × AI × Growth' })).toBeVisible()
   await expect(selectedWork.getByRole('group', {
     name: 'Operations × Large-scale transformations'
   })).toBeVisible()
+  await expect(selectedWork.getByRole('group', { name: 'Personal projects' })).toBeVisible()
   await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
   await expect(selectedWork.getByText('Created a path to $150M+ in value uplift.')).toBeVisible()
   await expect(selectedWork.getByText('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')).toBeVisible()
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
   await expect(selectedWork.getByRole('button', { name: 'See all work' })).toHaveCount(0)
-  await expect(selectedWork.getByRole('article', { name: 'Trail Pulse' })).toHaveCount(0)
+  await expect(selectedWork.getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
 
   await selectedWork.getByRole('button', { name: 'Open case study: B2B SaaS & logistics investment diligence' })
     .click()
@@ -153,9 +154,7 @@ test('selected work exposes six CV-grounded cases in two technology-first groups
 test('Trail Pulse remains an honest Personal project rather than professional work', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  await expect(selectedWork.getByRole('article', { name: 'Trail Pulse' })).toHaveCount(0)
-
-  const personalProjects = page.getByRole('region', { name: 'Personal projects' })
+  const personalProjects = selectedWork.getByRole('group', { name: 'Personal projects' })
   const builderTrailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
   await expect(builderTrailPulse.getByText(
     'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
@@ -164,6 +163,59 @@ test('Trail Pulse remains an honest Personal project rather than professional wo
   await expect(builderTrailPulse.getByRole('link', { name: 'Try Trail Pulse' })).toHaveAttribute(
     'href', 'https://trail-pulse-alpha.vercel.app/'
   )
+})
+
+test('each professional case uses a distinct, case-specific geometric system', async ({ page }) => {
+  await page.goto('/')
+  const systems = await page.locator('.case-card__visual').evaluateAll((visuals) => (
+    visuals.map((visual) => ({
+      slug: (visual as HTMLElement).dataset.visualVariant,
+      system: getComputedStyle(visual).getPropertyValue('--visual-system').trim()
+    }))
+  ))
+
+  expect(systems).toEqual([
+    { slug: 'omnichannel-payments-strategy', system: 'payment-rails' },
+    { slug: 'buy-side-commercial-diligence', system: 'diligence-matrix' },
+    { slug: 'talent-acquisition-operating-model', system: 'ai-pipeline' },
+    { slug: 'workforce-operations-transformation', system: 'workforce-schedule' },
+    { slug: 'performance-and-value-realization-program', system: 'performance-dial' },
+    { slug: 'pharma-life-sciences-growth-transformation', system: 'molecular-network' }
+  ])
+  expect(new Set(systems.map(({ system }) => system))).toHaveProperty('size', 6)
+})
+
+test('portrait omits the decorative signal dot', async ({ page }) => {
+  await page.goto('/')
+  const signalContent = await page.locator('.hero__portrait').evaluate((portrait) => (
+    getComputedStyle(portrait, '::after').content
+  ))
+
+  expect(signalContent).toBe('none')
+})
+
+test('case studies reveal Outcome without scrolling at desktop and 390px', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 }
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', {
+      name: 'Open case study: B2B SaaS & logistics investment diligence'
+    }).click()
+
+    const outcome = page.locator('.case-dialog__outcome')
+    const box = await outcome.boundingBox()
+    expect(box, `${viewport.width}px Outcome has no rendered box`).not.toBeNull()
+    expect(box!.y, `${viewport.width}px Outcome starts above the viewport`).toBeGreaterThanOrEqual(0)
+    expect(
+      box!.y + box!.height,
+      `${viewport.width}px Outcome is not fully visible when the case opens`
+    ).toBeLessThanOrEqual(viewport.height)
+
+    await page.getByRole('button', { name: 'Close case study' }).click()
+  }
 })
 
 test('writing, research, builder, and contact destinations are safe external links', async ({ page }) => {
@@ -248,7 +300,6 @@ test('fine-pointer portrait hover comes alive without changing document layout',
   const before = await portrait.evaluate((figure) => {
     const card = figure.querySelector<HTMLElement>('.hero__portrait-card')!
     const frame = getComputedStyle(figure, '::before')
-    const accent = getComputedStyle(figure, '::after')
     return {
       layout: {
         height: card.offsetHeight,
@@ -257,10 +308,7 @@ test('fine-pointer portrait hover comes alive without changing document layout',
       },
       cardTransform: getComputedStyle(card).transform,
       cardShadow: getComputedStyle(card).boxShadow,
-      frameTransform: frame.transform,
-      accentOpacity: Number(accent.opacity),
-      accentBackground: accent.backgroundColor,
-      accentTransform: accent.transform
+      frameTransform: frame.transform
     }
   })
 
@@ -272,7 +320,6 @@ test('fine-pointer portrait hover comes alive without changing document layout',
   const after = await portrait.evaluate((figure) => {
     const card = figure.querySelector<HTMLElement>('.hero__portrait-card')!
     const frame = getComputedStyle(figure, '::before')
-    const accent = getComputedStyle(figure, '::after')
     return {
       layout: {
         height: card.offsetHeight,
@@ -281,10 +328,7 @@ test('fine-pointer portrait hover comes alive without changing document layout',
       },
       cardTransform: getComputedStyle(card).transform,
       cardShadow: getComputedStyle(card).boxShadow,
-      frameTransform: frame.transform,
-      accentOpacity: Number(accent.opacity),
-      accentBackground: accent.backgroundColor,
-      accentTransform: accent.transform
+      frameTransform: frame.transform
     }
   })
 
@@ -292,9 +336,6 @@ test('fine-pointer portrait hover comes alive without changing document layout',
   expect(after.cardTransform).not.toBe('none')
   expect(after.cardShadow).not.toBe(before.cardShadow)
   expect(after.frameTransform).not.toBe(before.frameTransform)
-  expect(after.accentOpacity).toBeGreaterThan(before.accentOpacity)
-  expect(after.accentBackground).not.toBe('rgba(0, 0, 0, 0)')
-  expect(after.accentTransform).not.toBe(before.accentTransform)
 })
 
 test('social preview metadata declares the reviewed 1200 by 630 image', async ({ page }) => {
@@ -605,13 +646,13 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.selected-work__group-heading h3',
     '.case-card__outcome',
     '.case-card__capabilities li',
+    '.selected-work__group-note',
     '.section-heading__note',
     '.builder-card__description',
     '.builder-card__honesty',
     '.builder-card li',
     '.experience__intro > p:last-child',
     '.experience-row__summary',
-    '.expertise-group li',
     '.education p',
     '.education__meta',
     '.writing-row__body > p',
@@ -634,6 +675,7 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
   for (const selector of [
     '.case-dialog__thesis',
     '.case-dialog__capability-group li',
+    '.case-dialog__outcome h3',
     '.case-dialog__narrative h3'
   ]) {
     const elements = page.locator(selector)
@@ -659,13 +701,11 @@ test('reduced motion removes translation and scale from animated interface state
   await expectNoMotionTransform(portrait.locator('.hero__portrait-card'), 'hero portrait card')
   await expectNoMotionTransform(portrait.locator('picture'), 'hero portrait image')
   await expectNoMotionTransform(portrait, 'hero portrait frame', '::before')
-  await expectNoMotionTransform(portrait, 'hero portrait signal', '::after')
   expect(await portrait.evaluate((figure) => [
     getComputedStyle(figure.querySelector('.hero__portrait-card')!).transitionDuration,
     getComputedStyle(figure.querySelector('picture')!).transitionDuration,
-    getComputedStyle(figure, '::before').transitionDuration,
-    getComputedStyle(figure, '::after').transitionDuration
-  ])).toEqual(['0s', '0s', '0s', '0s'])
+    getComputedStyle(figure, '::before').transitionDuration
+  ])).toEqual(['0s', '0s', '0s'])
 
   const firstCard = page.getByRole('region', { name: 'Selected work' }).getByRole('article').first()
   await firstCard.hover()

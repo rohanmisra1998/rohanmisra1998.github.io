@@ -2,11 +2,10 @@ import { lazy, Suspense } from 'react'
 import { About } from './components/About'
 import { CaseStudyDialog } from './components/CaseStudyDialog'
 import { Contact } from './components/Contact'
-import { Expertise } from './components/Expertise'
+import { Education } from './components/Education'
 import { Experience } from './components/Experience'
 import { Hero } from './components/Hero'
 import { OutsideWork } from './components/OutsideWork'
-import { PersonalProjects } from './components/PersonalProjects'
 import { SelectedWork } from './components/SelectedWork'
 import { SiteHeader } from './components/SiteHeader'
 import { Writing } from './components/Writing'
@@ -26,19 +25,19 @@ export default function App() {
     <>
       <div id="page-shell">
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader linkedinHref={portfolioContent.contact.linkedinHref} />
+        <SiteHeader />
         <main id="main-content" tabIndex={-1}>
           <Hero
             content={portfolioContent.hero}
             onOpenAssistant={layers.openAssistant}
           />
-          <SelectedWork items={portfolioContent.work} onOpenCase={layers.openCase} />
-          <Experience
-            items={portfolioContent.experience}
-            education={portfolioContent.education}
+          <SelectedWork
+            items={portfolioContent.work}
+            projects={portfolioContent.personalProjects}
+            onOpenCase={layers.openCase}
           />
-          <PersonalProjects items={portfolioContent.personalProjects} />
-          <Expertise groups={portfolioContent.expertise} />
+          <Experience items={portfolioContent.experience} />
+          <Education items={portfolioContent.education} />
           <Writing
             items={portfolioContent.writing}
             publicResearch={portfolioContent.publicResearch}

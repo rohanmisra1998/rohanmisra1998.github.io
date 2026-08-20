@@ -6,7 +6,7 @@ export function OutsideWork({ interests }: OutsideWorkProps) {
   return (
     <section className="outside-work" id="outside-work" aria-labelledby="outside-work-heading">
       <div className="outside-work__heading">
-        <p className="section-label">Beyond the operating model</p>
+        <p className="section-label">Beyond the résumé</p>
         <h2 id="outside-work-heading">Outside work</h2>
         <p>Usually outside, underwater, on the road—or halfway down a history rabbit hole.</p>
       </div>

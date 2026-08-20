@@ -6,13 +6,20 @@ interface PersonalProjectsProps {
 
 export function PersonalProjects({ items }: PersonalProjectsProps) {
   return (
-    <section className="builder-lab" id="personal-projects" aria-labelledby="personal-projects-heading">
-      <div className="section-heading section-heading--compact">
-        <p className="section-label">Built hands-on</p>
-        <h2 id="personal-projects-heading">Personal projects</h2>
-        <p className="section-heading__note">
-          A bias to action, made tangible: self-directed builds where I learn fast, get technical, and ship working systems.
-        </p>
+    <div
+      className="selected-work__group selected-work__group--projects"
+      id="personal-projects"
+      role="group"
+      aria-labelledby="personal-projects-heading"
+    >
+      <div className="selected-work__group-heading">
+        <span aria-hidden="true" />
+        <div>
+          <h3 id="personal-projects-heading">Personal projects</h3>
+          <p className="selected-work__group-note">
+            A bias to action, made tangible: self-directed builds where I learn fast, get technical, and ship working systems.
+          </p>
+        </div>
       </div>
 
       <div className="builder-lab__grid">
@@ -38,6 +45,6 @@ export function PersonalProjects({ items }: PersonalProjectsProps) {
           )
         })}
       </div>
-    </section>
+    </div>
   )
 }
