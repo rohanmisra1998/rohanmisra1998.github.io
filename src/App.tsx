@@ -37,8 +37,8 @@ export default function App() {
             items={portfolioContent.experience}
             education={portfolioContent.education}
           />
-          <Expertise groups={portfolioContent.expertise} />
           <PersonalProjects items={portfolioContent.personalProjects} />
+          <Expertise groups={portfolioContent.expertise} />
           <Writing
             items={portfolioContent.writing}
             publicResearch={portfolioContent.publicResearch}

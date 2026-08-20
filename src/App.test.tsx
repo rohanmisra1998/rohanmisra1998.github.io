@@ -382,6 +382,20 @@ describe('App', () => {
     expect(screen.getByText('Private-equity diligence')).toBeVisible()
   })
 
+  it('places Personal projects directly after Experience and before Expertise', () => {
+    render(<App />)
+    const main = screen.getByRole('main')
+    const experience = main.querySelector('#experience')
+    const personalProjects = main.querySelector('#personal-projects')
+    const expertise = main.querySelector('#expertise')
+
+    expect(experience).not.toBeNull()
+    expect(personalProjects).not.toBeNull()
+    expect(expertise).not.toBeNull()
+    expect(experience!.nextElementSibling).toBe(personalProjects)
+    expect(personalProjects!.nextElementSibling).toBe(expertise)
+  })
+
   it('keeps Personal projects honest and repairs the public report link', () => {
     render(<App />)
     const personalProjects = screen.getByRole('region', { name: 'Personal projects' })

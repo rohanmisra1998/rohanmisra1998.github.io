@@ -157,17 +157,17 @@ async function expectNoHorizontalOverflow(page: Page, label: string) {
 }
 
 async function expectIntentionalSectionRhythm(page: Page, viewportHeight: number, label: string) {
-  const [personalProjects, writing] = await Promise.all([
+  const [personalProjects, expertise] = await Promise.all([
     page.getByRole('region', { name: 'Personal projects' }).boundingBox(),
-    page.getByRole('region', { name: 'Writing' }).boundingBox()
+    page.getByRole('region', { name: 'Expertise' }).boundingBox()
   ])
   expect(personalProjects, `${label} Personal projects has no box`).not.toBeNull()
-  expect(writing, `${label} Writing has no box`).not.toBeNull()
+  expect(expertise, `${label} Expertise has no box`).not.toBeNull()
 
-  const gap = writing!.y - (personalProjects!.y + personalProjects!.height)
+  const gap = expertise!.y - (personalProjects!.y + personalProjects!.height)
   expect(
     gap,
-    `${label} has ${Math.round(gap)}px of dead space between Personal projects and Writing.`
+    `${label} has ${Math.round(gap)}px of dead space between Personal projects and Expertise.`
   ).toBeLessThanOrEqual(Math.round(viewportHeight * 0.2))
 }
 

@@ -11,7 +11,7 @@ export function PersonalProjects({ items }: PersonalProjectsProps) {
         <p className="section-label">Built hands-on</p>
         <h2 id="personal-projects-heading">Personal projects</h2>
         <p className="section-heading__note">
-          Self-directed builds that show how I learn, get technical, and turn ideas into working systems.
+          A bias to action, made tangible: self-directed builds where I learn fast, get technical, and ship working systems.
         </p>
       </div>
 
