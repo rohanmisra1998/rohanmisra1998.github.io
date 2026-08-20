@@ -65,31 +65,54 @@ try {
   await page.goto(previewUrl, { waitUntil: 'networkidle' })
   assert.equal(page.url(), previewUrl)
   assert.equal(failedResponses.length, 0, failedResponses.join('\n'))
-  assert.ok(imageRequests.length > 0, 'Expected the built page to request its portrait')
+  const portrait = page.getByRole('img', { name: /Rohan Misra/i })
+  await portrait.evaluate((image) => image.decode())
   assert.ok(
-    imageRequests.every((pathname) => pathname.startsWith(`${projectBase}images/`)),
-    `Image requests escaped the project base: ${imageRequests.join(', ')}`
-  )
-  await page.locator('.hero__portrait img').evaluate((image) => image.decode())
-  assert.ok(
-    await page.locator('.hero__portrait img').evaluate((image) => image.naturalWidth > 0),
+    await portrait.evaluate((image) => image.naturalWidth > 0),
     'The base-aware portrait did not decode'
   )
 
-  const trailPulseImage = page.locator('.builder-lab__image img')
-  await trailPulseImage.scrollIntoViewIfNeeded()
-  await trailPulseImage.evaluate((image) => image.decode())
+  const renderedImages = page.locator('img:visible')
+  assert.ok(await renderedImages.count() > 0, 'Expected at least the rendered portrait')
+  const renderedImageResults = await renderedImages.evaluateAll(async (images) => {
+    await Promise.all(images.map((image) => image.decode()))
+    return images.map((image) => {
+      const url = new URL(image.currentSrc || image.src)
+      return {
+        decoded: image.naturalWidth > 0,
+        source: url.href,
+        sameOriginPath: url.origin === location.origin ? url.pathname : null
+      }
+    })
+  })
+  for (const image of renderedImageResults) {
+    assert.ok(image.decoded, `Image did not decode: ${image.source}`)
+  }
+  const sameOriginImagePaths = renderedImageResults
+    .map((image) => image.sameOriginPath)
+    .filter(Boolean)
+  assert.ok(sameOriginImagePaths.length > 0, 'Expected at least one same-origin rendered image')
   assert.ok(
-    await trailPulseImage.evaluate((image) => image.naturalWidth > 0),
-    'The base-aware Trail Pulse image did not decode'
+    sameOriginImagePaths.every((pathname) => pathname.startsWith(projectBase)),
+    `Rendered same-origin images escaped the project base: ${sameOriginImagePaths.join(', ')}`
   )
-  const trailPulsePathname = await trailPulseImage.evaluate(
-    (image) => new URL(image.currentSrc || image.src).pathname
-  )
-  assert.equal(trailPulsePathname, `${projectBase}images/trail-pulse-results.webp`)
   assert.ok(
-    imageRequests.includes(trailPulsePathname),
-    `Trail Pulse did not request within the project base: ${imageRequests.join(', ')}`
+    sameOriginImagePaths.every((pathname) => imageRequests.includes(pathname)),
+    `Rendered images were not observed as project-base requests: ${imageRequests.join(', ')}`
+  )
+
+  const builderLab = page.getByRole('region', { name: 'Builder Lab' })
+  const trailPulse = builderLab.getByRole('article', { name: 'Trail Pulse' })
+  assert.equal(await trailPulse.isVisible(), true, 'Trail Pulse is not visible in Builder Lab')
+  const honestyNote = trailPulse.getByText(
+    'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
+    { exact: true }
+  )
+  assert.equal(await honestyNote.isVisible(), true, 'Trail Pulse honesty note is not visible')
+  const trailPulseAction = trailPulse.getByRole('link', { name: 'Try Trail Pulse' })
+  assert.equal(
+    await trailPulseAction.getAttribute('href'),
+    'https://trail-pulse-alpha.vercel.app/'
   )
   console.log(`Project-base smoke passed: ${imageRequests.join(', ')}`)
 } finally {

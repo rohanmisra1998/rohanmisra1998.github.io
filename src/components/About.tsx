@@ -1,8 +1,8 @@
-interface AboutProps {
-  interests: string[]
-}
+import type { PortfolioContent } from '../content/portfolio-types'
 
-export function About({ interests }: AboutProps) {
+interface AboutProps { content: PortfolioContent['about'] }
+
+export function About({ content }: AboutProps) {
   return (
     <section className="about" id="about" aria-labelledby="about-heading">
       <div className="about__heading">
@@ -10,15 +10,25 @@ export function About({ interests }: AboutProps) {
         <h2 id="about-heading">About</h2>
       </div>
       <div className="about__body">
-        <p className="about__statement">
-          The ambition is to keep getting closer to the technology, turn curiosity into useful
-          things, and build toward something enduring.
-        </p>
+        <p className="about__statement">{content.statement}</p>
         <ul className="interest-list" aria-label="Interests">
-          {interests.map((interest) => (
+          {content.interests.map((interest) => (
             <li key={interest}>{interest}</li>
           ))}
         </ul>
+        <aside
+          className="about__assistant"
+          id="about-assistant"
+          aria-labelledby="about-assistant-heading"
+        >
+          <p className="section-label">Trust note</p>
+          <h3 id="about-assistant-heading">About this assistant</h3>
+          <p>
+            Ask Rohan AI uses deterministic retrieval from approved public portfolio
+            content. It is not a generative model or a virtual twin. Questions are
+            processed locally and are not sent over the network or saved in browser storage.
+          </p>
+        </aside>
       </div>
     </section>
   )

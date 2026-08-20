@@ -56,6 +56,21 @@ async function writePortrait(outputDirectory) {
   ])
 }
 
+async function writeLauncherPortrait(outputDirectory) {
+  const circleMask = Buffer.from(`
+    <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#fff" />
+    </svg>
+  `)
+
+  await createPipeline(sources.portrait)
+    .resize({ width: 48, height: 48, fit: 'cover', position: 'centre' })
+    .ensureAlpha()
+    .composite([{ input: circleMask, blend: 'dest-in' }])
+    .png({ compressionLevel: 9 })
+    .toFile(path.join(outputDirectory, 'rohan-launcher.png'))
+}
+
 async function writeScreenshots(outputDirectory) {
   await Promise.all([
     createPipeline(sources.trailPulseResults)
@@ -83,6 +98,7 @@ export async function prepareAssets(outputDirectory = 'public/images') {
 
   await Promise.all([
     writePortrait(resolvedOutputDirectory),
+    writeLauncherPortrait(resolvedOutputDirectory),
     writeScreenshots(resolvedOutputDirectory),
     writeSocialImage(resolvedOutputDirectory),
   ])

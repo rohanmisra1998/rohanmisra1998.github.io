@@ -1,22 +1,31 @@
 :root {
-  --paper: #f6f7f2;
-  --ink: #0b1f33;
-  --signal: #4c6fff;
-  --signal-text: #2949c7;
-  --signal-hover: #2949c7;
-  --saffron: #ffb000;
-  --field: #47705a;
-  --mist: #dde5e8;
-  --ink-muted: #46586a;
-  --ink-subtle: #536475;
-  --white: #ffffff;
+  --canvas: #f4f2ec;
+  --surface: #fffefb;
+  --surface-raised: #ffffff;
+  --ink: #151923;
+  --muted: #626b7a;
+  --line: #dfe3ea;
+  --accent: #315ee7;
+  --accent-ink: #ffffff;
+  --success: #287a55;
+  --shadow-soft: 0 16px 48px rgb(24 32 56 / 10%);
+  --radius-capsule: 999px;
+  --radius-card: 28px;
   --display: 'Bricolage Grotesque Variable', sans-serif;
   --body: 'DM Sans Variable', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
-  --content: min(1180px, calc(100vw - 48px));
-  --radius-sm: 12px;
-  --radius-lg: 30px;
-  --shadow: 0 24px 70px rgb(11 31 51 / 12%);
-  --space-section: clamp(5rem, 10vw, 9rem);
-  --rule: 1px solid rgb(11 31 51 / 16%);
+  --content: min(1240px, calc(100vw - 40px));
+  --space-section: clamp(5rem, 9vw, 8rem);
+}
+
+[data-theme='dark'] {
+  --canvas: #0d1119;
+  --surface: #141b27;
+  --surface-raised: #1a2331;
+  --ink: #f5f2ea;
+  --muted: #aeb7c7;
+  --line: #2b3748;
+  --accent: #7896ff;
+  --accent-ink: #0c1220;
+  --success: #6bc79a;
 }

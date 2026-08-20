@@ -1,45 +1,35 @@
-import { Proofline } from './Proofline'
+import type { PortfolioContent } from '../content/portfolio-types'
 import { publicAsset } from '../lib/publicAsset'
 
-interface HeroContent {
-  headline: string
-  subhead: string
-  location: string
+export interface HeroProps {
+  content: PortfolioContent['hero']
+  onOpenAssistant(trigger: HTMLButtonElement): void
 }
 
-interface HeroProps {
-  content: HeroContent
-}
-
-export function Hero({ content }: HeroProps) {
+export function Hero({ content, onOpenAssistant }: HeroProps) {
   return (
     <section className="hero" id="overview" aria-labelledby="hero-headline">
       <div className="hero__copy reveal">
-        <p className="hero__eyebrow">
-          <span>Tech-first operator</span>
-          <span aria-hidden="true">/</span>
-          <span>{content.location}</span>
-        </p>
+        <p className="hero__eyebrow">{content.eyebrow}</p>
         <h1 id="hero-headline">{content.headline}</h1>
         <p className="hero__subhead">{content.subhead}</p>
-        <div className="hero__actions" aria-label="Explore Rohan's work">
+        <p className="hero__current">{content.current}</p>
+        <div className="hero__actions" aria-label="Explore Rohan's portfolio">
           <a className="action action--primary" href="#work">
-            See what I’m building <span aria-hidden="true">↘</span>
+            Explore selected work
           </a>
-          <a className="action action--quiet" href="#writing">
-            Read my thinking <span aria-hidden="true">↘</span>
-          </a>
+          <button
+            className="action action--assistant"
+            type="button"
+            onClick={(event) => onOpenAssistant(event.currentTarget)}
+          >
+            Ask Rohan AI <span aria-hidden="true">✦</span>
+          </button>
+          <a className="action action--quiet" href="#writing">Read my writing</a>
         </div>
-        <dl className="hero__scope" aria-label="Current focus">
-          <div>
-            <dt>Working across</dt>
-            <dd>Marketplaces + operational scale</dd>
-          </div>
-          <div>
-            <dt>Growing focus</dt>
-            <dd>Applied AI</dd>
-          </div>
-        </dl>
+        <ul className="hero__chips" aria-label="Areas of expertise">
+          {content.chips.map((chip) => <li key={chip}>{chip}</li>)}
+        </ul>
       </div>
       <figure className="hero__portrait reveal">
         <picture>
@@ -51,14 +41,8 @@ export function Hero({ content }: HeroProps) {
             height="1150"
           />
         </picture>
-        <figcaption>
-          <span>Strategy as a toolkit.</span>
-          <span>Building as the goal.</span>
-        </figcaption>
+        <figcaption>Operator, strategist, and hands-on builder.</figcaption>
       </figure>
-      <div className="hero__proofline">
-        <Proofline variant="hero" />
-      </div>
     </section>
   )
 }

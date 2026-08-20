@@ -2,13 +2,18 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: 'production-csp.spec.ts',
   use: {
     baseURL: 'http://127.0.0.1:43917'
   },
   projects: [
     {
       name: 'chromium-desktop',
-      use: { browserName: 'chromium', viewport: { width: 1440, height: 900 } }
+      use: {
+        browserName: 'chromium',
+        launchOptions: { args: ['--disable-gpu'] },
+        viewport: { width: 1440, height: 900 }
+      }
     },
     {
       name: 'chromium-mobile',

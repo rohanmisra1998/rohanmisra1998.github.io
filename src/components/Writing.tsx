@@ -1,10 +1,11 @@
-import type { WritingItem } from '../content/types'
+import type { PublicResearchItem, WritingItem } from '../content/portfolio-types'
 
 interface WritingProps {
   items: WritingItem[]
+  publicResearch: PublicResearchItem
 }
 
-export function Writing({ items }: WritingProps) {
+export function Writing({ items, publicResearch }: WritingProps) {
   return (
     <section className="writing" id="writing" aria-labelledby="writing-heading">
       <div className="section-heading section-heading--writing">
@@ -33,6 +34,23 @@ export function Writing({ items }: WritingProps) {
             </span>
           </a>
         ))}
+        <a
+          className="writing-row writing-row--research"
+          href={publicResearch.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${publicResearch.title} — public report PDF, opens in a new tab`}
+        >
+          <p className="writing-row__date">Public research</p>
+          <div className="writing-row__body">
+            <h3>{publicResearch.title}</h3>
+            <p>{publicResearch.role} · {publicResearch.industry}</p>
+            <p className="writing-row__summary">{publicResearch.summary}</p>
+          </div>
+          <span className="writing-row__action">
+            Read PDF <span aria-hidden="true">↗</span>
+          </span>
+        </a>
       </div>
     </section>
   )

@@ -18,6 +18,44 @@ async function makeFixtureDirectory() {
   return directory
 }
 
+async function makeBuiltAssistantFixture({ chunkContents, mapSources, mapSourcesContent }) {
+  const directory = await makeFixtureDirectory()
+  const distDirectory = join(directory, 'dist')
+  const assetsDirectory = join(distDirectory, 'assets')
+  const manifestDirectory = join(distDirectory, '.vite')
+  await mkdir(assetsDirectory, { recursive: true })
+  await mkdir(manifestDirectory, { recursive: true })
+  await writeFile(join(manifestDirectory, 'manifest.json'), JSON.stringify({
+    'index.html': {
+      file: 'assets/main.js',
+      src: 'index.html',
+      isEntry: true,
+      dynamicImports: ['src/components/assistant/AssistantFeature.tsx']
+    },
+    'src/components/assistant/AssistantFeature.tsx': {
+      file: 'assets/AssistantFeature-fixture.js',
+      src: 'src/components/assistant/AssistantFeature.tsx',
+      isDynamicEntry: true,
+      css: ['assets/AssistantFeature-fixture.css']
+    }
+  }))
+  await writeFile(join(assetsDirectory, 'main.js'), 'const app = true')
+  await writeFile(
+    join(assetsDirectory, 'AssistantFeature-fixture.js'),
+    `${chunkContents}\n//# sourceMappingURL=AssistantFeature-fixture.js.map`
+  )
+  await writeFile(join(assetsDirectory, 'AssistantFeature-fixture.js.map'), JSON.stringify({
+    version: 3,
+    file: 'AssistantFeature-fixture.js',
+    sources: mapSources,
+    sourcesContent: mapSourcesContent,
+    names: [],
+    mappings: ''
+  }))
+  await writeFile(join(assetsDirectory, 'AssistantFeature-fixture.css'), '.assistant{}')
+  return distDirectory
+}
+
 function hasViolation(violations, fileName, rule) {
   return violations.some(
     (violation) => violation.includes(fileName) && violation.endsWith(`:${rule}`)
@@ -211,6 +249,55 @@ test('rejects direct contact links and email-shaped public copy', async () => {
   assert.equal(hasViolation(violations, 'address.txt', 'forbidden-email-address'), true)
 })
 
+test('rejects phone-number-shaped public copy and the obsolete report URL', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixtures = [
+    ['us-phone.txt', 'Call +1 (415) 555-0123 for details.'],
+    ['india-phone.txt', 'Call +91 98765 43210 for details.'],
+    ['uk-phone.txt', 'Call +44 20 7946 0958 for details.'],
+    ['alternate-india-grouping.txt', 'Call +91 9876 543 210 for details.'],
+    ['e164-phone.txt', 'Call +442079460958 for details.'],
+    ['international-prefix.txt', 'Call 0044 20 7946 0958 for details.'],
+    ['parenthesized-area.txt', 'Call +61 (2) 9374-4000 for details.'],
+    [
+      'obsolete-report.html',
+      '<a href="https://laureatesandleaders.org/a-fair-share-for-children-preventing-the-loss-of-a-generation-to-covid-19/">Report</a>'
+    ]
+  ]
+
+  for (const [fileName, contents] of fixtures) {
+    await writeFile(join(directory, fileName), contents)
+  }
+
+  const violations = await auditPaths([directory])
+
+  assert.equal(hasViolation(violations, 'us-phone.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'india-phone.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'uk-phone.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'alternate-india-grouping.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'e164-phone.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'international-prefix.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'parenthesized-area.txt', 'forbidden-phone-number'), true)
+  assert.equal(hasViolation(violations, 'obsolete-report.html', 'obsolete-report-url'), true)
+})
+
+test('does not mistake dates, CSS values, hashes, URLs, or ordinary metrics for phone numbers', async () => {
+  const directory = await makeFixtureDirectory()
+  const fixtures = [
+    ['dates.txt', 'Published 2026-08-19 at 15:48:30.123Z.'],
+    ['styles.css', '.panel { box-shadow: 0 24px 70px rgb(11 31 51 / 12%); }'],
+    ['hash.txt', 'Artifact 44700bb3bf134c7fa1e15adade4daa51 passed.'],
+    ['url.txt', 'Read https://example.com/releases/2026-08-19/build-20260819.'],
+    ['metrics.txt', '10+ pilots, ~15,000 hours, 8%+ improvement, and 200+ counties.']
+  ]
+
+  for (const [fileName, contents] of fixtures) {
+    const fixture = join(directory, fileName)
+    await writeFile(fixture, contents)
+    assert.deepEqual(await auditPaths([fixture]), [], fileName)
+  }
+})
+
 test('allows only the narrow synthetic email explicitly reserved for audit fixtures', async () => {
   const directory = await makeFixtureDirectory()
   const fixture = join(directory, 'allowlisted.txt')
@@ -250,6 +337,199 @@ test('scans web manifests, source maps, and XML as published text', async () => 
   assert.equal(hasViolation(violations, 'site.webmanifest', 'forbidden-email-address'), true)
   assert.equal(hasViolation(violations, 'bundle.js.map', 'forbidden-private-topic'), true)
   assert.equal(hasViolation(violations, 'sitemap.xml', 'forbidden-private-topic'), true)
+})
+
+test('rejects private source-document filenames embedded in decoded text', async () => {
+  const directory = await makeFixtureDirectory()
+  const sourceMap = join(directory, 'bundle.js.map')
+  await writeFile(sourceMap, JSON.stringify({
+    version: 3,
+    sources: ['../notes/Context_Handoff.md'],
+    names: [],
+    mappings: ''
+  }))
+
+  const violations = await auditPaths([sourceMap])
+
+  assert.equal(hasViolation(violations, 'bundle.js.map', 'forbidden-source-file'), true)
+})
+
+test('rejects whitespace-bearing private source-document references', async () => {
+  const directory = await makeFixtureDirectory()
+  const sourceMap = join(directory, 'bundle.js.map')
+  await writeFile(sourceMap, JSON.stringify({
+    version: 3,
+    sources: ['../notes/Context Handoff Notes.pdf'],
+    names: [],
+    mappings: ''
+  }))
+
+  const violations = await auditPaths([sourceMap])
+
+  assert.equal(hasViolation(violations, 'bundle.js.map', 'forbidden-source-file'), true)
+})
+
+test('rejects contact-shaped basenames for every physical entry before extension filtering', async () => {
+  const directory = await makeFixtureDirectory()
+  const internalDirectory = join(directory, 'internal')
+  const emailImage = 'portrait-person@example.invalid.png'
+  const phoneImage = 'portrait-415-555-0123.webp'
+  await mkdir(internalDirectory)
+  await writeFile(join(internalDirectory, emailImage), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+  await writeFile(join(internalDirectory, phoneImage), Buffer.from([0x52, 0x49, 0x46, 0x46]))
+
+  const violations = await auditPaths([directory])
+
+  assert.equal(hasViolation(violations, emailImage, 'forbidden-email-address'), true)
+  assert.equal(hasViolation(violations, phoneImage, 'forbidden-phone-number'), true)
+})
+
+test('applies basename privacy checks to physical directory entries', async () => {
+  const directory = await makeFixtureDirectory()
+  const privateDirectory = 'Context Handoff Notes'
+  const emailDirectory = 'person@example.invalid.png'
+  const phoneDirectory = '415-555-0123.webp'
+  await mkdir(join(directory, privateDirectory))
+  await mkdir(join(directory, emailDirectory))
+  await mkdir(join(directory, phoneDirectory))
+
+  const violations = await auditPaths([directory])
+
+  assert.equal(hasViolation(violations, privateDirectory, 'forbidden-source-file'), true)
+  assert.equal(hasViolation(violations, emailDirectory, 'forbidden-email-address'), true)
+  assert.equal(hasViolation(violations, phoneDirectory, 'forbidden-phone-number'), true)
+})
+
+test('rejects network and persistence capabilities in assistant source', async () => {
+  const directory = await makeFixtureDirectory()
+  const assistantDirectory = join(directory, 'src', 'assistant')
+  const componentDirectory = join(directory, 'src', 'components', 'assistant')
+  await mkdir(assistantDirectory, { recursive: true })
+  await mkdir(componentDirectory, { recursive: true })
+  const fixtures = [
+    ['fetch.ts', 'export const request = () => fetch("/api")'],
+    ['xhr.ts', 'export const request = new XMLHttpRequest()'],
+    ['socket.ts', 'export const socket = new WebSocket("wss://example.invalid")'],
+    ['beacon.ts', 'navigator.sendBeacon("/event", "x")'],
+    ['cookie.ts', 'export const cookie = document.cookie'],
+    ['worker.ts', 'serviceWorker.register("/worker.js")'],
+    ['session.ts', 'sessionStorage.setItem("draft", "x")'],
+    ['local.ts', 'localStorage.setItem("draft", "x")']
+  ]
+  for (const [fileName, contents] of fixtures.slice(0, 4)) {
+    await writeFile(join(assistantDirectory, fileName), contents)
+  }
+  for (const [fileName, contents] of fixtures.slice(4)) {
+    await writeFile(join(componentDirectory, fileName), contents)
+  }
+
+  const violations = await auditPaths([join(directory, 'src')])
+
+  for (const [fileName] of fixtures) {
+    assert.equal(
+      hasViolation(violations, fileName, 'forbidden-assistant-capability'),
+      true,
+      fileName
+    )
+  }
+})
+
+test('allows localStorage only in ThemeToggle and the exact theme bootstrap', async () => {
+  const directory = await makeFixtureDirectory()
+  const componentsDirectory = join(directory, 'src', 'components')
+  await mkdir(componentsDirectory, { recursive: true })
+  const themeToggle = join(componentsDirectory, 'ThemeToggle.tsx')
+  const unrelated = join(componentsDirectory, 'RememberMe.tsx')
+  const index = join(directory, 'index.html')
+  await writeFile(themeToggle, "const theme = window.localStorage.getItem('rohan-theme')")
+  await writeFile(unrelated, "const value = localStorage.getItem('other')")
+  await writeFile(
+    index,
+    `<script data-theme-bootstrap>(()=>{try{const k='rohan-theme',v=localStorage.getItem(k),m=matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=v==='light'||v==='dark'?v:(m?'dark':'light')}catch{document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}})();</script>`
+  )
+
+  assert.deepEqual(await auditPaths([themeToggle, index]), [])
+  assert.equal(
+    hasViolation(await auditPaths([unrelated]), 'RememberMe.tsx', 'forbidden-local-storage'),
+    true
+  )
+})
+
+test('allows test modules to emulate prohibited APIs while testing shipped behavior', async () => {
+  const directory = await makeFixtureDirectory()
+  const assistantDirectory = join(directory, 'src', 'components', 'assistant')
+  const componentsDirectory = join(directory, 'src', 'components')
+  await mkdir(assistantDirectory, { recursive: true })
+  await writeFile(
+    join(assistantDirectory, 'Assistant.test.tsx'),
+    "const storageSpy = vi.spyOn(Storage.prototype, 'setItem'); const xhr = XMLHttpRequest"
+  )
+  await writeFile(
+    join(componentsDirectory, 'ThemeToggle.test.tsx'),
+    "localStorage.setItem('rohan-theme', 'dark')"
+  )
+
+  assert.deepEqual(await auditPaths([join(directory, 'src')]), [])
+})
+
+test('rejects a forbidden capability introduced only in the emitted assistant chunk', async () => {
+  const distDirectory = await makeBuiltAssistantFixture({
+    chunkContents: 'const injected = () => fetch("/hidden")',
+    mapSources: ['../../src/components/assistant/AssistantFeature.tsx'],
+    mapSourcesContent: ['export default function AssistantFeature() { return null }']
+  })
+
+  const violations = await auditPaths([distDirectory])
+
+  assert.equal(
+    hasViolation(violations, 'AssistantFeature-fixture.js', 'forbidden-assistant-capability'),
+    true
+  )
+})
+
+test('rejects a forbidden capability present only in an aligned assistant source-map module', async () => {
+  const distDirectory = await makeBuiltAssistantFixture({
+    chunkContents: 'const assistant = true',
+    mapSources: [
+      '../../src/components/assistant/AssistantFeature.tsx',
+      '../../src/assistant/localAdapter.ts',
+      '../../src/components/assistant/Assistant.test.tsx'
+    ],
+    mapSourcesContent: [
+      'export default function AssistantFeature() { return null }',
+      'navigator.sendBeacon("/hidden", "x")',
+      'localStorage.setItem("test-only", "x")'
+    ]
+  })
+
+  const violations = await auditPaths([distDirectory])
+
+  assert.equal(
+    hasViolation(violations, 'AssistantFeature-fixture.js.map', 'forbidden-assistant-capability'),
+    true
+  )
+  assert.equal(
+    violations.some((violation) => violation.includes('Assistant.test.tsx')),
+    false
+  )
+})
+
+test('rejects contact data in published binary filenames without decoding the files', async () => {
+  const directory = await makeFixtureDirectory()
+  const publicDirectory = join(directory, 'public', 'images')
+  const privateSourceImage = 'Context_Handoff.png'
+  const emailImage = 'portrait-person@example.invalid.png'
+  const phoneImage = 'portrait-415-555-0123.webp'
+  await mkdir(publicDirectory, { recursive: true })
+  await writeFile(join(publicDirectory, privateSourceImage), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+  await writeFile(join(publicDirectory, emailImage), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+  await writeFile(join(publicDirectory, phoneImage), Buffer.from([0x52, 0x49, 0x46, 0x46]))
+
+  const violations = await auditPaths([join(directory, 'public')])
+
+  assert.equal(hasViolation(violations, privateSourceImage, 'forbidden-source-file'), true)
+  assert.equal(hasViolation(violations, emailImage, 'forbidden-email-address'), true)
+  assert.equal(hasViolation(violations, phoneImage, 'forbidden-phone-number'), true)
 })
 
 test('decodes UTF BOMs before applying privacy rules', async () => {
@@ -330,6 +610,29 @@ test('CLI exits cleanly for safe input and fails with one line per violation', a
         1
       )
       assert.match(error.stdout, /unsafe\.txt:forbidden-private-topic/)
+      return true
+    }
+  )
+})
+
+test('CLI default scans src, public, index.html, and dist', async () => {
+  const directory = await makeFixtureDirectory()
+  await mkdir(join(directory, 'src'))
+  await mkdir(join(directory, 'public'))
+  await mkdir(join(directory, 'dist'))
+  await writeFile(join(directory, 'src', 'safe.ts'), 'export const message = "Public portfolio copy."')
+  await writeFile(join(directory, 'public', 'safe.txt'), 'Public portfolio copy.')
+  await writeFile(join(directory, 'index.html'), '<main>Public portfolio copy.</main>')
+  await writeFile(
+    join(directory, 'dist', 'unsafe.html'),
+    '<p>Direct contact: person@example.invalid</p>'
+  )
+
+  await assert.rejects(
+    execFileAsync(process.execPath, [auditScript], { cwd: directory }),
+    (error) => {
+      assert.equal(error.code, 1)
+      assert.match(error.stdout, /dist[\\/]unsafe\.html:forbidden-email-address/)
       return true
     }
   )

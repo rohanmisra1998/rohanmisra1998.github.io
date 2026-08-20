@@ -1,62 +1,69 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { portfolioContent } from '../content/portfolio-content'
 import { SelectedWork } from './SelectedWork'
-import { siteContent } from '../content/site-content'
 
 afterEach(cleanup)
 
 describe('SelectedWork', () => {
-  it('keeps professional proof primary and Trail Pulse explicitly experimental', () => {
-    render(<SelectedWork projects={siteContent.work} />)
-    expect(screen.getByRole('article', { name: 'Transformation at scale' })).toHaveAttribute(
-      'data-emphasis', 'primary'
-    )
-    const trailPulse = screen.getByRole('article', { name: 'Trail Pulse' })
-    expect(trailPulse).toHaveAttribute('data-emphasis', 'secondary')
-    expect(trailPulse).toHaveTextContent('Builder Lab · AI-assisted experiment')
-    expect(trailPulse).toHaveTextContent('early vibe-coded product experiment')
-    expect(screen.getByText('What Trail Pulse does')).toBeInTheDocument()
+  it('shows six home-visible cases and reveals all eight in place', async () => {
+    const user = userEvent.setup()
+    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
+
+    expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(6)
+    expect(screen.queryByText('Performance and value-realization program')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'See all work' }))
+
+    expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(8)
+    expect(screen.getByText('Performance and value-realization program')).toBeVisible()
   })
 
-  it('renders every approved proof and the qualified Trail Pulse capabilities', () => {
-    render(<SelectedWork projects={siteContent.work} />)
-    const transformation = screen.getByRole('article', { name: 'Transformation at scale' })
-    for (const proof of [
-      '10+ pilots implemented',
-      '8%+ productivity improvement',
-      '~15K hours saved annually',
-      'Multi-year roadmaps'
-    ]) {
-      expect(within(transformation).getByText(proof)).toBeInTheDocument()
-    }
+  it('keeps Trail Pulse last and visually secondary in the initial collection', () => {
+    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
 
-    const trailPulse = screen.getByRole('article', { name: 'Trail Pulse' })
-    for (const capability of [
-      'Discovery + recommendations',
-      'Trail intelligence',
-      'Logistics',
-      'Exact navigation'
-    ]) {
-      expect(within(trailPulse).getByText(capability, { selector: 'h4' })).toBeInTheDocument()
-    }
-    expect(trailPulse).toHaveTextContent(
-      'When actual trail geometry passes strict validation, Trail Pulse exports the complete route as GPX/KML so the trail a user discovers is the trail they can navigate. Routes without defensible geometry remain honestly trailhead-only.'
+    const cards = screen.getAllByRole('article')
+    expect(cards).toHaveLength(6)
+    expect(cards.at(-1)).toHaveAccessibleName('Trail Pulse')
+    expect(cards.at(-1)).toHaveAttribute('data-emphasis', 'secondary')
+  })
+
+  it('shows approved evidence, industries, capability limits, and diligence disclosures', () => {
+    render(<SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />)
+
+    const workforce = screen.getByRole('article', { name: 'Workforce operations transformation' })
+    expect(within(workforce).getByText('Utilities')).toBeVisible()
+    expect(within(workforce).getByText('10+ pilots implemented · 8%+ workforce-productivity improvement')).toBeVisible()
+    expect(within(workforce).getAllByRole('listitem')).toHaveLength(3)
+
+    const diligence = screen.getByRole('article', { name: 'Buy-side commercial diligence' })
+    expect(diligence).toHaveTextContent('3+ buy-side diligences informing investor decisions')
+    expect(diligence).toHaveTextContent(
+      'Target identities, recommendations, conclusions, and transaction details remain private.'
     )
   })
 
-  it('keeps both external work actions exact and isolated from the opener', () => {
-    render(<SelectedWork projects={siteContent.work} />)
-    const report = screen.getByRole('link', { name: 'Read the report' })
-    expect(report).toHaveAttribute(
-      'href',
-      'https://laureatesandleaders.org/a-fair-share-for-children-preventing-the-loss-of-a-generation-to-covid-19/'
+  it('exposes a unique slug-derived visual variant for every case', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <SelectedWork items={portfolioContent.work} onOpenCase={vi.fn()} />
     )
+    await user.click(screen.getByRole('button', { name: 'See all work' }))
 
-    for (const link of [report, screen.getByRole('link', { name: 'Try Trail Pulse' })]) {
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link.getAttribute('rel')?.split(/\s+/)).toEqual(
-        expect.arrayContaining(['noopener', 'noreferrer'])
-      )
-    }
+    const variants = [...container.querySelectorAll<HTMLElement>('.case-card__visual')]
+      .map((visual) => visual.dataset.visualVariant)
+
+    expect(variants).toEqual([
+      'workforce-operations-transformation',
+      'buy-side-commercial-diligence',
+      'omnichannel-payments-strategy',
+      'talent-acquisition-operating-model',
+      'life-sciences-sector-and-value-creation-scan',
+      'trail-pulse',
+      'performance-and-value-realization-program',
+      'distribution-transformation-and-growth'
+    ])
+    expect(new Set(variants)).toHaveProperty('size', 8)
   })
 })

@@ -1,0 +1,52 @@
+# Rohan Misra portfolio
+
+A privacy-conscious React and TypeScript portfolio for an operator, strategist, and hands-on builder. The static Vite application includes accessible case-study dialogs, responsive navigation, persisted theme selection, and a deterministic local retrieval assistant grounded only in approved public portfolio content.
+
+## Architecture
+
+- `src/App.tsx` composes the page. Its single lazy `AssistantFeature` import is the assistant's only bundle boundary; the launcher placeholder keeps the initial layout stable while that chunk loads.
+- `src/components/` contains the semantic page sections, navigation, theme control, work cards, and modal case-study presentation.
+- `src/hooks/useCaseHistory.ts` synchronizes case studies with browser history and the `?case=` query contract.
+- `src/hooks/useModalLayer.ts` owns modal focus containment, background isolation, scroll locking, Escape handling, and focus restoration.
+- `src/hooks/usePortfolioLayers.ts` is the canonical layer controller. It serializes case-study and assistant surfaces, including focus-safe handoffs, so neither feature invents a competing owner.
+- `src/assistant/` contains deterministic normalization, retrieval, response policy, and state. `src/content/assistant-knowledge.ts` derives the answer corpus from approved public portfolio facts.
+- `src/content/portfolio-content.ts` is the single content authority. Its shape is enforced by `src/content/portfolio-types.ts`; components should consume this model rather than duplicate portfolio facts.
+- `src/lib/publicAsset.ts` resolves same-origin public assets through Vite's configured base path.
+- `scripts/` contains asset preparation, privacy auditing, script-test orchestration, and the rendered project-base smoke.
+
+The selected-work collection has eight typed work items. Exactly six have `homeVisible: true`; Trail Pulse is sixth and home-last, with secondary emphasis. Trail Pulse also appears in Builder Lab, so tests and consumers should scope lookups to the appropriate `Selected work` or `Builder Lab` region.
+
+## Browser contracts
+
+Case studies use a shareable `?case=<slug>` query. A valid slug opens its dialog on direct load. Opening a card pushes a history entry, closing returns to the prior URL when appropriate, and browser Back closes the dialog. Unknown slugs are removed without opening a case study. The dialog title precedes industry in document order, and modal focus is contained and restored.
+
+Theme preference is stored in local storage under `rohan-theme`. Supported values are `system`, `light`, and `dark`; `system` resolves from `prefers-color-scheme`.
+
+GitHub Pages builds derive their base path from `GITHUB_REPOSITORY`. Rendered same-origin assets must remain beneath that base, including `/rohan-portfolio/` for the project deployment.
+
+## Local assistant contract
+
+Ask Rohan AI is an on-page retrieval interface, not a generative model or virtual twin. It normalizes each question, scores a frozen allowlisted corpus, and returns only authored answers, clarification prompts, or a bounded fallback. Retrieval is synchronous and deterministic: opening or querying the assistant performs no network request and reads or writes no browser storage. Refresh therefore starts a new empty conversation.
+
+The surface has explicit closed, compact, expanded, and history-retaining minimized states. Only Clear conversation erases the transcript and topic. Citations target visible semantic sections, case handoffs pass through `usePortfolioLayers`, and the shared modal layer owns focus containment, page isolation, scroll locking, Escape, and focus restoration.
+
+## Privacy boundary
+
+The published site exposes approved portfolio copy and allowlisted HTTPS destinations only. The privacy audit recursively scans `src`, `public`, `index.html`, and `dist`; it rejects email and phone patterns, contact protocols, private-topic markers, source-document names, the obsolete public-report URL, unapproved published PDFs, malformed text, and symbolic links. The CV remains disabled unless an explicitly approved public artifact is added and the audit gate is deliberately enabled.
+
+Production builds are gated by a hash-based meta CSP with `connect-src 'none'`, a secured-dist real-browser test, the recursive privacy audit, and an assistant lazy-chunk budget. The CSP check proves the final HTML still loads its hashed inline boot code, module, styles, fonts, and same-origin images without violations while blocking connections.
+
+## Development and verification
+
+```powershell
+npm install
+npm run dev
+```
+
+Run the release verification before handoff:
+
+```powershell
+npm run verify
+```
+
+`npm run verify` preserves the required gate order: script tests, unit/component tests, project-base smoke, secured production build, assistant budget, privacy audit, production-CSP browser checks, and the complete Playwright suite. The Win32 visual baselines are deliberately reviewed release artifacts; snapshot comparisons remain zero-tolerance (`threshold: 0`, no masks) and changes require inspection rather than automatic acceptance.

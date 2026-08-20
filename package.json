@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "preview:dist": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
     "test:scripts": "node scripts/run-script-tests.mjs",
@@ -12,9 +13,12 @@
     "typecheck": "tsc -b",
     "assets": "node scripts/prepare-assets.mjs",
     "privacy:audit": "node scripts/privacy-audit.mjs src public index.html dist",
-    "build": "npm run assets && tsc -b && vite build",
+    "security:production": "node scripts/production-security.mjs dist/index.html",
+    "assistant:budget": "node scripts/assistant-budget.mjs dist/.vite/manifest.json",
+    "build": "npm run assets && tsc -b && vite build && npm run security:production",
     "test:e2e": "playwright test",
-    "verify": "npm run test:scripts && npm run test:run && npm run build && npm run test:base && npm run privacy:audit && npm run test:e2e"
+    "test:e2e:production": "playwright test --config=playwright.production.config.ts",
+    "verify": "npm run test:scripts && npm run test:run && npm run test:base && npm run build && npm run assistant:budget && npm run privacy:audit && npm run test:e2e:production && npm run test:e2e"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "5.3.0",

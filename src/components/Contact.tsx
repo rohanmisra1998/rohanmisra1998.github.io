@@ -1,4 +1,4 @@
-import type { ContactConfig } from '../content/types'
+import type { ContactConfig } from '../content/portfolio-types'
 
 interface ContactProps {
   config: ContactConfig
@@ -20,7 +20,6 @@ export function Contact({ config }: ContactProps) {
           <a href={config.linkedinHref} target="_blank" rel="noopener noreferrer">
             LinkedIn <span aria-hidden="true">↗</span>
           </a>
-          {config.emailHref && <a href={config.emailHref}>Email</a>}
           {config.resumeHref ? (
             <a href={config.resumeHref}>CV</a>
           ) : (

@@ -9,5 +9,5 @@ const pagesBase = process.env.GITHUB_ACTIONS
 export default defineConfig({
   base: pagesBase,
   plugins: [react()],
-  build: { target: 'es2022', sourcemap: true }
+  build: { target: 'es2022', sourcemap: true, manifest: true }
 })

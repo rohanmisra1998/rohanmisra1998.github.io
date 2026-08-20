@@ -4,7 +4,14 @@
   min-height: 100vh;
 }
 
-header,
+#page-shell {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header,
 .hero,
 main > section:not(.hero),
 main > [id]:not(.hero),
@@ -13,47 +20,51 @@ footer > * {
   margin-inline: auto;
 }
 
-header {
+.site-header {
+  position: sticky;
+  z-index: 20;
+  top: 16px;
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto 1fr auto;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
   align-items: center;
-  min-height: 76px;
+  min-height: 60px;
+  margin-top: 16px;
+  padding: 8px 10px 8px 20px;
 }
 
-header nav {
-  grid-column: 3;
+.site-header nav {
   justify-self: end;
 }
 
 .hero {
-  position: relative;
-  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(300px, 5fr);
-  gap: clamp(2.5rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 7.25fr) minmax(320px, 4.75fr);
+  gap: clamp(2.5rem, 6vw, 6.5rem);
   align-items: center;
-  min-height: 88svh;
-  padding-block: clamp(2.25rem, 4.5vh, 3rem);
+  min-height: calc(100svh - 92px);
+  padding-block: clamp(4rem, 8vw, 7.5rem);
 }
 
 .hero__copy,
 .hero__portrait {
-  position: relative;
-  z-index: 2;
+  min-width: 0;
 }
 
 main > section:not(.hero) {
   padding-block: var(--space-section);
 }
 
-main > [id]:not(.hero) {
-  scroll-margin-top: 6rem;
+main > #experience {
+  padding-top: calc(var(--space-section) * 1.15);
 }
 
-.work-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  gap: clamp(1rem, 2vw, 2rem);
+main > #builder-lab {
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+main > [id]:not(.hero) {
+  scroll-margin-top: 6.5rem;
 }
 
 footer {
@@ -61,57 +72,53 @@ footer {
 }
 
 @media (max-width: 900px) {
-  header {
-    grid-template-columns: 1fr auto;
-    min-height: 68px;
+  .site-header {
+    grid-template-columns: 1fr auto auto;
   }
 
-  header nav {
+  .site-header nav {
     grid-column: 1 / -1;
     justify-self: stretch;
   }
 
   .hero {
-    grid-template-columns: minmax(0, 6fr) minmax(260px, 4fr);
-    gap: clamp(1.75rem, 4vw, 3rem);
-  }
-
-  .work-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: clamp(2rem, 5vw, 3.5rem);
+    min-height: auto;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
   :root {
-    --content: calc(100vw - 32px);
+    --content: calc(100vw - 28px);
+  }
+
+  .site-header {
+    top: 10px;
+    min-height: 56px;
+    margin-top: 10px;
+    padding: 6px 6px 6px 16px;
   }
 
   .hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.75rem;
-    min-height: auto;
-    padding-block: clamp(3rem, 12vw, 4rem) 5rem;
+    gap: 3rem;
+    padding-block: clamp(2.5rem, 11vw, 5rem);
   }
 
   .hero__copy {
     grid-row: 1;
-    min-width: 0;
-  }
-
-  .hero__proofline {
-    grid-row: 2;
   }
 
   .hero__portrait {
-    grid-row: 3;
-    min-width: 0;
-  }
-
-  .work-grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-row: 2;
   }
 
   main > section:not(.hero) {
-    padding-block: clamp(4rem, 20vw, 6rem);
+    padding-block: clamp(4rem, 18vw, 6rem);
+  }
+
+  main > #builder-lab {
+    padding-block: 3.5rem;
   }
 }
