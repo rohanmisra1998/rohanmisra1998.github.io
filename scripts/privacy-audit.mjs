@@ -402,6 +402,27 @@ function hasForbiddenContact(contents) {
   return false
 }
 
+function hasForbiddenContactForFile(filePath, contents) {
+  if (!filePath.toLowerCase().endsWith('.map')) return hasForbiddenContact(contents)
+
+  try {
+    const sourceMap = JSON.parse(contents)
+    if (!sourceMap || typeof sourceMap !== 'object' || Array.isArray(sourceMap)) {
+      return hasForbiddenContact(contents)
+    }
+
+    const sourcesContent = Array.isArray(sourceMap.sourcesContent)
+      ? sourceMap.sourcesContent.filter((source) => typeof source === 'string')
+      : []
+    const mapMetadata = { ...sourceMap, sourcesContent: [] }
+
+    return hasForbiddenContact(JSON.stringify(mapMetadata))
+      || sourcesContent.some((source) => hasForbiddenContact(source))
+  } catch {
+    return hasForbiddenContact(contents)
+  }
+}
+
 async function auditBuiltAssistantArtifacts(entries, violations) {
   const manifests = [...entries.values()].filter(({ filePath, regularFile }) => (
     regularFile
@@ -496,7 +517,7 @@ export async function auditPaths(paths) {
       addViolation(violations, filePath, 'forbidden-source-file')
     }
     const contactAnalysis = analyzeContactEncoding(contents)
-    if (hasForbiddenContact(contents)) {
+    if (hasForbiddenContactForFile(filePath, contents)) {
       addViolation(violations, filePath, 'forbidden-contact-link')
     }
 

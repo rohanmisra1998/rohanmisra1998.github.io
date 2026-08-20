@@ -359,8 +359,11 @@ test('accepts exact current contact forms in source, built JavaScript, HTML, and
     ['dist/assets/contact.js', 'const c={email:"misrarohan619@gmail.com",href:"mailto:misrarohan619@gmail.com"};'],
     ['dist/assets/contact.js.map', JSON.stringify({
       version: 3,
-      sources: ['../../src/contact.ts'],
-      sourcesContent: ["export const href = 'mailto:misrarohan619@gmail.com';"],
+      sources: ['../../src/about.ts', '../../src/contact.ts'],
+      sourcesContent: [
+        'export const label = "builder\'s portfolio";',
+        "export const href = 'mailto:misrarohan619@gmail.com';"
+      ],
       names: [],
       mappings: ''
     })]
