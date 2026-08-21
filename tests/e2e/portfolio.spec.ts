@@ -117,23 +117,25 @@ test('case query supports direct load, close, and browser Back', async ({ page }
   await expect(page).toHaveURL('/')
 })
 
-test('selected work exposes six CV-grounded cases and Personal projects in three groups', async ({ page }) => {
+test('selected work exposes seven grounded cases and Personal projects in three groups', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
   const initialCards = selectedWork.getByRole('article')
 
-  await expect(initialCards).toHaveCount(8)
-  await expect(initialCards.nth(0)).toHaveAccessibleName('Omnichannel payments growth strategy')
-  await expect(initialCards.nth(7)).toHaveAccessibleName('Trail Pulse')
+  await expect(initialCards).toHaveCount(9)
+  await expect(initialCards.nth(0)).toHaveAccessibleName("Reimagining eBay's parts buyer experience")
+  await expect(initialCards.nth(8)).toHaveAccessibleName('Trail Pulse')
   await expect(selectedWork.getByRole('group', { name: 'Tech × AI × Growth' })).toBeVisible()
   await expect(selectedWork.getByRole('group', {
     name: 'Operations × Large-scale transformations'
   })).toBeVisible()
   await expect(selectedWork.getByRole('group', { name: 'Personal projects' })).toBeVisible()
+  await expect(selectedWork.getByText('eBay · Global marketplace')).toBeVisible()
+  await expect(selectedWork.getByText('~$XXM incremental GMV opportunity.')).toBeVisible()
   await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
   await expect(selectedWork.getByText('$150M+ realized GMV uplift.')).toBeVisible()
   await expect(selectedWork.getByText('~15,000 recruiting hours saved annually.')).toBeVisible()
-  await expect(selectedWork.locator('.case-card__impact-type')).toHaveCount(6)
+  await expect(selectedWork.locator('.case-card__impact-type')).toHaveCount(7)
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
   await expect(selectedWork.getByRole('button', { name: 'See all work' })).toHaveCount(0)
@@ -182,6 +184,10 @@ test('each professional case uses a distinct, case-specific geometric system', a
 
   expect(systems).toEqual([
     {
+      slug: 'end-to-end-parts-buyer-experience', system: 'fitment-journey',
+      parts: ['buyer-query', 'compatibility-gate', 'complete-the-job']
+    },
+    {
       slug: 'omnichannel-payments-strategy', system: 'payment-rails',
       parts: ['online-channel', 'payment-hub', 'pos-channel']
     },
@@ -206,7 +212,7 @@ test('each professional case uses a distinct, case-specific geometric system', a
       parts: ['therapy-product', 'distribution-hub', 'expansion-network']
     }
   ])
-  expect(new Set(systems.map(({ system }) => system))).toHaveProperty('size', 6)
+  expect(new Set(systems.map(({ system }) => system))).toHaveProperty('size', 7)
 })
 
 test('adjacent narrative sections keep a deliberate compact rhythm', async ({ page }) => {
@@ -277,6 +283,7 @@ test('portrait omits the decorative signal dot', async ({ page }) => {
 
 test('all case studies reveal classified impact before scrolling and expose ownership and judgment without reconstructed artifacts', async ({ page }) => {
   const cases = [
+    ['end-to-end-parts-buyer-experience', "Reimagining eBay's parts buyer experience"],
     ['omnichannel-payments-strategy', 'Omnichannel payments growth strategy'],
     ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence'],
     ['talent-acquisition-operating-model', 'AI-led talent acquisition transformation'],

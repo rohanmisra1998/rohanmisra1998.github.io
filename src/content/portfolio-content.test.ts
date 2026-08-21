@@ -14,8 +14,9 @@ describe('approved public portfolio content', () => {
       ])
   })
 
-  it('publishes six CV-grounded cases in the approved technology-first order', () => {
+  it('publishes seven grounded cases in the approved technology-first order', () => {
     expect(portfolioContent.work.map(({ slug }) => slug)).toEqual([
+      'end-to-end-parts-buyer-experience',
       'omnichannel-payments-strategy',
       'buy-side-commercial-diligence',
       'talent-acquisition-operating-model',
@@ -25,6 +26,7 @@ describe('approved public portfolio content', () => {
     ])
     expect(portfolioContent.work.map((item) => (item as unknown as { group?: string }).group))
       .toEqual([
+        'tech-ai-growth',
         'tech-ai-growth',
         'tech-ai-growth',
         'tech-ai-growth',
@@ -51,7 +53,15 @@ describe('approved public portfolio content', () => {
   })
 
   it('uses the approved scale, impact classes, and outcomes', () => {
-    const [payments, diligence, talent, utilities, automotive, pharma] = portfolioContent.work
+    const [ebay, payments, diligence, talent, utilities, automotive, pharma] = portfolioContent.work
+
+    expect(ebay).toMatchObject({
+      title: "Reimagining eBay's parts buyer experience",
+      industry: 'eBay · Global marketplace',
+      scale: "Global marketplace · One of commerce's most technical buying journeys",
+      impactType: 'In-flight impact',
+      outcome: '~$XXM incremental GMV opportunity.'
+    })
 
     expect(payments.industry).toContain("India's largest payments platform")
     expect(payments).toMatchObject({
@@ -101,6 +111,12 @@ describe('approved public portfolio content', () => {
     }))
 
     expect(copy).toEqual([
+      expect.objectContaining({
+        role: 'Strategy & operations program lead',
+        owned: expect.stringContaining('resourcing'),
+        decision: expect.stringContaining('compatibility confidence'),
+        approach: expect.stringContaining('verticalized buyer journey')
+      }),
       expect.objectContaining({
         role: 'Product strategy & GTM workstream lead',
         owned: expect.stringContaining('Core economics'),

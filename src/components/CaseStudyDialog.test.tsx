@@ -140,7 +140,9 @@ describe('CaseStudyDialog', () => {
   })
 
   it('exposes the integrated assistant action for the current work', () => {
-    const item = portfolioContent.work[0]
+    const item = portfolioContent.work.find(
+      ({ slug }) => slug === 'omnichannel-payments-strategy'
+    )!
     render(
       <>
         <div id="page-shell">Portfolio shell</div>

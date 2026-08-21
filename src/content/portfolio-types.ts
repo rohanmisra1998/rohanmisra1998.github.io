@@ -1,6 +1,7 @@
 export type WorkCategory = 'transformation' | 'diligence' | 'product'
 export type WorkGroup = 'tech-ai-growth' | 'operations-transformations'
 export type ImpactType =
+  | 'In-flight impact'
   | 'Investment decisions'
   | 'Realized impact'
   | 'Identified opportunity'

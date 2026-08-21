@@ -6,10 +6,10 @@ import { SelectedWork } from './SelectedWork'
 afterEach(cleanup)
 
 describe('SelectedWork', () => {
-  it('shows six approved cases followed by Personal projects inside Selected work', () => {
+  it('shows seven approved cases followed by Personal projects inside Selected work', () => {
     render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
 
-    expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(6)
+    expect(screen.getAllByRole('button', { name: /Open case study:/i })).toHaveLength(7)
     expect(screen.queryByRole('button', { name: 'See all work' })).not.toBeInTheDocument()
 
     const tech = screen.getByRole('group', { name: 'Tech × AI × Growth' })
@@ -19,6 +19,7 @@ describe('SelectedWork', () => {
     const projects = screen.getByRole('group', { name: 'Personal projects' })
     expect(within(tech).getAllByRole('article').map((card) => card.getAttribute('aria-labelledby')))
       .toEqual([
+        'work-end-to-end-parts-buyer-experience-heading',
         'work-omnichannel-payments-strategy-heading',
         'work-buy-side-commercial-diligence-heading',
         'work-talent-acquisition-operating-model-heading'
@@ -34,6 +35,11 @@ describe('SelectedWork', () => {
 
   it('leads with CV-grounded outcomes, industries, and technical transformation skills', () => {
     render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
+
+    const ebay = screen.getByRole('article', { name: "Reimagining eBay's parts buyer experience" })
+    expect(within(ebay).getByText('eBay · Global marketplace')).toBeVisible()
+    expect(ebay).toHaveTextContent('~$XXM incremental GMV opportunity')
+    expect(ebay).toHaveTextContent('Buyer-experience strategy')
 
     const payments = screen.getByRole('article', { name: 'Omnichannel payments growth strategy' })
     expect(within(payments).getByText(/India's largest payments platform/)).toBeVisible()
@@ -55,16 +61,16 @@ describe('SelectedWork', () => {
       .getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
   })
 
-  it('labels the impact on six equally weighted cards', () => {
+  it('labels the impact on seven equally weighted cards', () => {
     const { container } = render(
       <SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />
     )
 
-    expect(screen.getAllByText(/^(Investment decisions|Realized impact|Identified opportunity|Execution result)$/))
-      .toHaveLength(6)
+    expect(screen.getAllByText(/^(In-flight impact|Investment decisions|Realized impact|Identified opportunity|Execution result)$/))
+      .toHaveLength(7)
 
     const cases = [...container.querySelectorAll<HTMLElement>('.case-card')]
-    expect(cases).toHaveLength(6)
+    expect(cases).toHaveLength(7)
     expect(cases.every((card) => card.dataset.emphasis === 'primary')).toBe(true)
     expect(container.querySelector('[data-featured]')).not.toBeInTheDocument()
   })
@@ -78,6 +84,7 @@ describe('SelectedWork', () => {
       .map((visual) => visual.dataset.visualVariant)
 
     expect(variants).toEqual([
+      'end-to-end-parts-buyer-experience',
       'omnichannel-payments-strategy',
       'buy-side-commercial-diligence',
       'talent-acquisition-operating-model',
@@ -85,6 +92,6 @@ describe('SelectedWork', () => {
       'performance-and-value-realization-program',
       'pharma-life-sciences-growth-transformation'
     ])
-    expect(new Set(variants)).toHaveProperty('size', 6)
+    expect(new Set(variants)).toHaveProperty('size', 7)
   })
 })

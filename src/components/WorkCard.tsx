@@ -6,6 +6,7 @@ interface WorkCardProps {
 }
 
 const visualParts: Record<string, readonly [string, string, string]> = {
+  'end-to-end-parts-buyer-experience': ['buyer-query', 'compatibility-gate', 'complete-the-job'],
   'omnichannel-payments-strategy': ['online-channel', 'payment-hub', 'pos-channel'],
   'buy-side-commercial-diligence': ['market-evidence', 'investment-filter', 'risk-evidence'],
   'talent-acquisition-operating-model': ['candidate-flow', 'ai-orchestration', 'capacity-release'],

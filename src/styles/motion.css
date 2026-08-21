@@ -69,14 +69,14 @@
 
 .case-card:hover .case-card__visual::before,
 .case-card:focus-within .case-card__visual::before {
-  transform: translate(var(--case-shift-x), var(--case-shift-y)) rotate(calc(var(--case-turn) + 4deg)) scale(1.02);
+  transform: translate(var(--case-shift-x), var(--case-shift-y)) rotate(calc(var(--case-turn) + 4deg)) scale(1.019);
 }
 
 .case-card:hover .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before,
 .case-card:focus-within .case-card__visual[data-visual-variant='buy-side-commercial-diligence']::before,
 .case-card:hover .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before,
 .case-card:focus-within .case-card__visual[data-visual-variant='performance-and-value-realization-program']::before {
-  transform: translateX(-50%) rotate(calc(var(--case-turn) + 4deg)) scale(1.02);
+  transform: translateX(-50%) rotate(calc(var(--case-turn) + 4deg)) scale(1.019);
 }
 
 .case-card__open:hover span:last-child,
