@@ -1757,8 +1757,8 @@ footer p {
   width: 100%;
   max-width: 100%;
   margin-bottom: 0.75rem;
-  overflow-wrap: anywhere;
-  font-size: clamp(2.5rem, 3.5vw, 4rem);
+  overflow-wrap: normal;
+  font-size: clamp(2.35rem, 3vw, 3.5rem);
   line-height: 0.96;
 }
 

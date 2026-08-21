@@ -688,6 +688,26 @@ test('case dialog presents title before industry in the accessibility reading or
   expect(titleGeometry.textRight).toBeLessThanOrEqual(titleGeometry.titleRight + 1)
 })
 
+test('desktop case titles do not split words across lines', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'One desktop typography contract')
+
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.goto('/?case=omnichannel-payments-strategy')
+  const title = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+    .getByRole('heading', { level: 2, name: 'Omnichannel payments strategy' })
+
+  const firstWordLineCount = await title.evaluate((element) => {
+    const textNode = element.firstChild
+    if (!(textNode instanceof Text)) throw new Error('Case title must start with a text node')
+    const range = document.createRange()
+    range.setStart(textNode, 0)
+    range.setEnd(textNode, 'Omnichannel'.length)
+    return range.getClientRects().length
+  })
+
+  expect(firstWordLineCount, 'Omnichannel split inside the word').toBe(1)
+})
+
 test('mobile launcher never overlaps or intercepts a visible hero action', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'One direct 320px/390px geometry contract')
 
