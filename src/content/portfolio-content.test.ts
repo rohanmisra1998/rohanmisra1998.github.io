@@ -39,40 +39,80 @@ describe('approved public portfolio content', () => {
       expect(item.thesis).not.toBe('')
       expect(item.challenge).not.toBe('')
       expect(item.approach).not.toBe('')
-      expect((item as unknown as { outcome?: string }).outcome).not.toBe('')
-      expect(item).not.toHaveProperty('role')
-      expect(item).not.toHaveProperty('evidence')
+      expect(item.outcome).not.toBe('')
+      expect(item.scale).not.toBe('')
+      expect(item.impactType).not.toBe('')
+      expect(item.role.position).not.toBe('')
+      expect(item.role.owned).not.toBe('')
+      expect(item.role.partneredWith).not.toBe('')
+      expect(item.keyDecision).not.toBe('')
+      expect(item.artifact.title).not.toBe('')
+      expect(item.artifact.nodes.length).toBeGreaterThanOrEqual(4)
     }
+
+    expect(new Set(portfolioContent.work.map(({ artifact }) => artifact.kind)).size).toBe(6)
   })
 
-  it('uses the approved CV scale and metrics while keeping personal builds separate', () => {
-    const payments = portfolioContent.work[0] as unknown as { industry: string; outcome: string }
-    const talent = portfolioContent.work[2] as unknown as { title: string; approach: string; outcome: string }
-    const utilities = portfolioContent.work[3] as unknown as { outcome: string }
-    const automotive = portfolioContent.work[4] as unknown as { outcome: string }
-    const pharma = portfolioContent.work[5] as unknown as { challenge: string; approach: string; outcome: string }
+  it('uses the approved scale, impact classes, and outcomes', () => {
+    const [payments, diligence, talent, utilities, automotive, pharma] = portfolioContent.work
 
     expect(payments.industry).toContain("India's largest payments platform")
-    expect(payments.outcome).toContain('$150M+')
-    expect(portfolioContent.work[1].outcome).toBe('Informed X buy-side investment theses.')
-    expect(talent.title).toBe('AI-powered recruiting transformation')
-    expect(talent.approach).toMatch(/AI-tool integrations.*Paradox/i)
-    expect(talent.outcome).toBe('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')
-    expect(utilities.outcome).toMatch(/\$20M\+.*8%\+/)
-    expect(automotive.outcome).toContain('$40M+')
-    expect(pharma.approach).toMatch(/770\+ counties.*adult-vaccine/i)
-    expect(pharma.challenge).toMatch(/^Across separate engagements,/i)
-    expect(pharma.outcome).toMatch(/30%\+.*200\+ counties/i)
+    expect(payments).toMatchObject({
+      scale: "India's largest payments platform · Four-year roadmap",
+      impactType: 'Modeled opportunity',
+      outcome: '$150M+ value-uplift path.'
+    })
+    expect(diligence).toMatchObject({
+      scale: 'Multiple buy-side diligences · B2B SaaS and logistics',
+      impactType: 'Decision impact',
+      outcome: 'Informed X buy-side investment theses.'
+    })
+    expect(talent).toMatchObject({
+      scale: 'Close to 1M applicants annually',
+      impactType: 'Implementation target',
+      outcome: '~15,000 hours of annual recruiting and talent-team capacity.'
+    })
+    expect(utilities).toMatchObject({
+      scale: '~$9B enterprise · 10+ operating centers',
+      impactType: 'Realized impact',
+      outcome: '$20M+ delivered savings · 8%+ productivity improvement.'
+    })
+    expect(automotive).toMatchObject({
+      scale: '~$15B enterprise · Five regions · 10+ levers',
+      impactType: 'Validated opportunity',
+      outcome: '$40M+ savings identified across five regions.'
+    })
+    expect(pharma).toMatchObject({
+      scale: '~$4B enterprise · 700+ districts assessed',
+      impactType: 'Execution result',
+      outcome: '30%+ distributor rationalization · ~200 priority markets.'
+    })
+  })
+
+  it('keeps personal builds separate and frames Trail Pulse as technical agency', () => {
+    const personalProjects = portfolioContent.personalProjects
 
     expect(portfolioContent.work.filter(({ category }) => category === 'diligence')
       .every((item) => !('maturityNote' in item))).toBe(true)
-    const personalProjects = (portfolioContent as unknown as {
-      personalProjects?: typeof portfolioContent.personalProjects
-    }).personalProjects
     expect(personalProjects?.find(({ slug }) => slug === 'trail-pulse')?.honestyNote)
-      .toBe('An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.')
+      .toBe('An early AI-assisted prototype built end-to-end to learn modern product development and demonstrate technical agency.')
     expect(portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')).toBeUndefined()
     expect(serialized).not.toMatch(/No target|Target identities|transaction detail is disclosed/i)
+    expect(serialized).not.toMatch(/vibe-coded/i)
+  })
+
+  it('shows exactly the two approved Bain proof points', () => {
+    expect(portfolioContent.about.achievements).toEqual([
+      {
+        metric: '5 promotions',
+        detail: 'Five promotions in under four years at Bain on a top-rated, accelerated trajectory.'
+      },
+      {
+        metric: '~$250M',
+        detail: '~$250M in value across Bain engagements.'
+      }
+    ])
+    expect(serialized).not.toMatch(/Youngest student|\$210M\+/i)
   })
 
   it('publishes only the approved direct email action and no private phone data', () => {
