@@ -82,12 +82,6 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
           </aside>
 
           <div className="case-dialog__narrative">
-            {item.keyDecision && (
-              <section role="region" aria-label="Key decision" className="case-dialog__decision">
-                <p>Key decision</p>
-                <h3>{item.keyDecision}</h3>
-              </section>
-            )}
             <section role="region" aria-label="Challenge">
               <p>Challenge</p>
               <h3>{item.challenge}</h3>

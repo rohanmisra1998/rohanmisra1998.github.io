@@ -150,7 +150,7 @@ test('selected work exposes seven grounded cases and Personal projects in three 
   await expect(diligenceDialog.getByRole('region', { name: 'My role' })).toContainText(
     'Commercial diligence workstream lead'
   )
-  await expect(diligenceDialog.getByRole('region', { name: 'Key decision' })).toBeVisible()
+  await expect(diligenceDialog.getByRole('region', { name: 'Key decision' })).toHaveCount(0)
   await expect(diligenceDialog.getByText('X buy-side investment theses informed.')).toBeVisible()
   await expect(diligenceDialog.locator('[data-artifact-kind]')).toHaveCount(0)
   await expect(diligenceDialog.locator('figure')).toHaveCount(0)
@@ -283,7 +283,7 @@ test('portrait omits the decorative signal dot', async ({ page }) => {
   expect(signalContent).toBe('none')
 })
 
-test('all case studies reveal classified impact before scrolling and expose ownership and judgment without reconstructed artifacts', async ({ page }) => {
+test('all case studies reveal classified impact before scrolling and expose ownership without decision callouts or reconstructed artifacts', async ({ page }) => {
   const cases = [
     [
       'end-to-end-parts-buyer-experience',
@@ -315,11 +315,7 @@ test('all case studies reveal classified impact before scrolling and expose owne
         `${viewport.width}px ${title} impact is not fully visible when the case opens`
       ).toBeLessThanOrEqual(viewport.height)
       await expect(dialog.getByRole('region', { name: 'My role' })).toBeVisible()
-      if (slug === 'end-to-end-parts-buyer-experience') {
-        await expect(dialog.getByRole('region', { name: 'Key decision' })).toHaveCount(0)
-      } else {
-        await expect(dialog.getByRole('region', { name: 'Key decision' })).toBeAttached()
-      }
+      await expect(dialog.getByRole('region', { name: 'Key decision' })).toHaveCount(0)
       await expect(dialog.locator('[data-artifact-kind]')).toHaveCount(0)
       await expect(dialog.locator('figure')).toHaveCount(0)
       expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)

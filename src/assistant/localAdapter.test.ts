@@ -250,7 +250,7 @@ describe('localAssistantAdapter', () => {
     ['Tell me about his utility workforce work', 'workforce-operations-transformation'],
     ["What is Rohan's private-equity diligence experience?", 'buy-side-commercial-diligence'],
     ['How has he worked across product strategy and GTM?', 'omnichannel-payments-strategy']
-  ])('answers %s with ownership, judgment, and classified impact', async (input, slug) => {
+  ])('answers %s with ownership and classified impact without a decision callout', async (input, slug) => {
     const item = portfolioContent.work.find((work) => work.slug === slug)!
     const reply = await localAssistantAdapter.reply(
       { input, history: [] },
@@ -264,7 +264,7 @@ describe('localAssistantAdapter', () => {
     if (reply.kind !== 'answer') return
     expect(reply.text).toContain(item.role.position)
     expect(reply.text).toContain(item.role.owned)
-    expect(reply.text).toContain(item.keyDecision!)
+    expect(reply.text).not.toContain('Key decision:')
     expect(reply.text).toContain(`${item.impactType}: ${item.outcome}`)
   })
 

@@ -47,11 +47,7 @@ describe('approved public portfolio content', () => {
       expect(item.role.position).not.toBe('')
       expect(item.role.owned).not.toBe('')
       expect(item.role.partneredWith).not.toBe('')
-      if (item.slug === 'end-to-end-parts-buyer-experience') {
-        expect(item.keyDecision).toBeUndefined()
-      } else {
-        expect(item.keyDecision).not.toBe('')
-      }
+      expect(item).not.toHaveProperty('keyDecision')
       expect(item).not.toHaveProperty('artifact')
     }
   })
@@ -105,11 +101,10 @@ describe('approved public portfolio content', () => {
     })
   })
 
-  it('frames every consulting case around ownership and uses a decision callout only where it adds value', () => {
-    const copy = portfolioContent.work.map(({ role, keyDecision, challenge, approach }) => ({
+  it('frames every consulting case around ownership, challenge, and approach', () => {
+    const copy = portfolioContent.work.map(({ role, challenge, approach }) => ({
       role: role.position,
       owned: role.owned,
-      decision: keyDecision,
       challenge,
       approach
     }))
@@ -118,17 +113,14 @@ describe('approved public portfolio content', () => {
       expect.objectContaining({
         role: 'Strategy & operations program lead',
         owned: expect.stringContaining('resourcing'),
-        decision: undefined,
         approach: expect.stringContaining('verticalized buyer journey')
       }),
       expect.objectContaining({
         role: 'Product strategy & GTM workstream lead',
-        owned: expect.stringContaining('Core economics'),
-        decision: expect.stringContaining('maximum transaction value')
+        owned: expect.stringContaining('Core economics')
       }),
       expect.objectContaining({
-        role: 'Commercial diligence workstream lead',
-        decision: expect.stringContaining('market conviction first')
+        role: 'Commercial diligence workstream lead'
       }),
       expect.objectContaining({
         role: 'Cross-functional transformation lead',
@@ -136,12 +128,10 @@ describe('approved public portfolio content', () => {
         approach: expect.stringContaining('AI screening and scheduling')
       }),
       expect.objectContaining({
-        role: 'End-to-end transformation lead',
-        decision: expect.stringContaining('frontline resistance')
+        role: 'End-to-end transformation lead'
       }),
       expect.objectContaining({
-        role: 'Supply-chain transformation workstream lead',
-        decision: expect.stringContaining('cross-border integration thesis')
+        role: 'Supply-chain transformation workstream lead'
       }),
       expect.objectContaining({
         role: 'Commercial growth & life-sciences strategy workstream lead',

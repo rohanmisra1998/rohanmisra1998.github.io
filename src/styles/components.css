@@ -1878,10 +1878,6 @@ footer p {
   border-top: 0;
 }
 
-.case-dialog__decision h3 {
-  color: var(--accent);
-}
-
 .case-dialog__narrative section > p,
 .case-dialog__outcome > p {
   margin-bottom: 0.8rem;

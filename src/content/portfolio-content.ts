@@ -42,7 +42,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Core economics, merchant segmentation, product-roadmap phasing, sales operating model, and partnership strategy.',
         partneredWith: 'Product, sales, partnerships, and executive leadership.'
       },
-      keyDecision: 'Set maximum transaction value as the north star, then sequenced merchant features against value, time to market, and scalability—resolving the tension between a reusable platform core and one-off customization.',
       capabilities: ['Product roadmaps', 'Go-to-market design', 'Sales operating model', 'Partnership strategy'],
       thesis: 'Turn an offline point-of-sale acquisition into a scaled omnichannel payments growth engine.',
       challenge: 'Define the economics and rollout of a new omnichannel proposition without a clear Indian-market precedent or complete data.',
@@ -59,7 +58,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Market model, investment-thesis pressure test, competitive positioning, risk synthesis, and value-creation prioritization.',
         partneredWith: 'Investment teams, case leadership, and industry experts.'
       },
-      keyDecision: 'Established market conviction first because it determined the go/no-go call, then focused the remaining diligence on the value-creation levers that could change returns.',
       capabilities: ['Market assessment', 'Competitive positioning', 'Right-to-win analysis', 'Risk synthesis'],
       thesis: 'Convert incomplete evidence into a decision-ready view of market quality, right to win, downside risk, and value creation.',
       challenge: 'Evaluate fast-moving B2B SaaS and logistics businesses with incomplete evidence under compressed investment timelines.',
@@ -76,7 +74,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'End-to-end journey diagnostic, AI workflow design, interview redesign, pilot launch, adoption model, success metrics, and multiyear roadmap.',
         partneredWith: 'Recruiting, HR, hiring managers, and executive leadership.'
       },
-      keyDecision: 'Aligned recruiting, HR, and hiring managers on candidate experience, process consistency, and stakeholder time, then proved the model with early adopters before scaling.',
       capabilities: ['AI-tool integration', 'Process redesign', 'Operating model', 'Multiyear planning'],
       thesis: 'Redesign recruiting around AI so teams spend less time on manual work while candidates move through a faster, more consistent process.',
       challenge: 'Transform a fragmented hiring journey whose stakeholders were optimizing for different outcomes across close to one million applicants annually.',
@@ -93,7 +90,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Scoping, diagnostic, workforce-model design, pilot implementation, frontline adoption, and scale-up path.',
         partneredWith: 'Site leaders, supervisors, planners, schedulers, and frontline crews.'
       },
-      keyDecision: 'After the first pilot met frontline resistance, reset the rollout to prove the model at one operating center, then used frontline champions to scale the change.',
       capabilities: ['Workforce operations', 'Pilot design', 'Process redesign', 'Stakeholder alignment'],
       thesis: 'Turn field-workforce planning into a repeatable operating system that improves productivity and lowers cost.',
       challenge: 'Redesign planning, scheduling, crew assignment, and workforce management across electricity operating centers while overcoming frontline resistance.',
@@ -110,7 +106,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Regional fact base, lever sizing and prioritization, future-state operating model, C-suite alignment, and multiyear roadmap.',
         partneredWith: 'Regional leaders and C-suite stakeholders.'
       },
-      keyDecision: 'Abandoned the original cross-border integration thesis when external risk shifted, then rebuilt the value agenda around resilient regional levers.',
       capabilities: ['Supply chain', 'Value-lever identification', 'Executive workshops', 'Implementation roadmaps'],
       thesis: 'Convert a fragmented regional supply chain into a sequenced, executable performance agenda.',
       challenge: 'Unlock performance across acquisition-built regional operations while navigating local autonomy and changing cross-border risk.',
@@ -127,7 +122,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Distributor-performance diagnostic, channel rationalization, district prioritization, adult-vaccine sector scan, and add-on acquisition opportunity assessment.',
         partneredWith: 'Commercial, regional, and investment teams.'
       },
-      keyDecision: 'Concentrated resources instead of expanding indiscriminately—pruning underperforming distributors while prioritizing the strongest geographic markets and life-sciences adjacencies.',
       capabilities: ['Distribution transformation', 'Market entry', 'Sector mapping', 'Acquisition-led value creation'],
       thesis: 'Focus commercial and investment resources on the channels, markets, and adjacencies with the strongest right to win.',
       challenge: 'Across separate engagements, reshape a fragmented pharmaceutical distribution network and identify acquisition-led life-sciences opportunities.',
