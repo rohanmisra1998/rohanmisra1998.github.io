@@ -131,8 +131,9 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
   })).toBeVisible()
   await expect(selectedWork.getByRole('group', { name: 'Personal projects' })).toBeVisible()
   await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
-  await expect(selectedWork.getByText('Created a path to $150M+ in value uplift.')).toBeVisible()
-  await expect(selectedWork.getByText('Built the AI-enabled recruiting transformation to unlock ~15,000 hours of annual recruiter and talent-team capacity.')).toBeVisible()
+  await expect(selectedWork.getByText('$150M+ value-uplift path.')).toBeVisible()
+  await expect(selectedWork.getByText('~15,000 hours of annual recruiting and talent-team capacity.')).toBeVisible()
+  await expect(selectedWork.locator('.case-card__impact-type')).toHaveCount(6)
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
   await expect(selectedWork.getByRole('button', { name: 'See all work' })).toHaveCount(0)
@@ -142,10 +143,12 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
     .click()
   const diligenceDialog = page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
   await expect(diligenceDialog.getByText('Technology investing · B2B SaaS and logistics')).toBeVisible()
-  await expect(diligenceDialog.getByText('Market assessment')).toBeVisible()
-  await expect(diligenceDialog.getByText('Outcome')).toBeVisible()
+  await expect(diligenceDialog.getByRole('region', { name: 'My role' })).toContainText(
+    'Commercial-diligence workstream lead'
+  )
+  await expect(diligenceDialog.getByRole('region', { name: 'Key decision' })).toBeVisible()
   await expect(diligenceDialog.getByText('Informed X buy-side investment theses.')).toBeVisible()
-  await expect(diligenceDialog.getByText('Role', { exact: true })).toHaveCount(0)
+  await expect(diligenceDialog.locator('[data-artifact-kind="investment-filter"]')).toBeVisible()
   await expect(diligenceDialog.getByText('Evidence', { exact: true })).toHaveCount(0)
   await expect(diligenceDialog.locator('.case-dialog__disclosure')).toHaveCount(0)
   await expect(diligenceDialog).not.toContainText(/target identities|transaction detail is disclosed/i)
@@ -157,7 +160,7 @@ test('Trail Pulse remains an honest Personal project rather than professional wo
   const personalProjects = selectedWork.getByRole('group', { name: 'Personal projects' })
   const builderTrailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
   await expect(builderTrailPulse.getByText(
-    'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
+    'An early AI-assisted prototype built end-to-end to learn modern product development and demonstrate technical agency.',
     { exact: true }
   )).toBeVisible()
   await expect(builderTrailPulse.getByRole('link', { name: 'Try Trail Pulse' })).toHaveAttribute(
@@ -271,28 +274,69 @@ test('portrait omits the decorative signal dot', async ({ page }) => {
   expect(signalContent).toBe('none')
 })
 
-test('case studies reveal Outcome without scrolling at desktop and 390px', async ({ page }) => {
+test('all case studies reveal classified impact before scrolling and expose ownership, judgment, and artifacts', async ({ page }) => {
+  const cases = [
+    ['omnichannel-payments-strategy', 'Omnichannel payments strategy', 'merchant-economics'],
+    ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence', 'investment-filter'],
+    ['talent-acquisition-operating-model', 'AI-powered recruiting transformation', 'candidate-journey'],
+    ['workforce-operations-transformation', 'Utilities workforce transformation', 'pilot-operating-model'],
+    ['performance-and-value-realization-program', 'Automotive performance transformation', 'value-roadmap'],
+    ['pharma-life-sciences-growth-transformation', 'Pharma & life-sciences growth transformation', 'commercial-portfolio']
+  ] as const
+
   for (const viewport of [
     { width: 1440, height: 900 },
     { width: 390, height: 844 }
   ]) {
     await page.setViewportSize(viewport)
-    await page.goto('/')
-    await page.getByRole('button', {
-      name: 'Open case study: B2B SaaS & logistics investment diligence'
-    }).click()
-
-    const outcome = page.locator('.case-dialog__outcome')
-    const box = await outcome.boundingBox()
-    expect(box, `${viewport.width}px Outcome has no rendered box`).not.toBeNull()
-    expect(box!.y, `${viewport.width}px Outcome starts above the viewport`).toBeGreaterThanOrEqual(0)
-    expect(
-      box!.y + box!.height,
-      `${viewport.width}px Outcome is not fully visible when the case opens`
-    ).toBeLessThanOrEqual(viewport.height)
-
-    await page.getByRole('button', { name: 'Close case study' }).click()
+    for (const [slug, title, artifactKind] of cases) {
+      await page.goto(`/?case=${slug}`)
+      const dialog = page.getByRole('dialog', { name: title })
+      const outcome = dialog.locator('.case-dialog__outcome')
+      const box = await outcome.boundingBox()
+      expect(box, `${viewport.width}px ${title} impact has no rendered box`).not.toBeNull()
+      expect(box!.y, `${viewport.width}px ${title} impact starts above the viewport`)
+        .toBeGreaterThanOrEqual(0)
+      expect(
+        box!.y + box!.height,
+        `${viewport.width}px ${title} impact is not fully visible when the case opens`
+      ).toBeLessThanOrEqual(viewport.height)
+      await expect(dialog.getByRole('region', { name: 'My role' })).toBeVisible()
+      await expect(dialog.getByRole('region', { name: 'Key decision' })).toBeAttached()
+      const artifact = dialog.locator(`[data-artifact-kind="${artifactKind}"]`)
+      await expect(artifact).toBeAttached()
+      const containedNodes = await artifact.evaluate((figure) => {
+        const boundary = figure.getBoundingClientRect()
+        return Array.from(figure.querySelectorAll('.case-artifact__nodes li')).every((node) => {
+          const box = node.getBoundingClientRect()
+          return box.left >= boundary.left
+            && box.right <= boundary.right
+            && box.top >= boundary.top
+            && box.bottom <= boundary.bottom
+        })
+      })
+      expect(containedNodes, `${viewport.width}px ${title} artifact clipped a decision node`)
+        .toBe(true)
+      expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
+    }
   }
+})
+
+test('the two approved proof points fill the profile evenly', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Read more about me' }).click()
+
+  const proof = page.getByRole('list', { name: 'Career highlights' })
+  const items = proof.getByRole('listitem')
+  await expect(items).toHaveCount(2)
+  const [proofBox, itemBoxes] = await Promise.all([
+    proof.boundingBox(),
+    items.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width))
+  ])
+  expect(proofBox).not.toBeNull()
+  expect(itemBoxes[0]).toBeCloseTo(itemBoxes[1], 0)
+  expect(itemBoxes[0] + itemBoxes[1]).toBeCloseTo(proofBox!.width, 0)
 })
 
 test('writing, research, builder, and contact destinations are safe external links', async ({ page }) => {
@@ -751,9 +795,12 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     .getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
   for (const selector of [
     '.case-dialog__thesis',
-    '.case-dialog__capability-group li',
+    '.case-dialog__role dd',
     '.case-dialog__outcome h3',
-    '.case-dialog__narrative h3'
+    '.case-dialog__narrative h3',
+    '.case-artifact__nodes h4',
+    '.case-artifact__nodes p',
+    '.case-artifact__decision'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered dialog copy`).toBeGreaterThan(0)

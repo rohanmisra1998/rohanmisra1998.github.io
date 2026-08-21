@@ -106,7 +106,7 @@ try {
   const trailPulse = personalProjects.getByRole('article', { name: 'Trail Pulse' })
   assert.equal(await trailPulse.isVisible(), true, 'Trail Pulse is not visible in Personal projects')
   const honestyNote = trailPulse.getByText(
-    'An early AI-assisted, vibe-coded experiment built to learn and signal technical curiosity—not a flagship product.',
+    'An early AI-assisted prototype built end-to-end to learn modern product development and demonstrate technical agency.',
     { exact: true }
   )
   assert.equal(await honestyNote.isVisible(), true, 'Trail Pulse honesty note is not visible')

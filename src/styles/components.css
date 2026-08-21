@@ -731,7 +731,7 @@
 
 .profile__proof {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-self: start;
   margin: 0;
   padding: 0;
@@ -2013,7 +2013,7 @@ footer p {
 }
 
 .case-artifact[data-artifact-kind='value-roadmap'] .case-artifact__nodes li {
-  width: calc(70% + (var(--node-index) * 8%));
+  width: calc(70% + (var(--node-index) * 5%));
   margin-left: calc(var(--node-index) * 5%);
   border-left: 0.45rem solid var(--accent);
 }
@@ -2124,6 +2124,14 @@ footer p {
 
   .case-dialog__narrative h3 {
     font-size: clamp(1.5rem, 7vw, 2.25rem);
+  }
+
+  .case-dialog__thesis,
+  .case-dialog__role dd,
+  .case-artifact__nodes h4,
+  .case-artifact__nodes p,
+  .case-artifact__decision {
+    font-size: 1rem;
   }
 
   .case-artifact[data-artifact-kind='merchant-economics'] .case-artifact__nodes,

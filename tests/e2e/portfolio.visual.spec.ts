@@ -207,7 +207,7 @@ for (const viewport of [
 
     await expect(trigger).toHaveAttribute('aria-expanded', 'true')
     await expect(profile.locator('.profile__details')).not.toHaveAttribute('aria-hidden')
-    const finalProof = profile.getByText(/\$210M\+ in value uplift and savings/i)
+    const finalProof = profile.getByText(/~\$250M in value across Bain engagements/i)
     await expect(finalProof).toBeVisible()
     const [profileBox, finalProofBox] = await Promise.all([
       profile.boundingBox(),
@@ -287,6 +287,37 @@ for (const viewport of [
     await expectNoHorizontalOverflow(page, `${viewport.name} case dialog`)
     expectCleanBrowser()
     await expectReviewedScreenshot(page, `case-${viewport.name}.png`)
+    expectCleanBrowser()
+  })
+}
+
+for (const [slug, title, artifactKind] of [
+  ['omnichannel-payments-strategy', 'Omnichannel payments strategy', 'merchant-economics'],
+  ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence', 'investment-filter'],
+  ['talent-acquisition-operating-model', 'AI-powered recruiting transformation', 'candidate-journey'],
+  ['workforce-operations-transformation', 'Utilities workforce transformation', 'pilot-operating-model'],
+  ['performance-and-value-realization-program', 'Automotive performance transformation', 'value-roadmap'],
+  ['pharma-life-sciences-growth-transformation', 'Pharma & life-sciences growth transformation', 'commercial-portfolio']
+] as const) {
+  test(`${artifactKind} has a reviewed case-specific artifact`, async ({ page }, testInfo) => {
+    skipOutsideReviewProject(testInfo)
+    const expectCleanBrowser = captureUnexpectedBrowserMessages(page)
+
+    await page.setViewportSize({ width: 1024, height: 900 })
+    await page.goto(`/?case=${slug}`)
+    const dialog = page.getByRole('dialog', { name: title })
+    const artifact = dialog.locator(`[data-artifact-kind="${artifactKind}"]`)
+    await artifact.scrollIntoViewIfNeeded()
+    await waitForRenderedState(page)
+    await expect(artifact).toBeVisible()
+    expectCleanBrowser()
+    await expect(artifact).toHaveScreenshot(`artifact-${artifactKind}.png`, {
+      animations: 'allow',
+      caret: 'hide',
+      maxDiffPixelRatio: 0,
+      maxDiffPixels: 0,
+      threshold: 0
+    })
     expectCleanBrowser()
   })
 }
