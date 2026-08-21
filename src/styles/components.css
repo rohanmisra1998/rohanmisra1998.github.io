@@ -1861,7 +1861,7 @@ footer p {
   align-items: center;
   justify-content: center;
   min-height: 46px;
-  margin-left: 0.6rem;
+  margin: 1.5rem 0 0;
   padding: 0.75rem 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
   border-radius: var(--radius-capsule);
@@ -1873,162 +1873,6 @@ footer p {
 
 .case-dialog__assistant span {
   color: var(--accent);
-}
-
-.case-artifact {
-  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
-  padding: clamp(1rem, 2vw, 1.5rem);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
-  border-radius: 1.2rem;
-  background:
-    linear-gradient(color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px),
-    color-mix(in srgb, var(--accent) 3%, var(--surface));
-  background-size: 2rem 2rem;
-}
-
-.case-artifact figcaption {
-  display: grid;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-}
-
-.case-artifact figcaption span,
-.case-artifact__decision span,
-.case-artifact__nodes > li > span {
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-}
-
-.case-artifact figcaption strong {
-  font-family: var(--display);
-  font-size: clamp(1.2rem, 2vw, 1.7rem);
-  line-height: 1.08;
-}
-
-.case-artifact__nodes {
-  position: relative;
-  display: grid;
-  gap: 0.6rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.case-artifact__nodes li {
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-  padding: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 36%, var(--line));
-  border-radius: 0.8rem;
-  background: color-mix(in srgb, var(--surface-raised) 94%, transparent);
-}
-
-.case-artifact__nodes h4,
-.case-artifact__nodes p {
-  margin: 0;
-}
-
-.case-artifact__nodes h4 {
-  margin-top: 0.65rem;
-  font-size: 0.92rem;
-  line-height: 1.15;
-}
-
-.case-artifact__nodes p {
-  margin-top: 0.25rem;
-  color: var(--muted);
-  font-size: 0.72rem;
-  line-height: 1.35;
-}
-
-.case-artifact__decision {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.7rem;
-  align-items: start;
-  margin: 0.8rem 0 0;
-  padding-top: 0.8rem;
-  border-top: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
-  font-size: 0.86rem;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.case-artifact[data-artifact-kind='merchant-economics'] .case-artifact__nodes,
-.case-artifact[data-artifact-kind='candidate-journey'] .case-artifact__nodes {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.case-artifact[data-artifact-kind='candidate-journey'] .case-artifact__nodes {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.case-artifact[data-artifact-kind='merchant-economics'] .case-artifact__nodes::before,
-.case-artifact[data-artifact-kind='candidate-journey'] .case-artifact__nodes::before {
-  position: absolute;
-  top: 50%;
-  right: 5%;
-  left: 5%;
-  height: 2px;
-  background: var(--accent);
-  content: '';
-}
-
-.case-artifact[data-artifact-kind='investment-filter'] .case-artifact__nodes,
-.case-artifact[data-artifact-kind='commercial-portfolio'] .case-artifact__nodes {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: 0.7rem 0 0 0.7rem;
-  border-left: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
-}
-
-.case-artifact[data-artifact-kind='investment-filter'] .case-artifact__nodes li:nth-child(3),
-.case-artifact[data-artifact-kind='commercial-portfolio'] .case-artifact__nodes li:nth-child(1),
-.case-artifact[data-artifact-kind='commercial-portfolio'] .case-artifact__nodes li:nth-child(4) {
-  background: color-mix(in srgb, var(--signal) 22%, var(--surface-raised));
-}
-
-.case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li {
-  grid-column: span 2;
-}
-
-.case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li:nth-child(4) {
-  grid-column: 4 / span 2;
-}
-
-.case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li:nth-child(5) {
-  grid-column: 2 / span 2;
-  background: color-mix(in srgb, var(--signal) 22%, var(--surface-raised));
-}
-
-.case-artifact[data-artifact-kind='value-roadmap'] .case-artifact__nodes li {
-  width: calc(70% + (var(--node-index) * 5%));
-  margin-left: calc(var(--node-index) * 5%);
-  border-left: 0.45rem solid var(--accent);
-}
-
-.case-artifact[data-artifact-kind='commercial-portfolio'] .case-artifact__nodes::before,
-.case-artifact[data-artifact-kind='investment-filter'] .case-artifact__nodes::before {
-  position: absolute;
-  top: -0.2rem;
-  left: -0.2rem;
-  width: 0.65rem;
-  height: 0.65rem;
-  border-radius: 50%;
-  background: var(--signal);
-  content: '';
-  transform: translate(-50%, -50%);
 }
 
 .assistant-launcher-placeholder {
@@ -2127,33 +1971,8 @@ footer p {
   }
 
   .case-dialog__thesis,
-  .case-dialog__role dd,
-  .case-artifact__nodes h4,
-  .case-artifact__nodes p,
-  .case-artifact__decision {
+  .case-dialog__role dd {
     font-size: 1rem;
-  }
-
-  .case-artifact[data-artifact-kind='merchant-economics'] .case-artifact__nodes,
-  .case-artifact[data-artifact-kind='candidate-journey'] .case-artifact__nodes,
-  .case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li,
-  .case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li:nth-child(4),
-  .case-artifact[data-artifact-kind='pilot-operating-model'] .case-artifact__nodes li:nth-child(5) {
-    grid-column: auto;
-  }
-
-  .case-artifact[data-artifact-kind='merchant-economics'] .case-artifact__nodes::before,
-  .case-artifact[data-artifact-kind='candidate-journey'] .case-artifact__nodes::before {
-    top: 5%;
-    right: auto;
-    bottom: 5%;
-    left: 1rem;
-    width: 2px;
-    height: auto;
   }
 
   .case-card__outcome,

@@ -123,7 +123,7 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
   const initialCards = selectedWork.getByRole('article')
 
   await expect(initialCards).toHaveCount(8)
-  await expect(initialCards.nth(0)).toHaveAccessibleName('Omnichannel payments strategy')
+  await expect(initialCards.nth(0)).toHaveAccessibleName('Omnichannel payments growth strategy')
   await expect(initialCards.nth(7)).toHaveAccessibleName('Trail Pulse')
   await expect(selectedWork.getByRole('group', { name: 'Tech × AI × Growth' })).toBeVisible()
   await expect(selectedWork.getByRole('group', {
@@ -131,8 +131,8 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
   })).toBeVisible()
   await expect(selectedWork.getByRole('group', { name: 'Personal projects' })).toBeVisible()
   await expect(selectedWork.getByText("Fintech · India's largest payments platform")).toBeVisible()
-  await expect(selectedWork.getByText('$150M+ value-uplift path.')).toBeVisible()
-  await expect(selectedWork.getByText('~15,000 hours of annual recruiting and talent-team capacity.')).toBeVisible()
+  await expect(selectedWork.getByText('$150M+ realized GMV uplift.')).toBeVisible()
+  await expect(selectedWork.getByText('~15,000 recruiting hours saved annually.')).toBeVisible()
   await expect(selectedWork.locator('.case-card__impact-type')).toHaveCount(6)
   await expect(selectedWork.locator('.case-card__disclosure')).toHaveCount(0)
   await expect(selectedWork).not.toContainText(/target identities|transaction detail is disclosed/i)
@@ -142,13 +142,14 @@ test('selected work exposes six CV-grounded cases and Personal projects in three
   await selectedWork.getByRole('button', { name: 'Open case study: B2B SaaS & logistics investment diligence' })
     .click()
   const diligenceDialog = page.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
-  await expect(diligenceDialog.getByText('Technology investing · B2B SaaS and logistics')).toBeVisible()
+  await expect(diligenceDialog.getByText('Private equity · B2B SaaS and logistics')).toBeVisible()
   await expect(diligenceDialog.getByRole('region', { name: 'My role' })).toContainText(
-    'Commercial-diligence workstream lead'
+    'Commercial diligence workstream lead'
   )
   await expect(diligenceDialog.getByRole('region', { name: 'Key decision' })).toBeVisible()
-  await expect(diligenceDialog.getByText('Informed X buy-side investment theses.')).toBeVisible()
-  await expect(diligenceDialog.locator('[data-artifact-kind="investment-filter"]')).toBeVisible()
+  await expect(diligenceDialog.getByText('X buy-side investment theses informed.')).toBeVisible()
+  await expect(diligenceDialog.locator('[data-artifact-kind]')).toHaveCount(0)
+  await expect(diligenceDialog.locator('figure')).toHaveCount(0)
   await expect(diligenceDialog.getByText('Evidence', { exact: true })).toHaveCount(0)
   await expect(diligenceDialog.locator('.case-dialog__disclosure')).toHaveCount(0)
   await expect(diligenceDialog).not.toContainText(/target identities|transaction detail is disclosed/i)
@@ -274,14 +275,14 @@ test('portrait omits the decorative signal dot', async ({ page }) => {
   expect(signalContent).toBe('none')
 })
 
-test('all case studies reveal classified impact before scrolling and expose ownership, judgment, and artifacts', async ({ page }) => {
+test('all case studies reveal classified impact before scrolling and expose ownership and judgment without reconstructed artifacts', async ({ page }) => {
   const cases = [
-    ['omnichannel-payments-strategy', 'Omnichannel payments strategy', 'merchant-economics'],
-    ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence', 'investment-filter'],
-    ['talent-acquisition-operating-model', 'AI-powered recruiting transformation', 'candidate-journey'],
-    ['workforce-operations-transformation', 'Utilities workforce transformation', 'pilot-operating-model'],
-    ['performance-and-value-realization-program', 'Automotive performance transformation', 'value-roadmap'],
-    ['pharma-life-sciences-growth-transformation', 'Pharma & life-sciences growth transformation', 'commercial-portfolio']
+    ['omnichannel-payments-strategy', 'Omnichannel payments growth strategy'],
+    ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence'],
+    ['talent-acquisition-operating-model', 'AI-led talent acquisition transformation'],
+    ['workforce-operations-transformation', 'Utilities field-operations transformation'],
+    ['performance-and-value-realization-program', 'Automotive supply-chain transformation'],
+    ['pharma-life-sciences-growth-transformation', 'Pharma distribution & life-sciences growth']
   ] as const
 
   for (const viewport of [
@@ -289,7 +290,7 @@ test('all case studies reveal classified impact before scrolling and expose owne
     { width: 390, height: 844 }
   ]) {
     await page.setViewportSize(viewport)
-    for (const [slug, title, artifactKind] of cases) {
+    for (const [slug, title] of cases) {
       await page.goto(`/?case=${slug}`)
       const dialog = page.getByRole('dialog', { name: title })
       const outcome = dialog.locator('.case-dialog__outcome')
@@ -303,20 +304,8 @@ test('all case studies reveal classified impact before scrolling and expose owne
       ).toBeLessThanOrEqual(viewport.height)
       await expect(dialog.getByRole('region', { name: 'My role' })).toBeVisible()
       await expect(dialog.getByRole('region', { name: 'Key decision' })).toBeAttached()
-      const artifact = dialog.locator(`[data-artifact-kind="${artifactKind}"]`)
-      await expect(artifact).toBeAttached()
-      const containedNodes = await artifact.evaluate((figure) => {
-        const boundary = figure.getBoundingClientRect()
-        return Array.from(figure.querySelectorAll('.case-artifact__nodes li')).every((node) => {
-          const box = node.getBoundingClientRect()
-          return box.left >= boundary.left
-            && box.right <= boundary.right
-            && box.top >= boundary.top
-            && box.bottom <= boundary.bottom
-        })
-      })
-      expect(containedNodes, `${viewport.width}px ${title} artifact clipped a decision node`)
-        .toBe(true)
+      await expect(dialog.locator('[data-artifact-kind]')).toHaveCount(0)
+      await expect(dialog.locator('figure')).toHaveCount(0)
       expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
     }
   }
@@ -603,11 +592,11 @@ test('invalid direct case queries are removed without opening a dialog', async (
 test('case dialog starts on its heading, preserves natural Tab order, traps both boundaries, and restores its trigger', async ({ page }) => {
   await page.goto('/')
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  const trigger = selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' })
+  const trigger = selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments growth strategy' })
   await trigger.click()
 
-  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
-  const heading = dialog.getByRole('heading', { level: 2, name: 'Omnichannel payments strategy' })
+  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
+  const heading = dialog.getByRole('heading', { level: 2, name: 'Omnichannel payments growth strategy' })
   const close = dialog.getByRole('button', { name: 'Close case study' })
   const assistantAction = dialog.getByRole('button', { name: 'Ask Rohan AI about this work' })
   await expect(heading).toBeFocused()
@@ -667,7 +656,7 @@ test('case dialog presents title before industry in the accessibility reading or
     .evaluateAll((elements) => elements.map((element) => element.textContent?.trim()))
   expect(order).toEqual([
     'B2B SaaS & logistics investment diligence',
-    'Technology investing · B2B SaaS and logistics'
+    'Private equity · B2B SaaS and logistics'
   ])
   const titleGeometry = await title.evaluate((element) => {
     const box = element.getBoundingClientRect()
@@ -693,8 +682,8 @@ test('desktop case titles do not split words across lines', async ({ page }, tes
 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto('/?case=omnichannel-payments-strategy')
-  const title = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
-    .getByRole('heading', { level: 2, name: 'Omnichannel payments strategy' })
+  const title = page.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
+    .getByRole('heading', { level: 2, name: 'Omnichannel payments growth strategy' })
 
   const firstWordLineCount = await title.evaluate((element) => {
     const textNode = element.firstChild
@@ -767,8 +756,8 @@ test('supported widths keep rendered content in the viewport and controls at lea
     }
 
     const selectedWork = page.getByRole('region', { name: 'Selected work' })
-    await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
-    const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+    await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments growth strategy' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
     await settleAnimations(dialog)
     await expectMinimumTargetSize(
       dialog.locator('a[href]:visible, button:visible'),
@@ -812,15 +801,12 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
   }
 
   await page.getByRole('region', { name: 'Selected work' })
-    .getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
+    .getByRole('button', { name: 'Open case study: Omnichannel payments growth strategy' }).click()
   for (const selector of [
     '.case-dialog__thesis',
     '.case-dialog__role dd',
     '.case-dialog__outcome h3',
-    '.case-dialog__narrative h3',
-    '.case-artifact__nodes h4',
-    '.case-artifact__nodes p',
-    '.case-artifact__decision'
+    '.case-dialog__narrative h3'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered dialog copy`).toBeGreaterThan(0)
@@ -900,8 +886,8 @@ test('settled home, open disclosure, and open case have no detectable accessibil
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 
   const selectedWork = page.getByRole('region', { name: 'Selected work' })
-  await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments strategy' }).click()
-  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+  await selectedWork.getByRole('button', { name: 'Open case study: Omnichannel payments growth strategy' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
   await expect(dialog).toBeVisible()
   await settleAnimations(dialog)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
@@ -932,7 +918,7 @@ test('assistant graph preloads for offline use and both case handoffs keep one s
   expect(assistantResources.some((name) => name.includes('assistant-knowledge'))).toBe(true)
 
   await page.getByRole('button', {
-    name: /Open case study: AI-powered recruiting transformation/i
+    name: /Open case study: AI-led talent acquisition transformation/i
   }).click()
   await expect(page.getByRole('button', { name: 'Ask Rohan AI about this work' }))
     .toHaveCount(0)

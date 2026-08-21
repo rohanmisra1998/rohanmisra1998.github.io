@@ -76,7 +76,7 @@ describe('CaseStudyDialog', () => {
       </>
     )
 
-    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
     expect(document.getElementById('page-shell')).not.toContainElement(dialog)
     expect(document.body).toContainElement(dialog)
     expect(dialog).toHaveAttribute('aria-modal', 'true')
@@ -112,6 +112,8 @@ describe('CaseStudyDialog', () => {
 
     expect(dialog).not.toHaveTextContent('Capabilities')
     expect(dialog).not.toHaveTextContent('Evidence')
+    expect(dialog.querySelector('figure')).not.toBeInTheDocument()
+    expect(dialog.querySelector('[data-artifact-kind]')).not.toBeInTheDocument()
   })
 
   it('shows a complete My role block and key decision for every case', () => {
@@ -130,6 +132,9 @@ describe('CaseStudyDialog', () => {
       expect(role).toHaveTextContent(item.role.partneredWith)
       expect(within(dialog).getByRole('region', { name: 'Key decision' }))
         .toHaveTextContent(item.keyDecision)
+      expect(dialog.querySelector('figure')).not.toBeInTheDocument()
+      expect(dialog.querySelector('[data-artifact-kind]')).not.toBeInTheDocument()
+      expect(dialog).not.toHaveTextContent('Decision model')
       unmount()
     }
   })
@@ -168,7 +173,7 @@ describe('CaseStudyDialog', () => {
     await user.click(screen.getByRole('button', { name: /Open case study: Utilities/i }))
     expect(location.search).toBe('?case=workforce-operations-transformation')
     expect(
-      screen.getByRole('dialog', { name: 'Utilities workforce transformation' })
+      screen.getByRole('dialog', { name: 'Utilities field-operations transformation' })
     ).toBeVisible()
 
     history.back()
@@ -183,10 +188,10 @@ describe('CaseStudyDialog', () => {
 
     await user.click(trigger)
 
-    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })
+    const dialog = screen.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })
     const heading = within(dialog).getByRole('heading', {
       level: 2,
-      name: 'Omnichannel payments strategy'
+      name: 'Omnichannel payments growth strategy'
     })
     const close = within(dialog).getByRole('button', { name: 'Close case study' })
     const assistantAction = within(dialog).getByRole('button', {
@@ -229,9 +234,9 @@ describe('CaseStudyDialog', () => {
     )
 
     const dialog = screen.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
-    expect(within(dialog).getByText(/Technology investing · B2B SaaS and logistics/))
+    expect(within(dialog).getByText(/Private equity · B2B SaaS and logistics/))
       .toBeVisible()
-    expect(within(dialog).getByText('Commercial-diligence workstream lead')).toBeVisible()
+    expect(within(dialog).getByText('Commercial diligence workstream lead')).toBeVisible()
     expect(dialog.querySelector('.case-dialog__disclosure')).not.toBeInTheDocument()
     expect(dialog.querySelector('.case-dialog__maturity')).not.toBeInTheDocument()
     expect(dialog).not.toHaveTextContent(/target identities|transaction detail is disclosed/i)

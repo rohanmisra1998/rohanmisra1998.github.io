@@ -18,173 +18,105 @@ export const portfolioContent: PortfolioContent = {
   work: [
     {
       slug: 'omnichannel-payments-strategy', category: 'product', group: 'tech-ai-growth',
-      title: 'Omnichannel payments strategy', industry: "Fintech · India's largest payments platform",
-      scale: "India's largest payments platform · Four-year roadmap",
-      impactType: 'Modeled opportunity',
+      title: 'Omnichannel payments growth strategy', industry: "Fintech · India's largest payments platform",
+      scale: "India's largest payments platform · Four-year product and GTM roadmap",
+      impactType: 'Realized impact',
       role: {
-        position: 'Core model owner & product/GTM workstream lead',
-        owned: 'Bottom-up economics, scenario analysis, roadmap phasing, sales operating model, and partnership strategy.',
+        position: 'Product strategy & GTM workstream lead',
+        owned: 'Core economics, merchant segmentation, product-roadmap phasing, sales operating model, and partnership strategy.',
         partneredWith: 'Product, sales, partnerships, and executive leadership.'
       },
-      keyDecision: 'Prioritized scalable platform capabilities over one-off merchant customization, using value, time-to-market, and scalability to phase investment.',
-      artifact: {
-        kind: 'merchant-economics',
-        title: 'Merchant economics → rollout decision',
-        nodes: [
-          { label: 'Merchant segment', detail: 'Needs and economics' },
-          { label: 'Activation & take rate', detail: 'Revenue engine' },
-          { label: 'Margin & payback', detail: 'Unit economics' },
-          { label: 'Rollout phase', detail: 'Investment sequence' }
-        ],
-        decision: 'Scale the platform core first; phase customization where the economics earn it.'
-      },
+      keyDecision: 'Set maximum transaction value as the north star, then sequenced merchant features against value, time to market, and scalability—resolving the tension between a reusable platform core and one-off customization.',
       capabilities: ['Product roadmaps', 'Go-to-market design', 'Sales operating model', 'Partnership strategy'],
-      thesis: 'Build an omnichannel payments offering that can launch, integrate, and scale.',
-      challenge: 'Turn an acquired offline point-of-sale capability into a scalable omnichannel payments business with no clear market precedent.',
-      approach: 'Built the merchant economics model, translated segment-level revenue, margin, and payback into a four-year product roadmap, and designed the sales and partnership model.',
-      outcome: '$150M+ value-uplift path.'
+      thesis: 'Turn an offline point-of-sale acquisition into a scaled omnichannel payments growth engine.',
+      challenge: 'Define the economics and rollout of a new omnichannel proposition without a clear Indian-market precedent or complete data.',
+      approach: 'Built bottom-up revenue, margin, and payback economics by merchant segment; triangulated assumptions with market evidence and customer, product, sales, and partnership inputs; and translated the answer into a four-year product and GTM roadmap.',
+      outcome: '$150M+ realized GMV uplift.'
     },
     {
       slug: 'buy-side-commercial-diligence', category: 'diligence', group: 'tech-ai-growth',
-      title: 'B2B SaaS & logistics investment diligence', industry: 'Technology investing · B2B SaaS and logistics',
-      scale: 'Multiple buy-side diligences · B2B SaaS and logistics',
-      impactType: 'Decision impact',
+      title: 'B2B SaaS & logistics investment diligence', industry: 'Private equity · B2B SaaS and logistics',
+      scale: 'X buy-side diligences · B2B SaaS and logistics',
+      impactType: 'Investment decisions',
       role: {
-        position: 'Commercial-diligence workstream lead',
-        owned: 'Market model, investment-thesis pressure test, value-creation prioritization, and risk synthesis.',
-        partneredWith: 'Investment teams, diligence teams, and industry experts.'
+        position: 'Commercial diligence workstream lead',
+        owned: 'Market model, investment-thesis pressure test, competitive positioning, risk synthesis, and value-creation prioritization.',
+        partneredWith: 'Investment teams, case leadership, and industry experts.'
       },
-      keyDecision: 'Established directional market conviction before deepening value creation, because the market view determined the go/no-go call and where upside could credibly exist.',
-      artifact: {
-        kind: 'investment-filter',
-        title: 'Investment thesis filter',
-        nodes: [
-          { label: 'Market attractiveness', detail: 'Growth and structure' },
-          { label: 'Right to win', detail: 'Differentiation' },
-          { label: 'Value creation', detail: 'Credible upside' },
-          { label: 'Downside risk', detail: 'Failure modes' }
-        ],
-        decision: 'Build market conviction first, then spend the clock on the upside that can change the call.'
-      },
+      keyDecision: 'Established market conviction first because it determined the go/no-go call, then focused the remaining diligence on the value-creation levers that could change returns.',
       capabilities: ['Market assessment', 'Competitive positioning', 'Right-to-win analysis', 'Risk synthesis'],
-      thesis: 'Pressure-test whether fast-moving technology businesses can support a credible investment thesis.',
-      challenge: 'Assess prospective B2B SaaS and logistics assets under compressed timelines across market growth, right to win, competitive positioning, and downside risk.',
-      approach: 'Triangulated primary research, market evidence, competitive dynamics, and scenario analysis into a decision-oriented investment thesis.',
-      outcome: 'Informed X buy-side investment theses.'
+      thesis: 'Convert incomplete evidence into a decision-ready view of market quality, right to win, downside risk, and value creation.',
+      challenge: 'Evaluate fast-moving B2B SaaS and logistics businesses with incomplete evidence under compressed investment timelines.',
+      approach: 'Triangulated primary research, market modeling, competitive evidence, and scenario analysis; then linked the market view to the highest-confidence growth, pricing, and operational levers.',
+      outcome: 'X buy-side investment theses informed.'
     },
     {
       slug: 'talent-acquisition-operating-model', category: 'transformation', group: 'tech-ai-growth',
-      title: 'AI-powered recruiting transformation', industry: 'Insurance · ~$50B P&C carrier',
-      scale: 'Close to 1M applicants annually',
-      impactType: 'Implementation target',
+      title: 'AI-led talent acquisition transformation', industry: 'Insurance · ~$50B P&C carrier',
+      scale: '~1M applicants annually · Enterprise recruiting',
+      impactType: 'Realized impact',
       role: {
-        position: 'Cross-functional process-design lead',
-        owned: 'End-to-end journey diagnostic, pilot design, AI workflow integration, success metrics, and multiyear roadmap.',
+        position: 'Cross-functional transformation lead',
+        owned: 'End-to-end journey diagnostic, AI workflow design, interview redesign, pilot launch, adoption model, success metrics, and multiyear roadmap.',
         partneredWith: 'Recruiting, HR, hiring managers, and executive leadership.'
       },
-      keyDecision: 'Anchored tradeoffs on candidate experience, process consistency, and stakeholder time, then proved the model with early-adopter pilots before scaling.',
-      artifact: {
-        kind: 'candidate-journey',
-        title: 'AI-enabled candidate journey',
-        nodes: [
-          { label: 'Apply', detail: 'Candidate entry' },
-          { label: 'AI screening', detail: 'Consistent triage' },
-          { label: 'Scheduling', detail: 'Automated coordination' },
-          { label: 'Structured interview', detail: 'Comparable signal' },
-          { label: 'Feedback loop', detail: 'Pilot metrics' }
-        ],
-        decision: 'Prove experience and capacity gains with early adopters before scaling the new workflow.'
-      },
+      keyDecision: 'Aligned recruiting, HR, and hiring managers on candidate experience, process consistency, and stakeholder time, then proved the model with early adopters before scaling.',
       capabilities: ['AI-tool integration', 'Process redesign', 'Operating model', 'Multiyear planning'],
-      thesis: 'Use AI and workflow redesign to give recruiting teams back time for higher-value work.',
-      challenge: 'Redesign a fragmented hiring journey supporting close to one million applicants annually.',
-      approach: 'Simplified workflows, integrated AI-enabled screening and scheduling, standardized interviews, and used weekly pilot metrics to build adoption.',
-      outcome: '~15,000 hours of annual recruiting and talent-team capacity.'
+      thesis: 'Redesign recruiting around AI so teams spend less time on manual work while candidates move through a faster, more consistent process.',
+      challenge: 'Transform a fragmented hiring journey whose stakeholders were optimizing for different outcomes across close to one million applicants annually.',
+      approach: 'Mapped the applicant journey, simplified handoffs, integrated AI screening and scheduling, standardized interviews, and used weekly pilot metrics to build adoption.',
+      outcome: '~15,000 recruiting hours saved annually.'
     },
     {
       slug: 'workforce-operations-transformation', category: 'transformation', group: 'operations-transformations',
-      title: 'Utilities workforce transformation', industry: 'Utilities · ~$9B enterprise',
-      scale: '~$9B enterprise · 10+ operating centers',
+      title: 'Utilities field-operations transformation', industry: 'Utilities · ~$9B enterprise',
+      scale: '~$9B utility · 10+ operating centers',
       impactType: 'Realized impact',
       role: {
         position: 'End-to-end transformation lead',
-        owned: 'Diagnostic, workforce-model design, pilot implementation, adoption model, and scale-up path.',
+        owned: 'Scoping, diagnostic, workforce-model design, pilot implementation, frontline adoption, and scale-up path.',
         partneredWith: 'Site leaders, supervisors, planners, schedulers, and frontline crews.'
       },
-      keyDecision: 'Reset the rollout from simultaneous multi-site deployment to a focused proof at one site, then used internal champions to scale adoption.',
-      artifact: {
-        kind: 'pilot-operating-model',
-        title: 'Pilot-to-scale operating model',
-        nodes: [
-          { label: 'Work demand', detail: 'Priority and volume' },
-          { label: 'Planning', detail: 'Ready work' },
-          { label: 'Crew schedule', detail: 'Capacity match' },
-          { label: 'Field execution', detail: 'Frontline delivery' },
-          { label: 'KPI loop', detail: 'Learn and scale' }
-        ],
-        decision: 'Make one site work end-to-end, then scale through proof and internal champions.'
-      },
+      keyDecision: 'After the first pilot met frontline resistance, reset the rollout to prove the model at one operating center, then used frontline champions to scale the change.',
       capabilities: ['Workforce operations', 'Pilot design', 'Process redesign', 'Stakeholder alignment'],
-      thesis: 'Turn complex field operations into a more productive, lower-cost workforce system.',
-      challenge: 'Redesign planning, scheduling, crew assignment, and workforce-management processes across electricity operating centers.',
-      approach: 'Redesigned planning, scheduling, and crew assignment; ran pilots across 10+ operating centers; and built the frontline feedback and KPI cadence for scale.',
-      outcome: '$20M+ delivered savings · 8%+ productivity improvement.'
+      thesis: 'Turn field-workforce planning into a repeatable operating system that improves productivity and lowers cost.',
+      challenge: 'Redesign planning, scheduling, crew assignment, and workforce management across electricity operating centers while overcoming frontline resistance.',
+      approach: 'Diagnosed sources of lost crew time, redesigned core workflows and management routines, implemented pilots across 10+ operating centers, and created the frontline feedback and KPI cadence required for adoption.',
+      outcome: '$20M+ savings delivered · 8%+ workforce productivity improvement.'
     },
     {
       slug: 'performance-and-value-realization-program', category: 'transformation', group: 'operations-transformations',
-      title: 'Automotive performance transformation', industry: 'Automotive services · ~$15B enterprise',
+      title: 'Automotive supply-chain transformation', industry: 'Automotive services · ~$15B enterprise',
       scale: '~$15B enterprise · Five regions · 10+ levers',
-      impactType: 'Validated opportunity',
+      impactType: 'Identified opportunity',
       role: {
-        position: 'Supply-chain value-creation workstream lead',
-        owned: 'Regional fact base, lever sizing and prioritization, executive decision narrative, and sequenced roadmap.',
+        position: 'Supply-chain transformation workstream lead',
+        owned: 'Regional fact base, lever sizing and prioritization, future-state operating model, C-suite alignment, and multiyear roadmap.',
         partneredWith: 'Regional leaders and C-suite stakeholders.'
       },
-      keyDecision: 'Moved away from cross-border supply-chain integration when external risk changed, then rebuilt the value agenda around sourcing, footprint, inventory, and logistics.',
-      artifact: {
-        kind: 'value-roadmap',
-        title: 'Value-realization roadmap',
-        nodes: [
-          { label: 'Sourcing', detail: 'Near-term value' },
-          { label: 'Footprint', detail: 'Structural move' },
-          { label: 'Inventory', detail: 'Working capital' },
-          { label: 'Logistics', detail: 'Service and cost' }
-        ],
-        decision: 'Rebuild the roadmap around resilient regional levers when cross-border integration stopped being the right bet.'
-      },
+      keyDecision: 'Abandoned the original cross-border integration thesis when external risk shifted, then rebuilt the value agenda around resilient regional levers.',
       capabilities: ['Supply chain', 'Value-lever identification', 'Executive workshops', 'Implementation roadmaps'],
-      thesis: 'Convert a broad performance agenda into region-specific levers, ownership, and a sequenced realization path.',
-      challenge: 'Accelerate performance across supply-chain spend and operations in five key regions.',
-      approach: 'Sized and prioritized 10+ levers across sourcing, warehousing, inventory, and transport, then built the multiyear roadmap through C-suite working sessions.',
+      thesis: 'Convert a fragmented regional supply chain into a sequenced, executable performance agenda.',
+      challenge: 'Unlock performance across acquisition-built regional operations while navigating local autonomy and changing cross-border risk.',
+      approach: 'Sized 10+ levers across sourcing, warehouse footprint, inventory, transportation, and network design, then used C-suite workshops to align on tradeoffs and sequencing.',
       outcome: '$40M+ savings identified across five regions.'
     },
     {
       slug: 'pharma-life-sciences-growth-transformation', category: 'transformation', group: 'operations-transformations',
-      title: 'Pharma & life-sciences growth transformation', industry: 'Pharmaceuticals and life sciences · India',
-      scale: '~$4B enterprise · 700+ districts assessed',
+      title: 'Pharma distribution & life-sciences growth', industry: 'Pharmaceuticals and life sciences · India',
+      scale: '~$4B pharma enterprise · 770+ districts assessed',
       impactType: 'Execution result',
       role: {
-        position: 'Commercial analytics & market-expansion workstream lead',
-        owned: 'Distributor-performance diagnostic, network rationalization, district prioritization, and expansion logic.',
-        partneredWith: 'Commercial and regional teams.'
+        position: 'Commercial growth & life-sciences strategy workstream lead',
+        owned: 'Distributor-performance diagnostic, channel rationalization, district prioritization, adult-vaccine sector scan, and add-on acquisition opportunity assessment.',
+        partneredWith: 'Commercial, regional, and investment teams.'
       },
-      keyDecision: 'Pruned low-performing distributors while concentrating expansion on the highest-potential markets instead of maximizing partner count or geographic breadth.',
-      artifact: {
-        kind: 'commercial-portfolio',
-        title: 'Commercial portfolio matrix',
-        nodes: [
-          { label: 'Retain', detail: 'Strong partner · strong market' },
-          { label: 'Improve', detail: 'Weak partner · strong market' },
-          { label: 'Exit', detail: 'Weak partner · weak market' },
-          { label: 'Expand', detail: 'Open high-potential market' }
-        ],
-        decision: 'Concentrate the network on strong partners and the markets with the clearest growth headroom.'
-      },
+      keyDecision: 'Concentrated resources instead of expanding indiscriminately—pruning underperforming distributors while prioritizing the strongest geographic markets and life-sciences adjacencies.',
       capabilities: ['Distribution transformation', 'Market entry', 'Sector mapping', 'Acquisition-led value creation'],
-      thesis: 'Rewire commercial distribution while finding the next acquisition-led growth vectors.',
-      challenge: 'Accelerate growth across a fragmented and uneven pharmaceutical distribution network.',
-      approach: 'Assessed distributor and market performance across 700+ districts, rationalized the network, and prioritized ~200 high-potential markets for expansion.',
-      outcome: '30%+ distributor rationalization · ~200 priority markets.'
+      thesis: 'Focus commercial and investment resources on the channels, markets, and adjacencies with the strongest right to win.',
+      challenge: 'Across separate engagements, reshape a fragmented pharmaceutical distribution network and identify acquisition-led life-sciences opportunities.',
+      approach: 'Assessed distributor performance and opportunity across 770+ districts, rationalized the channel network, prioritized expansion markets, and evaluated adult-vaccine and add-on acquisition opportunities.',
+      outcome: '30%+ distributor-base reduction · expansion enabled across 200+ districts.'
     }
   ],
   experience: [

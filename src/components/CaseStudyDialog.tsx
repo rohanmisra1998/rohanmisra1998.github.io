@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { assistantTopicForCase } from '../content/assistant-topics'
 import type { WorkItem } from '../content/portfolio-types'
 import { useModalLayer } from '../hooks/useModalLayer'
-import { CaseArtifact } from './CaseArtifact'
 
 interface CaseStudyDialogProps {
   item: WorkItem
@@ -95,7 +94,6 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
               <p>Approach</p>
               <h3>{item.approach}</h3>
             </section>
-            <CaseArtifact artifact={item.artifact} />
             {hasAssistantTopic && onOpenAssistant && (
               <button
                 className="case-dialog__assistant"

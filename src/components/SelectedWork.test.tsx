@@ -35,22 +35,22 @@ describe('SelectedWork', () => {
   it('leads with CV-grounded outcomes, industries, and technical transformation skills', () => {
     render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
 
-    const payments = screen.getByRole('article', { name: 'Omnichannel payments strategy' })
+    const payments = screen.getByRole('article', { name: 'Omnichannel payments growth strategy' })
     expect(within(payments).getByText(/India's largest payments platform/)).toBeVisible()
-    expect(payments).toHaveTextContent('$150M+ value-uplift path')
+    expect(payments).toHaveTextContent('$150M+ realized GMV uplift')
 
-    const talent = screen.getByRole('article', { name: 'AI-powered recruiting transformation' })
+    const talent = screen.getByRole('article', { name: 'AI-led talent acquisition transformation' })
     expect(talent).toHaveTextContent('AI-tool integration')
-    expect(talent).toHaveTextContent('15,000 hours')
+    expect(talent).toHaveTextContent('15,000 recruiting hours saved annually')
 
     const diligence = screen.getByRole('article', { name: 'B2B SaaS & logistics investment diligence' })
     expect(within(diligence).getByText(/B2B SaaS and logistics/)).toBeVisible()
     expect(within(diligence).getByText('Market assessment')).toBeVisible()
     expect(diligence).toHaveTextContent('X buy-side investment theses')
 
-    const pharma = screen.getByRole('article', { name: 'Pharma & life-sciences growth transformation' })
+    const pharma = screen.getByRole('article', { name: 'Pharma distribution & life-sciences growth' })
     expect(pharma).toHaveTextContent('30%+')
-    expect(pharma).toHaveTextContent('~200 priority markets')
+    expect(pharma).toHaveTextContent('expansion enabled across 200+ districts')
     expect(within(screen.getByRole('group', { name: 'Personal projects' }))
       .getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
   })
@@ -60,7 +60,7 @@ describe('SelectedWork', () => {
       <SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />
     )
 
-    expect(screen.getAllByText(/^(Modeled opportunity|Decision impact|Implementation target|Realized impact|Validated opportunity|Execution result)$/))
+    expect(screen.getAllByText(/^(Investment decisions|Realized impact|Identified opportunity|Execution result)$/))
       .toHaveLength(6)
 
     const cases = [...container.querySelectorAll<HTMLElement>('.case-card')]

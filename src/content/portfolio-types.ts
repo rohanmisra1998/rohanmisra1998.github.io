@@ -1,32 +1,15 @@
 export type WorkCategory = 'transformation' | 'diligence' | 'product'
 export type WorkGroup = 'tech-ai-growth' | 'operations-transformations'
 export type ImpactType =
-  | 'Modeled opportunity'
-  | 'Decision impact'
-  | 'Implementation target'
+  | 'Investment decisions'
   | 'Realized impact'
-  | 'Validated opportunity'
+  | 'Identified opportunity'
   | 'Execution result'
-
-export type CaseArtifactKind =
-  | 'merchant-economics'
-  | 'investment-filter'
-  | 'candidate-journey'
-  | 'pilot-operating-model'
-  | 'value-roadmap'
-  | 'commercial-portfolio'
 
 export interface WorkRole {
   position: string
   owned: string
   partneredWith: string
-}
-
-export interface CaseArtifact {
-  kind: CaseArtifactKind
-  title: string
-  nodes: Array<{ label: string; detail: string }>
-  decision: string
 }
 
 export interface WorkItem {
@@ -39,7 +22,6 @@ export interface WorkItem {
   impactType: ImpactType
   role: WorkRole
   keyDecision: string
-  artifact: CaseArtifact
   capabilities: string[]
   thesis: string
   challenge: string

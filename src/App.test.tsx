@@ -178,10 +178,10 @@ describe('App', () => {
     render(<App />)
 
     await user.click(screen.getByRole('button', {
-      name: /Open case study: AI-powered recruiting transformation/i
+      name: /Open case study: AI-led talent acquisition transformation/i
     }))
 
-    expect(screen.getByRole('dialog', { name: 'AI-powered recruiting transformation' }))
+    expect(screen.getByRole('dialog', { name: 'AI-led talent acquisition transformation' }))
       .toBeVisible()
     expect(screen.queryByRole('button', { name: 'Ask Rohan AI about this work' }))
       .not.toBeInTheDocument()
@@ -519,9 +519,9 @@ describe('App', () => {
 
     const selectedWork = screen.getByRole('region', { name: 'Selected work' })
     const capabilities = within(
-      within(selectedWork).getByRole('article', { name: 'Omnichannel payments strategy' })
-    ).getByRole('group', { name: 'Omnichannel payments strategy capabilities' })
-    expect(capabilities).toHaveAccessibleName('Omnichannel payments strategy capabilities')
+      within(selectedWork).getByRole('article', { name: 'Omnichannel payments growth strategy' })
+    ).getByRole('group', { name: 'Omnichannel payments growth strategy capabilities' })
+    expect(capabilities).toHaveAccessibleName('Omnichannel payments growth strategy capabilities')
   })
 
   it('does not omit an unlabeled main section from semantic validation', () => {

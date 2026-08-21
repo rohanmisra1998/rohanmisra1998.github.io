@@ -20,7 +20,7 @@ describe('usePortfolioLayers integration', () => {
     history.replaceState({ portfolioCase: 'omnichannel-payments-strategy' }, '', '/?case=omnichannel-payments-strategy')
     render(<App />)
 
-    expect(screen.getByRole('dialog', { name: 'Omnichannel payments strategy' })).toBeVisible()
+    expect(screen.getByRole('dialog', { name: 'Omnichannel payments growth strategy' })).toBeVisible()
     expect(screen.queryByRole('dialog', { name: 'Ask Rohan AI' })).not.toBeInTheDocument()
     await waitFor(() => expect(document.querySelector('.ask-rohan-launcher')).toBeInTheDocument())
 
