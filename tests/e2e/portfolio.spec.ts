@@ -79,10 +79,10 @@ async function expectNoMotionTransform(
 test('first viewport communicates the operator thesis and offers three actions', async ({ page }) => {
   await page.goto('/')
   const heading = page.getByRole('heading', { level: 1 })
-  await expect(heading).toContainText('messy operations')
+  await expect(heading).toContainText('intersection of marketplaces, product, and AI')
   for (const [label, locator] of [
     ['operator thesis', heading],
-    ['current role', page.getByText('Senior Manager, Strategy & Operations at eBay · San Jose, CA')],
+    ['proof strip', page.getByText('Senior Manager @ eBay · ex-Bain · 5 accelerated promotions · ~$250M in delivered value · Kellogg MBA')],
     ['selected-work action', page.getByRole('link', { name: 'Explore selected work' })],
     ['assistant action', page.locator('.action--assistant')],
     ['writing action', page.getByRole('link', { name: 'Read my writing' })]
@@ -778,7 +778,6 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
 
   await page.goto('/')
   for (const selector of [
-    '.hero__subhead',
     '.hero__current',
     '.selected-work__group-heading h3',
     '.case-card__outcome',

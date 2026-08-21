@@ -152,7 +152,7 @@
 }
 
 .hero h1 {
-  max-width: 12.5ch;
+  max-width: 14.5ch;
   margin-bottom: clamp(1.5rem, 3vw, 2rem);
   font-size: clamp(3.25rem, 6.2vw, 6.5rem);
   line-height: 0.92;
@@ -987,7 +987,7 @@ footer p {
   }
 
   .hero h1 {
-    max-width: 11ch;
+    max-width: 12ch;
     font-size: clamp(3rem, 14vw, 4.5rem);
   }
 

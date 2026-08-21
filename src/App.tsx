@@ -25,7 +25,7 @@ export default function App() {
     <>
       <div id="page-shell">
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader linkedinHref={portfolioContent.contact.linkedinHref} />
+        <SiteHeader />
         <main id="main-content" tabIndex={-1}>
           <Hero
             content={portfolioContent.hero}

@@ -3,9 +3,9 @@ import type { PortfolioContent } from './portfolio-types'
 export const portfolioContent: PortfolioContent = {
   hero: {
     eyebrow: 'Strategy & operations · Marketplaces · Applied AI',
-    headline: 'I turn messy operations into scalable products and systems.',
+    headline: 'Tech-first operator building at the intersection of marketplaces, product, and AI.',
     subhead: "I'm Rohan Misra, a high agency tech-first strategy and operations leader. I turn complex operating problems into practical pilots, product roadmaps, and systems that can scale—across marketplaces, transformation, and applied AI.",
-    current: 'Senior Manager, Strategy & Operations at eBay · San Jose, CA',
+    current: 'Senior Manager @ eBay · ex-Bain · 5 accelerated promotions · ~$250M in delivered value · Kellogg MBA',
     chips: [
       'Marketplace & product strategy',
       'Operating transformation',

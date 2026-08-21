@@ -5,12 +5,9 @@ const navigationLinks = [
   { href: '#overview', label: 'Home' },
   { href: '#work', label: 'Work' },
   { href: '#experience', label: 'Experience' },
+  { href: '#education', label: 'Education' },
   { href: '#contact', label: 'Contact' }
 ]
-
-interface SiteHeaderProps {
-  linkedinHref: string
-}
 
 const mobileNavigationQuery = '(max-width: 900px)'
 
@@ -20,7 +17,7 @@ function getIsMobileNavigation() {
     && window.matchMedia(mobileNavigationQuery).matches
 }
 
-export function SiteHeader({ linkedinHref }: SiteHeaderProps) {
+export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobileNavigation, setIsMobileNavigation] = useState(getIsMobileNavigation)
   const [currentSection, setCurrentSection] = useState('overview')
@@ -120,16 +117,6 @@ export function SiteHeader({ linkedinHref }: SiteHeaderProps) {
             {label}
           </a>
         ))}
-        <a
-          className="site-header__external"
-          href={linkedinHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn"
-          onClick={() => closeMenu()}
-        >
-          LinkedIn<span aria-hidden="true">↗</span>
-        </a>
       </nav>
       <ThemeToggle />
     </header>

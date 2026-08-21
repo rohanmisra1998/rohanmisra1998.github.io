@@ -12,7 +12,6 @@ export function Hero({ content, onOpenAssistant }: HeroProps) {
       <div className="hero__copy reveal">
         <p className="hero__eyebrow">{content.eyebrow}</p>
         <h1 id="hero-headline">{content.headline}</h1>
-        <p className="hero__subhead">{content.subhead}</p>
         <p className="hero__current">{content.current}</p>
         <div className="hero__actions" aria-label="Explore Rohan's portfolio">
           <a className="action action--primary" href="#work">

@@ -49,21 +49,22 @@ describe('App', () => {
       'Home',
       'Work',
       'Experience',
-      'Contact',
-      'LinkedIn↗'
+      'Education',
+      'Contact'
     ])
+    expect(within(navigation).getByRole('link', { name: 'Education' })).toHaveAttribute(
+      'href',
+      '#education'
+    )
     expect(within(navigation).getByRole('link', { name: 'Contact' })).toHaveAttribute(
       'href',
       '#contact'
     )
-    expect(within(navigation).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
-      'href',
-      'https://www.linkedin.com/in/rohan-misra-mba/'
-    )
+    expect(within(navigation).queryByRole('link', { name: 'LinkedIn' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'I turn messy operations into scalable products and systems.'
+      'Tech-first operator building at the intersection of marketplaces, product, and AI.'
     )
-    expect(screen.getByText('Senior Manager, Strategy & Operations at eBay · San Jose, CA'))
+    expect(screen.getByText('Senior Manager @ eBay · ex-Bain · 5 accelerated promotions · ~$250M in delivered value · Kellogg MBA'))
       .toBeVisible()
     expect(screen.getByRole('link', { name: 'Explore selected work' })).toHaveAttribute(
       'href',
@@ -240,7 +241,7 @@ describe('App', () => {
     )
     render(<App />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'I turn messy operations into scalable products and systems.'
+      'Tech-first operator building at the intersection of marketplaces, product, and AI.'
     )
     expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
@@ -352,8 +353,10 @@ describe('App', () => {
 
   it('renders the corrected experience, verified essays, and approved email contact', () => {
     render(<App />)
-    expect(screen.getByText(/I'm Rohan Misra, a high agency tech-first strategy and operations leader/i))
-      .toBeInTheDocument()
+    expect(screen.getByRole('heading', {
+      level: 1,
+      name: 'Tech-first operator building at the intersection of marketplaces, product, and AI.'
+    })).toBeInTheDocument()
     expect(screen.getByText('Senior Manager, Strategy & Operations')).toBeInTheDocument()
     expect(screen.getByText('July 2025–present')).toBeInTheDocument()
     expect(screen.getByText(/five promotions in under four years on a top-rated, accelerated trajectory/i))
@@ -435,13 +438,11 @@ describe('App', () => {
       .toBeInTheDocument()
   })
 
-  it('offers LinkedIn and a direct, accessible email action without a CV affordance', () => {
+  it('keeps LinkedIn in Contact and offers direct email without a CV affordance', () => {
     render(<App />)
     const navigation = screen.getByRole('navigation', { name: 'Primary' })
     const contact = screen.getByRole('region', { name: 'Let’s talk.' })
-    expect(within(navigation).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
-      'href', 'https://www.linkedin.com/in/rohan-misra-mba/'
-    )
+    expect(within(navigation).queryByRole('link', { name: 'LinkedIn' })).not.toBeInTheDocument()
     expect(within(contact).getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
       'href', 'https://www.linkedin.com/in/rohan-misra-mba/'
     )
@@ -482,7 +483,7 @@ describe('App', () => {
     render(<App />)
     const main = screen.getByRole('main')
     const hero = screen.getByRole('region', {
-      name: 'I turn messy operations into scalable products and systems.'
+      name: 'Tech-first operator building at the intersection of marketplaces, product, and AI.'
     })
     const profile = screen.getByRole('region', { name: 'Read more about me' })
     const trigger = within(profile).getByRole('button', { name: 'Read more about me' })

@@ -46,7 +46,8 @@ test('secured production page accepts hashed inline scripts and loads self-hoste
 
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('messy operations')
+  await expect(page.getByRole('heading', { level: 1 }))
+    .toContainText('intersection of marketplaces, product, and AI')
   await expect(page.locator('.ask-rohan-launcher__button')).toBeVisible()
 
   const artifact = await page.evaluate(async () => {
