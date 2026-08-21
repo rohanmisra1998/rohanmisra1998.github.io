@@ -34,6 +34,7 @@ export function WorkCard({ item, onOpen }: WorkCardProps) {
       <div className="case-card__body">
         <p className="case-card__industry">{item.industry}</p>
         <h4 id={headingId}>{item.title}</h4>
+        <p className="case-card__impact-type">{item.impactType}</p>
         <p className="case-card__outcome">{item.outcome}</p>
         <div
           className="case-card__details"

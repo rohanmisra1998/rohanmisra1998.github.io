@@ -1590,6 +1590,7 @@ footer p {
 }
 
 .case-card__industry,
+.case-card__impact-type,
 .case-card__capabilities,
 .case-dialog__bar,
 .case-dialog__industry,
@@ -1613,6 +1614,11 @@ footer p {
   margin-bottom: 1rem;
   font-size: clamp(1.65rem, 2.5vw, 2.6rem);
   line-height: 1.02;
+}
+
+.case-card__impact-type {
+  margin-bottom: 0.35rem;
+  color: var(--accent);
 }
 
 .case-card__outcome {

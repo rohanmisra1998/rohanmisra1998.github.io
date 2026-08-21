@@ -37,7 +37,7 @@ describe('SelectedWork', () => {
 
     const payments = screen.getByRole('article', { name: 'Omnichannel payments strategy' })
     expect(within(payments).getByText(/India's largest payments platform/)).toBeVisible()
-    expect(payments).toHaveTextContent('$150M+ in value uplift')
+    expect(payments).toHaveTextContent('$150M+ value-uplift path')
 
     const talent = screen.getByRole('article', { name: 'AI-powered recruiting transformation' })
     expect(talent).toHaveTextContent('AI-tool integration')
@@ -50,9 +50,23 @@ describe('SelectedWork', () => {
 
     const pharma = screen.getByRole('article', { name: 'Pharma & life-sciences growth transformation' })
     expect(pharma).toHaveTextContent('30%+')
-    expect(pharma).toHaveTextContent('200+ counties')
+    expect(pharma).toHaveTextContent('~200 priority markets')
     expect(within(screen.getByRole('group', { name: 'Personal projects' }))
       .getByRole('article', { name: 'Trail Pulse' })).toBeVisible()
+  })
+
+  it('labels the impact on six equally weighted cards', () => {
+    const { container } = render(
+      <SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />
+    )
+
+    expect(screen.getAllByText(/^(Modeled opportunity|Decision impact|Implementation target|Realized impact|Validated opportunity|Execution result)$/))
+      .toHaveLength(6)
+
+    const cases = [...container.querySelectorAll<HTMLElement>('.case-card')]
+    expect(cases).toHaveLength(6)
+    expect(cases.every((card) => card.dataset.emphasis === 'primary')).toBe(true)
+    expect(container.querySelector('[data-featured]')).not.toBeInTheDocument()
   })
 
   it('exposes a unique slug-derived visual variant for every case', () => {
