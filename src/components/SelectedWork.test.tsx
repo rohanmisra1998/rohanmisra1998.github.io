@@ -36,7 +36,9 @@ describe('SelectedWork', () => {
   it('leads with CV-grounded outcomes, industries, and technical transformation skills', () => {
     render(<SelectedWork items={portfolioContent.work} projects={portfolioContent.personalProjects} onOpenCase={vi.fn()} />)
 
-    const ebay = screen.getByRole('article', { name: "Reimagining eBay's parts buyer experience" })
+    const ebay = screen.getByRole('article', {
+      name: "Drove verticalization of eBay's parts buyer experience"
+    })
     expect(within(ebay).getByText('eBay · Global marketplace')).toBeVisible()
     expect(ebay).toHaveTextContent('~$XXM incremental GMV opportunity')
     expect(ebay).toHaveTextContent('Buyer-experience strategy')

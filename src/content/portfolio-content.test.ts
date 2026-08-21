@@ -47,7 +47,11 @@ describe('approved public portfolio content', () => {
       expect(item.role.position).not.toBe('')
       expect(item.role.owned).not.toBe('')
       expect(item.role.partneredWith).not.toBe('')
-      expect(item.keyDecision).not.toBe('')
+      if (item.slug === 'end-to-end-parts-buyer-experience') {
+        expect(item.keyDecision).toBeUndefined()
+      } else {
+        expect(item.keyDecision).not.toBe('')
+      }
       expect(item).not.toHaveProperty('artifact')
     }
   })
@@ -56,7 +60,7 @@ describe('approved public portfolio content', () => {
     const [ebay, payments, diligence, talent, utilities, automotive, pharma] = portfolioContent.work
 
     expect(ebay).toMatchObject({
-      title: "Reimagining eBay's parts buyer experience",
+      title: "Drove verticalization of eBay's parts buyer experience",
       industry: 'eBay · Global marketplace',
       scale: "Global marketplace · One of commerce's most technical buying journeys",
       impactType: 'In-flight impact',
@@ -101,7 +105,7 @@ describe('approved public portfolio content', () => {
     })
   })
 
-  it('frames every consulting case around ownership and a consequential decision', () => {
+  it('frames every consulting case around ownership and uses a decision callout only where it adds value', () => {
     const copy = portfolioContent.work.map(({ role, keyDecision, challenge, approach }) => ({
       role: role.position,
       owned: role.owned,
@@ -114,7 +118,7 @@ describe('approved public portfolio content', () => {
       expect.objectContaining({
         role: 'Strategy & operations program lead',
         owned: expect.stringContaining('resourcing'),
-        decision: expect.stringContaining('compatibility confidence'),
+        decision: undefined,
         approach: expect.stringContaining('verticalized buyer journey')
       }),
       expect.objectContaining({

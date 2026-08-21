@@ -97,7 +97,7 @@ describe('CaseStudyDialog', () => {
       'Partnered with',
       item.role.partneredWith,
       'Key decision',
-      item.keyDecision,
+      item.keyDecision!,
       'Challenge',
       item.challenge,
       'Approach',
@@ -116,7 +116,7 @@ describe('CaseStudyDialog', () => {
     expect(dialog.querySelector('[data-artifact-kind]')).not.toBeInTheDocument()
   })
 
-  it('shows a complete My role block and key decision for every case', () => {
+  it('shows a complete My role block for every case and omits an unhelpful decision callout', () => {
     for (const item of portfolioContent.work) {
       const { unmount } = render(
         <>
@@ -130,8 +130,13 @@ describe('CaseStudyDialog', () => {
       expect(role).toHaveTextContent(item.role.position)
       expect(role).toHaveTextContent(item.role.owned)
       expect(role).toHaveTextContent(item.role.partneredWith)
-      expect(within(dialog).getByRole('region', { name: 'Key decision' }))
-        .toHaveTextContent(item.keyDecision)
+      if (item.slug === 'end-to-end-parts-buyer-experience') {
+        expect(within(dialog).queryByRole('region', { name: 'Key decision' }))
+          .not.toBeInTheDocument()
+      } else {
+        expect(within(dialog).getByRole('region', { name: 'Key decision' }))
+          .toHaveTextContent(item.keyDecision!)
+      }
       expect(dialog.querySelector('figure')).not.toBeInTheDocument()
       expect(dialog.querySelector('[data-artifact-kind]')).not.toBeInTheDocument()
       expect(dialog).not.toHaveTextContent('Decision model')

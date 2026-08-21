@@ -34,7 +34,8 @@ const copyRecord = (record: ReadonlyKnowledgeRecord): KnowledgeRecord => ({
 
 const summarizeCase = (item: WorkItem) => (
   `Rohan's ${item.title} work. My role: ${item.role.position}. `
-  + `Owned: ${item.role.owned} Key decision: ${item.keyDecision} `
+  + `Owned: ${item.role.owned} `
+  + (item.keyDecision ? `Key decision: ${item.keyDecision} ` : '')
   + `${item.impactType}: ${item.outcome}`
 )
 

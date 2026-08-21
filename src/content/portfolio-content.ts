@@ -18,7 +18,7 @@ export const portfolioContent: PortfolioContent = {
   work: [
     {
       slug: 'end-to-end-parts-buyer-experience', category: 'product', group: 'tech-ai-growth',
-      title: "Reimagining eBay's parts buyer experience", industry: 'eBay · Global marketplace',
+      title: "Drove verticalization of eBay's parts buyer experience", industry: 'eBay · Global marketplace',
       scale: "Global marketplace · One of commerce's most technical buying journeys",
       impactType: 'In-flight impact',
       role: {
@@ -26,7 +26,6 @@ export const portfolioContent: PortfolioContent = {
         owned: 'Opportunity sizing, problem definition, solution scope, roadmap, resourcing, governance, and cross-functional delivery.',
         partneredWith: 'Product, engineering, search, design, analytics, marketing, and regional business teams.'
       },
-      keyDecision: 'Made compatibility confidence the foundation of the experience, sequencing guided discovery and technical item pages ahead of repair-job cross-sell so growth rested on buyer trust.',
       capabilities: ['Buyer-experience strategy', 'Growth experimentation', 'Cross-functional delivery', 'Product roadmapping'],
       thesis: 'Turn a fragmented, high-anxiety parts journey into a guided, confidence-building experience—from first search to a complete repair basket.',
       challenge: 'Parts buyers must translate a repair need into a compatible set of highly technical products; a horizontal marketplace journey left too much of that burden with the customer.',

@@ -22,7 +22,7 @@ export interface WorkItem {
   scale: string
   impactType: ImpactType
   role: WorkRole
-  keyDecision: string
+  keyDecision?: string
   capabilities: string[]
   thesis: string
   challenge: string

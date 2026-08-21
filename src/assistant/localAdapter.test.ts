@@ -264,7 +264,7 @@ describe('localAssistantAdapter', () => {
     if (reply.kind !== 'answer') return
     expect(reply.text).toContain(item.role.position)
     expect(reply.text).toContain(item.role.owned)
-    expect(reply.text).toContain(item.keyDecision)
+    expect(reply.text).toContain(item.keyDecision!)
     expect(reply.text).toContain(`${item.impactType}: ${item.outcome}`)
   })
 

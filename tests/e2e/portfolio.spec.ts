@@ -123,7 +123,9 @@ test('selected work exposes seven grounded cases and Personal projects in three 
   const initialCards = selectedWork.getByRole('article')
 
   await expect(initialCards).toHaveCount(9)
-  await expect(initialCards.nth(0)).toHaveAccessibleName("Reimagining eBay's parts buyer experience")
+  await expect(initialCards.nth(0)).toHaveAccessibleName(
+    "Drove verticalization of eBay's parts buyer experience"
+  )
   await expect(initialCards.nth(8)).toHaveAccessibleName('Trail Pulse')
   await expect(selectedWork.getByRole('group', { name: 'Tech × AI × Growth' })).toBeVisible()
   await expect(selectedWork.getByRole('group', {
@@ -283,7 +285,10 @@ test('portrait omits the decorative signal dot', async ({ page }) => {
 
 test('all case studies reveal classified impact before scrolling and expose ownership and judgment without reconstructed artifacts', async ({ page }) => {
   const cases = [
-    ['end-to-end-parts-buyer-experience', "Reimagining eBay's parts buyer experience"],
+    [
+      'end-to-end-parts-buyer-experience',
+      "Drove verticalization of eBay's parts buyer experience"
+    ],
     ['omnichannel-payments-strategy', 'Omnichannel payments growth strategy'],
     ['buy-side-commercial-diligence', 'B2B SaaS & logistics investment diligence'],
     ['talent-acquisition-operating-model', 'AI-led talent acquisition transformation'],
@@ -310,7 +315,11 @@ test('all case studies reveal classified impact before scrolling and expose owne
         `${viewport.width}px ${title} impact is not fully visible when the case opens`
       ).toBeLessThanOrEqual(viewport.height)
       await expect(dialog.getByRole('region', { name: 'My role' })).toBeVisible()
-      await expect(dialog.getByRole('region', { name: 'Key decision' })).toBeAttached()
+      if (slug === 'end-to-end-parts-buyer-experience') {
+        await expect(dialog.getByRole('region', { name: 'Key decision' })).toHaveCount(0)
+      } else {
+        await expect(dialog.getByRole('region', { name: 'Key decision' })).toBeAttached()
+      }
       await expect(dialog.locator('[data-artifact-kind]')).toHaveCount(0)
       await expect(dialog.locator('figure')).toHaveCount(0)
       expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
