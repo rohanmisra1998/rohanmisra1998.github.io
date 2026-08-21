@@ -419,13 +419,14 @@ describe('App', () => {
     expect(screen.queryByRole('region', { name: 'Personal projects' })).not.toBeInTheDocument()
   })
 
-  it('keeps Personal projects honest and repairs the public report link', () => {
+  it('frames Personal projects as evidence of technical agency and keeps the public report link', () => {
     render(<App />)
     const personalProjects = within(
       screen.getByRole('region', { name: 'Selected work' })
     ).getByRole('group', { name: 'Personal projects' })
     const trailPulse = within(personalProjects).getByRole('article', { name: 'Trail Pulse' })
-    expect(trailPulse).toHaveTextContent('not a flagship product')
+    expect(trailPulse).toHaveTextContent('AI-assisted prototype built end-to-end')
+    expect(trailPulse).not.toHaveTextContent('vibe-coded')
     expect(screen.getByRole('link', { name: /A Fair Share for Children/i })).toHaveAttribute(
       'href',
       'https://www.laureatesandleaders.org/_files/ugd/811759_44700bb3bf134c7fa1e15adade4daa51.pdf'
@@ -501,8 +502,8 @@ describe('App', () => {
     expect(panel).not.toHaveAttribute('aria-hidden')
     expect(within(profile).getByText(/problems with real operational texture/i)).toBeVisible()
     expect(within(profile).getByText(/five promotions in under four years/i)).toBeVisible()
-    expect(within(profile).getByText(/youngest student in (?:my|the) Kellogg MBA class/i)).toBeVisible()
-    expect(within(profile).getByText(/\$210M\+.*value uplift and savings/i)).toBeVisible()
+    expect(within(profile).getByText(/~\$250M in value across Bain engagements/i)).toBeVisible()
+    expect(within(profile).queryByText(/youngest student/i)).not.toBeInTheDocument()
     expect(within(main).queryByRole('region', { name: 'About' })).not.toBeInTheDocument()
 
     await user.click(trigger)

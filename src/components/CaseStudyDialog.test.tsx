@@ -67,7 +67,7 @@ afterEach(() => {
 })
 
 describe('CaseStudyDialog', () => {
-  it('portals outside the shell and leads with quantified outcome before challenge and approach', () => {
+  it('portals outside the shell and leads with impact, ownership, and judgment', () => {
     const item = portfolioContent.work.find(({ slug }) => slug === 'omnichannel-payments-strategy')!
     render(
       <>
@@ -85,9 +85,19 @@ describe('CaseStudyDialog', () => {
     const orderedCopy = [
       item.title,
       item.industry,
-      'Outcome',
-      '$150M+ in value uplift',
+      item.scale,
+      item.impactType,
+      item.outcome,
       item.thesis,
+      'My role',
+      'Position',
+      item.role.position,
+      'Owned',
+      item.role.owned,
+      'Partnered with',
+      item.role.partneredWith,
+      'Key decision',
+      item.keyDecision,
       'Challenge',
       item.challenge,
       'Approach',
@@ -100,8 +110,28 @@ describe('CaseStudyDialog', () => {
       lastPosition = position
     }
 
-    expect(dialog).not.toHaveTextContent('Role')
+    expect(dialog).not.toHaveTextContent('Capabilities')
     expect(dialog).not.toHaveTextContent('Evidence')
+  })
+
+  it('shows a complete My role block and key decision for every case', () => {
+    for (const item of portfolioContent.work) {
+      const { unmount } = render(
+        <>
+          <div id="page-shell">Portfolio shell</div>
+          <CaseStudyDialog item={item} onClose={() => {}} onOpenAssistant={() => {}} />
+        </>
+      )
+
+      const dialog = screen.getByRole('dialog', { name: item.title })
+      const role = within(dialog).getByRole('region', { name: 'My role' })
+      expect(role).toHaveTextContent(item.role.position)
+      expect(role).toHaveTextContent(item.role.owned)
+      expect(role).toHaveTextContent(item.role.partneredWith)
+      expect(within(dialog).getByRole('region', { name: 'Key decision' }))
+        .toHaveTextContent(item.keyDecision)
+      unmount()
+    }
   })
 
   it('exposes the integrated assistant action for the current work', () => {
@@ -187,7 +217,7 @@ describe('CaseStudyDialog', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
-  it('omits diligence process notes while preserving industry and capabilities', () => {
+  it('omits diligence process notes while preserving industry and ownership', () => {
     const diligence = portfolioContent.work.find(
       ({ slug }) => slug === 'buy-side-commercial-diligence'
     )!
@@ -201,7 +231,7 @@ describe('CaseStudyDialog', () => {
     const dialog = screen.getByRole('dialog', { name: 'B2B SaaS & logistics investment diligence' })
     expect(within(dialog).getByText(/Technology investing · B2B SaaS and logistics/))
       .toBeVisible()
-    expect(within(dialog).getByText('Market assessment')).toBeVisible()
+    expect(within(dialog).getByText('Commercial-diligence workstream lead')).toBeVisible()
     expect(dialog.querySelector('.case-dialog__disclosure')).not.toBeInTheDocument()
     expect(dialog.querySelector('.case-dialog__maturity')).not.toBeInTheDocument()
     expect(dialog).not.toHaveTextContent(/target identities|transaction detail is disclosed/i)

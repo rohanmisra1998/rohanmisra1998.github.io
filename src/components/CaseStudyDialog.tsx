@@ -56,25 +56,41 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
           <aside className="case-dialog__rail">
             <h2 id={titleId} ref={titleRef} tabIndex={-1}>{item.title}</h2>
             <p className="case-dialog__industry">{item.industry}</p>
-            <section className="case-dialog__outcome">
-              <p>Outcome</p>
+            <p className="case-dialog__scale">{item.scale}</p>
+            <section className="case-dialog__outcome" aria-label={`${item.impactType}: ${item.outcome}`}>
+              <p>{item.impactType}</p>
               <h3>{item.outcome}</h3>
             </section>
             <p className="case-dialog__thesis" id={thesisId}>{item.thesis}</p>
-            <div className="case-dialog__capability-group">
-              <p>Capabilities</p>
-              <ul>
-                {item.capabilities.map((capability) => <li key={capability}>{capability}</li>)}
-              </ul>
-            </div>
+            <section className="case-dialog__role" role="region" aria-label="My role">
+              <p>My role</p>
+              <dl>
+                <div>
+                  <dt>Position</dt>
+                  <dd>{item.role.position}</dd>
+                </div>
+                <div>
+                  <dt>Owned</dt>
+                  <dd>{item.role.owned}</dd>
+                </div>
+                <div>
+                  <dt>Partnered with</dt>
+                  <dd>{item.role.partneredWith}</dd>
+                </div>
+              </dl>
+            </section>
           </aside>
 
           <div className="case-dialog__narrative">
-            <section>
+            <section role="region" aria-label="Key decision" className="case-dialog__decision">
+              <p>Key decision</p>
+              <h3>{item.keyDecision}</h3>
+            </section>
+            <section role="region" aria-label="Challenge">
               <p>Challenge</p>
               <h3>{item.challenge}</h3>
             </section>
-            <section>
+            <section role="region" aria-label="Approach">
               <p>Approach</p>
               <h3>{item.approach}</h3>
             </section>
