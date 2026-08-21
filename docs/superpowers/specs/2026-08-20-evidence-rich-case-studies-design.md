@@ -138,17 +138,15 @@ All six artifacts use the existing cobalt/grid visual system, but their geometry
 The expanded profile has two equal proof columns:
 
 - `5 promotions` — five promotions in under four years at Bain on a top-rated, accelerated trajectory
-- `~$250M` — approximately $250M in delivered, validated, and modeled value across Bain engagements
+- `~$250M` — ~$250M in value across Bain engagements
 
 Remove the “Youngest student” proof entirely and do not replace it with another third card.
-
-The total deliberately describes mixed impact types instead of implying every dollar was realized.
 
 ## Personal-project framing
 
 Replace Trail Pulse's “vibe-coded” framing with:
 
-> An early AI-assisted prototype built end-to-end to learn modern product development and demonstrate technical agency—not positioned as a flagship product.
+> An early AI-assisted prototype built end-to-end to learn modern product development and demonstrate technical agency.
 
 Retain its actual product capabilities and the existing honest maturity distinction. Keep the portfolio project description focused on React/TypeScript, accessibility, deterministic local retrieval, privacy auditing, CSP enforcement, Playwright coverage, and hosted release verification.
 
