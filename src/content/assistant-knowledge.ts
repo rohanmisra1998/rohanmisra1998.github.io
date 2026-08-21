@@ -1,6 +1,6 @@
 import type { AssistantCitation, KnowledgeRecord, ReadonlyKnowledgeRecord } from '../assistant/types'
 import { portfolioContent } from './portfolio-content'
-import type { PortfolioContent } from './portfolio-types'
+import type { PortfolioContent, WorkItem } from './portfolio-types'
 
 export interface KnowledgeAccess {
   readonly records: readonly ReadonlyKnowledgeRecord[]
@@ -32,6 +32,12 @@ const copyRecord = (record: ReadonlyKnowledgeRecord): KnowledgeRecord => ({
   ...(record.guardedTerms ? { guardedTerms: [...record.guardedTerms] } : {})
 })
 
+const summarizeCase = (item: WorkItem) => (
+  `Rohan's ${item.title} work. My role: ${item.role.position}. `
+  + `Owned: ${item.role.owned} Key decision: ${item.keyDecision} `
+  + `${item.impactType}: ${item.outcome}`
+)
+
 const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
   const byWorkSlug = (slug: string) => {
     const item = content.work.find((work) => work.slug === slug)
@@ -52,7 +58,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['operating transformations', 'workforce operations transformation'],
       aliases: ['utility workforce', 'workforce operations', 'operating transformation', 'strategy and operations'],
       keywords: ['utilities', 'workforce', 'pilots', 'implementation', 'process redesign', 'operations'],
-      answer: `Rohan's ${workforce.title} work: ${workforce.approach} ${workforce.outcome}`,
+      answer: summarizeCase(workforce),
       citations: [section('#work', 'Work')],
       caseSlug: workforce.slug
     },
@@ -62,7 +68,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['private equity diligence', 'buy side commercial diligence'],
       aliases: ['commercial diligence', 'buy side diligence', 'private equity', 'due diligence'],
       keywords: ['commercial', 'diligence', 'market assessment', 'competitive positioning', 'investment'],
-      answer: `Rohan's ${diligence.title} work: ${diligence.approach} ${diligence.outcome}`,
+      answer: summarizeCase(diligence),
       citations: [section('#work', 'Work')],
       caseSlug: diligence.slug,
       guardedTerms: ['target names', 'investment recommendation', 'transaction details']
@@ -73,7 +79,7 @@ const buildRecords = (content: PortfolioContent): KnowledgeRecord[] => {
       entities: ['product strategy go to market', 'omnichannel payments strategy'],
       aliases: ['product gtm', 'go to market', 'product strategy', 'strategy and operations'],
       keywords: ['product', 'strategy', 'gtm', 'roadmap', 'partnerships', 'sales'],
-      answer: `Rohan's ${payments.title} work for ${payments.industry.toLowerCase()}: ${payments.approach} ${payments.outcome}`,
+      answer: summarizeCase(payments),
       citations: [section('#work', 'Work')],
       caseSlug: payments.slug
     },

@@ -246,6 +246,35 @@ describe('localAssistantAdapter', () => {
     }
   })
 
+  it.each([
+    ['Tell me about his utility workforce work', 'workforce-operations-transformation'],
+    ["What is Rohan's private-equity diligence experience?", 'buy-side-commercial-diligence'],
+    ['How has he worked across product strategy and GTM?', 'omnichannel-payments-strategy']
+  ])('answers %s with ownership, judgment, and classified impact', async (input, slug) => {
+    const item = portfolioContent.work.find((work) => work.slug === slug)!
+    const reply = await localAssistantAdapter.reply(
+      { input, history: [] },
+      new AbortController().signal
+    )
+
+    expect(reply).toMatchObject({
+      kind: 'answer',
+      citations: [{ sectionId: '#work', label: 'Work' }]
+    })
+    if (reply.kind !== 'answer') return
+    expect(reply.text).toContain(item.role.position)
+    expect(reply.text).toContain(item.role.owned)
+    expect(reply.text).toContain(item.keyDecision)
+    expect(reply.text).toContain(`${item.impactType}: ${item.outcome}`)
+  })
+
+  it('keeps private evidence and unsupported team counts out of the public corpus', () => {
+    const publicAnswers = assistantKnowledge.map(({ answer }) => answer).join(' ')
+
+    expect(publicAnswers).not.toMatch(/Project Phoenix Tracker|source workbook|private process notes/i)
+    expect(publicAnswers).not.toMatch(/team of \d+|direct reports|target names/i)
+  })
+
   it('grounds the assistant-about answer in a public semantic disclosure', async () => {
     const reply = await localAssistantAdapter.reply(
       { input: 'Is this assistant an LLM?', history: [] },
