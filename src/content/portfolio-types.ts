@@ -24,8 +24,8 @@ export interface WorkItem {
   role: WorkRole
   capabilities: string[]
   thesis: string
-  challenge: string
-  approach: string
+  challenge: string[]
+  approach: string[]
   outcome: string
 }
 
@@ -89,8 +89,6 @@ export interface PortfolioContent {
   writing: WritingItem[]
   publicResearch: PublicResearchItem
   about: {
-    statement: string
-    achievements: Array<{ metric: string; detail: string }>
     interests: string[]
   }
   contact: ContactConfig

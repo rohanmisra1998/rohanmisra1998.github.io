@@ -222,7 +222,7 @@ test('adjacent narrative sections keep a deliberate compact rhythm', async ({ pa
   await page.goto('/')
 
   const gaps = await page.locator('main').evaluate((main) => {
-    const ids = ['profile', 'work', 'experience', 'education', 'writing', 'outside-work', 'contact']
+    const ids = ['work', 'experience', 'education', 'writing', 'outside-work', 'contact']
     return ids.slice(0, -1).map((id, index) => {
       const current = main.querySelector<HTMLElement>(`#${id}`)!
       const next = main.querySelector<HTMLElement>(`#${ids[index + 1]}`)!
@@ -238,39 +238,6 @@ test('adjacent narrative sections keep a deliberate compact rhythm', async ({ pa
 
   for (const { from, to, gap } of gaps) {
     expect(gap, `${from} → ${to} has an oversized whitespace gap`).toBeLessThanOrEqual(144)
-  }
-})
-
-test('the promotions proof metric stays on one line without overflowing', async ({ page }) => {
-  for (const viewport of [
-    { width: 1440, height: 900 },
-    { width: 1024, height: 900 },
-    { width: 768, height: 900 }
-  ]) {
-    await page.setViewportSize(viewport)
-    await page.goto('/')
-    await page.getByRole('button', { name: 'Read more about me' }).click()
-
-    const metric = page.locator('.profile__proof strong').first()
-    const geometry = await metric.evaluate((element) => {
-      const box = element.getBoundingClientRect()
-      const lineHeight = Number.parseFloat(getComputedStyle(element).lineHeight)
-      return {
-        height: box.height,
-        lineHeight,
-        clientWidth: element.clientWidth,
-        scrollWidth: element.scrollWidth
-      }
-    })
-
-    expect(
-      geometry.height,
-      `${viewport.width}px promotions metric wrapped onto multiple lines`
-    ).toBeLessThanOrEqual(geometry.lineHeight + 1)
-    expect(
-      geometry.scrollWidth,
-      `${viewport.width}px promotions metric overflowed its proof column`
-    ).toBeLessThanOrEqual(geometry.clientWidth + 1)
   }
 })
 
@@ -315,29 +282,16 @@ test('all case studies reveal classified impact before scrolling and expose owne
         `${viewport.width}px ${title} impact is not fully visible when the case opens`
       ).toBeLessThanOrEqual(viewport.height)
       await expect(dialog.getByRole('region', { name: 'My role' })).toBeVisible()
+      await expect(dialog.getByRole('region', { name: 'Challenge' }).getByRole('listitem'))
+        .toHaveCount(2)
+      await expect(dialog.getByRole('region', { name: 'Approach' }).getByRole('listitem'))
+        .toHaveCount(3)
       await expect(dialog.getByRole('region', { name: 'Key decision' })).toHaveCount(0)
       await expect(dialog.locator('[data-artifact-kind]')).toHaveCount(0)
       await expect(dialog.locator('figure')).toHaveCount(0)
       expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
     }
   }
-})
-
-test('the two approved proof points fill the profile evenly', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 })
-  await page.goto('/')
-  await page.getByRole('button', { name: 'Read more about me' }).click()
-
-  const proof = page.getByRole('list', { name: 'Career highlights' })
-  const items = proof.getByRole('listitem')
-  await expect(items).toHaveCount(2)
-  const [proofBox, itemBoxes] = await Promise.all([
-    proof.boundingBox(),
-    items.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width))
-  ])
-  expect(proofBox).not.toBeNull()
-  expect(itemBoxes[0]).toBeCloseTo(itemBoxes[1], 0)
-  expect(itemBoxes[0] + itemBoxes[1]).toBeCloseTo(proofBox!.width, 0)
 })
 
 test('writing, research, builder, and contact destinations are safe external links', async ({ page }) => {
@@ -801,7 +755,6 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.education p',
     '.education__meta',
     '.writing-row__body > p',
-    '.profile__story > p',
     '.contact__body > p',
     '.outside-work__heading > p:last-child',
     '.outside-work__interests li'
@@ -821,7 +774,7 @@ test('mobile narrative and support copy remains at least 16px', async ({ page },
     '.case-dialog__thesis',
     '.case-dialog__role dd',
     '.case-dialog__outcome h3',
-    '.case-dialog__narrative h3'
+    '.case-dialog__narrative li'
   ]) {
     const elements = page.locator(selector)
     expect(await elements.count(), `${selector} must resolve to rendered dialog copy`).toBeGreaterThan(0)

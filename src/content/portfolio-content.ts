@@ -28,8 +28,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Buyer-experience strategy', 'Growth experimentation', 'Cross-functional delivery', 'Product roadmapping'],
       thesis: 'Turn a fragmented, high-anxiety parts journey into a guided, confidence-building experience—from first search to a complete repair basket.',
-      challenge: 'Parts buyers must translate a repair need into a compatible set of highly technical products; a horizontal marketplace journey left too much of that burden with the customer.',
-      approach: 'Scoped the opportunity, secured cross-functional capacity, and drove a verticalized buyer journey into delivery—combining guided search-result filters, richer technical item pages, and stronger fitment confidence, with repair-job cross-sell extending the journey beyond a single part.',
+      challenge: [
+        'Translate repair intent into the right compatible parts across a highly technical catalog',
+        'Close confidence gaps across discovery, item detail, and fitment in a horizontal marketplace journey'
+      ],
+      approach: [
+        'Scoped the end-to-end buyer journey and quantified the GMV opportunity',
+        'Secured capacity across product, engineering, search, design, analytics, marketing, and regional teams',
+        'Drove delivery of guided search filters, richer technical item pages, stronger fitment confidence, and repair-job cross-sell'
+      ],
       outcome: '~$XXM incremental GMV opportunity.'
     },
     {
@@ -44,8 +51,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Product roadmaps', 'Go-to-market design', 'Sales operating model', 'Partnership strategy'],
       thesis: 'Turn an offline point-of-sale acquisition into a scaled omnichannel payments growth engine.',
-      challenge: 'Define the economics and rollout of a new omnichannel proposition without a clear Indian-market precedent or complete data.',
-      approach: 'Built bottom-up revenue, margin, and payback economics by merchant segment; triangulated assumptions with market evidence and customer, product, sales, and partnership inputs; and translated the answer into a four-year product and GTM roadmap.',
+      challenge: [
+        'Establish the economics for a new omnichannel proposition without a clear Indian-market precedent',
+        'Define which merchant segments, products, channels, and partnerships could scale profitably'
+      ],
+      approach: [
+        'Built bottom-up revenue, margin, and payback economics by merchant segment',
+        'Triangulated market evidence with customer, product, sales, and partnership inputs',
+        'Translated findings into a four-year product, GTM, sales, and partnership roadmap'
+      ],
       outcome: '$150M+ realized GMV uplift.'
     },
     {
@@ -60,8 +74,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Market assessment', 'Competitive positioning', 'Right-to-win analysis', 'Risk synthesis'],
       thesis: 'Convert incomplete evidence into a decision-ready view of market quality, right to win, downside risk, and value creation.',
-      challenge: 'Evaluate fast-moving B2B SaaS and logistics businesses with incomplete evidence under compressed investment timelines.',
-      approach: 'Triangulated primary research, market modeling, competitive evidence, and scenario analysis; then linked the market view to the highest-confidence growth, pricing, and operational levers.',
+      challenge: [
+        'Assess market quality and competitive position with incomplete evidence under compressed investment timelines',
+        'Separate durable value-creation levers from optimistic management assumptions'
+      ],
+      approach: [
+        'Triangulated expert interviews, market models, competitive evidence, and scenario analysis',
+        'Pressure-tested growth, pricing, and operating assumptions against downside cases',
+        'Synthesized market attractiveness, right to win, risks, and value creation into decision-ready investment views'
+      ],
       outcome: 'X buy-side investment theses informed.'
     },
     {
@@ -76,8 +97,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['AI-tool integration', 'Process redesign', 'Operating model', 'Multiyear planning'],
       thesis: 'Redesign recruiting around AI so teams spend less time on manual work while candidates move through a faster, more consistent process.',
-      challenge: 'Transform a fragmented hiring journey whose stakeholders were optimizing for different outcomes across close to one million applicants annually.',
-      approach: 'Mapped the applicant journey, simplified handoffs, integrated AI screening and scheduling, standardized interviews, and used weekly pilot metrics to build adoption.',
+      challenge: [
+        'Redesign a fragmented recruiting journey serving close to one million applicants annually',
+        'Align recruiting, HR, and hiring managers around common outcomes and adoption'
+      ],
+      approach: [
+        'Mapped applicant pain points, manual work, and handoff failure points end to end',
+        'Integrated AI-enabled screening and scheduling while standardizing interview workflows',
+        'Launched pilots with weekly metrics, adoption routines, and a multiyear scale roadmap'
+      ],
       outcome: '~15,000 recruiting hours saved annually.'
     },
     {
@@ -92,8 +120,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Workforce operations', 'Pilot design', 'Process redesign', 'Stakeholder alignment'],
       thesis: 'Turn field-workforce planning into a repeatable operating system that improves productivity and lowers cost.',
-      challenge: 'Redesign planning, scheduling, crew assignment, and workforce management across electricity operating centers while overcoming frontline resistance.',
-      approach: 'Diagnosed sources of lost crew time, redesigned core workflows and management routines, implemented pilots across 10+ operating centers, and created the frontline feedback and KPI cadence required for adoption.',
+      challenge: [
+        'Redesign planning, scheduling, crew assignment, and workforce management across 10+ operating centers',
+        'Overcome frontline resistance without disrupting field delivery'
+      ],
+      approach: [
+        'Diagnosed sources of lost crew time through frontline observation and operating data',
+        'Redesigned workflows, roles, and management routines around prioritized work',
+        'Implemented pilots across 10+ centers with feedback loops and a KPI cadence to sustain adoption'
+      ],
       outcome: '$20M+ savings delivered · 8%+ workforce productivity improvement.'
     },
     {
@@ -108,8 +143,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Supply chain', 'Value-lever identification', 'Executive workshops', 'Implementation roadmaps'],
       thesis: 'Convert a fragmented regional supply chain into a sequenced, executable performance agenda.',
-      challenge: 'Unlock performance across acquisition-built regional operations while navigating local autonomy and changing cross-border risk.',
-      approach: 'Sized 10+ levers across sourcing, warehouse footprint, inventory, transportation, and network design, then used C-suite workshops to align on tradeoffs and sequencing.',
+      challenge: [
+        'Unlock supply-chain performance across acquisition-built regional operations',
+        'Balance enterprise scale benefits with local autonomy and shifting cross-border risk'
+      ],
+      approach: [
+        'Sized 10+ levers across sourcing, footprint, inventory, transportation, and network design',
+        'Defined the future-state operating model and sequenced the roadmap by value and feasibility',
+        'Led C-suite workshops to resolve tradeoffs and align five regions on implementation priorities'
+      ],
       outcome: '$40M+ savings identified across five regions.'
     },
     {
@@ -124,8 +166,15 @@ export const portfolioContent: PortfolioContent = {
       },
       capabilities: ['Distribution transformation', 'Market entry', 'Sector mapping', 'Acquisition-led value creation'],
       thesis: 'Focus commercial and investment resources on the channels, markets, and adjacencies with the strongest right to win.',
-      challenge: 'Across separate engagements, reshape a fragmented pharmaceutical distribution network and identify acquisition-led life-sciences opportunities.',
-      approach: 'Assessed distributor performance and opportunity across 770+ districts, rationalized the channel network, prioritized expansion markets, and evaluated adult-vaccine and add-on acquisition opportunities.',
+      challenge: [
+        'Rationalize a fragmented pharmaceutical distribution network across 770+ districts',
+        'Identify adjacent life-sciences growth and acquisition opportunities with the strongest right to win'
+      ],
+      approach: [
+        'Benchmarked distributor performance and market opportunity district by district',
+        'Rationalized channel coverage and prioritized expansion across 200+ districts',
+        'Assessed adult-vaccine and add-on acquisition opportunities against sector attractiveness and strategic fit'
+      ],
       outcome: '30%+ distributor-base reduction · expansion enabled across 200+ districts.'
     }
   ],
@@ -165,17 +214,6 @@ export const portfolioContent: PortfolioContent = {
     href: 'https://www.laureatesandleaders.org/_files/ugd/811759_44700bb3bf134c7fa1e15adade4daa51.pdf'
   },
   about: {
-    statement: 'I like problems with real operational texture: fragmented markets, imperfect information, and teams that need a practical path from analysis to action. My toolkit was built in consulting, sharpened through operating work, and keeps expanding through hands-on building.',
-    achievements: [
-      {
-        metric: '5 promotions',
-        detail: 'Five promotions in under four years at Bain on a top-rated, accelerated trajectory.'
-      },
-      {
-        metric: '~$250M',
-        detail: '~$250M in value across Bain engagements.'
-      }
-    ],
     interests: ['Hiking', 'History', 'Travel', 'Scuba diving', 'Horse riding']
   },
   contact: {

@@ -84,11 +84,15 @@ export function CaseStudyDialog({ item, onClose, onOpenAssistant }: CaseStudyDia
           <div className="case-dialog__narrative">
             <section role="region" aria-label="Challenge">
               <p>Challenge</p>
-              <h3>{item.challenge}</h3>
+              <ul>
+                {item.challenge.map((bullet) => <li key={bullet}>{bullet}</li>)}
+              </ul>
             </section>
             <section role="region" aria-label="Approach">
               <p>Approach</p>
-              <h3>{item.approach}</h3>
+              <ul>
+                {item.approach.map((bullet) => <li key={bullet}>{bullet}</li>)}
+              </ul>
             </section>
             {hasAssistantTopic && onOpenAssistant && (
               <button

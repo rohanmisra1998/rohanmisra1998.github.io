@@ -97,9 +97,9 @@ describe('CaseStudyDialog', () => {
       'Partnered with',
       item.role.partneredWith,
       'Challenge',
-      item.challenge,
+      ...item.challenge,
       'Approach',
-      item.approach
+      ...item.approach
     ]
     let lastPosition = -1
     for (const copy of orderedCopy) {
@@ -133,6 +133,27 @@ describe('CaseStudyDialog', () => {
       expect(dialog.querySelector('figure')).not.toBeInTheDocument()
       expect(dialog.querySelector('[data-artifact-kind]')).not.toBeInTheDocument()
       expect(dialog).not.toHaveTextContent('Decision model')
+      unmount()
+    }
+  })
+
+  it('renders Challenge and Approach as compact consulting bullets across every case', () => {
+    for (const item of portfolioContent.work) {
+      const { unmount } = render(
+        <>
+          <div id="page-shell">Portfolio shell</div>
+          <CaseStudyDialog item={item} onClose={() => {}} onOpenAssistant={() => {}} />
+        </>
+      )
+
+      const dialog = screen.getByRole('dialog', { name: item.title })
+      const challenge = within(dialog).getByRole('region', { name: 'Challenge' })
+      const approach = within(dialog).getByRole('region', { name: 'Approach' })
+
+      expect(within(challenge).getAllByRole('listitem')).toHaveLength(2)
+      expect(within(approach).getAllByRole('listitem')).toHaveLength(3)
+      expect(challenge.querySelector('h3')).not.toBeInTheDocument()
+      expect(approach.querySelector('h3')).not.toBeInTheDocument()
       unmount()
     }
   })

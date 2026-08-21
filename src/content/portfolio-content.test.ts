@@ -113,7 +113,7 @@ describe('approved public portfolio content', () => {
       expect.objectContaining({
         role: 'Strategy & operations program lead',
         owned: expect.stringContaining('resourcing'),
-        approach: expect.stringContaining('verticalized buyer journey')
+        approach: expect.arrayContaining([expect.stringContaining('Drove delivery')])
       }),
       expect.objectContaining({
         role: 'Product strategy & GTM workstream lead',
@@ -125,7 +125,7 @@ describe('approved public portfolio content', () => {
       expect.objectContaining({
         role: 'Cross-functional transformation lead',
         owned: expect.stringContaining('AI workflow design'),
-        approach: expect.stringContaining('AI screening and scheduling')
+        approach: expect.arrayContaining([expect.stringContaining('AI-enabled screening and scheduling')])
       }),
       expect.objectContaining({
         role: 'End-to-end transformation lead'
@@ -135,7 +135,7 @@ describe('approved public portfolio content', () => {
       }),
       expect.objectContaining({
         role: 'Commercial growth & life-sciences strategy workstream lead',
-        challenge: expect.stringContaining('life-sciences opportunities')
+        challenge: expect.arrayContaining([expect.stringContaining('life-sciences growth')])
       })
     ])
   })
@@ -150,20 +150,6 @@ describe('approved public portfolio content', () => {
     expect(portfolioContent.work.find(({ slug }) => slug === 'trail-pulse')).toBeUndefined()
     expect(serialized).not.toMatch(/No target|Target identities|transaction detail is disclosed/i)
     expect(serialized).not.toMatch(/vibe-coded/i)
-  })
-
-  it('shows exactly the two approved Bain proof points', () => {
-    expect(portfolioContent.about.achievements).toEqual([
-      {
-        metric: '5 promotions',
-        detail: 'Five promotions in under four years at Bain on a top-rated, accelerated trajectory.'
-      },
-      {
-        metric: '~$250M',
-        detail: '~$250M in value across Bain engagements.'
-      }
-    ])
-    expect(serialized).not.toMatch(/Youngest student|\$210M\+/i)
   })
 
   it('publishes only the approved direct email action and no private phone data', () => {

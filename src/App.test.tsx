@@ -478,45 +478,22 @@ describe('App', () => {
     )
   })
 
-  it('keeps the longer introduction compact until the reader asks to expand it', async () => {
-    const user = userEvent.setup()
+  it('removes the profile disclosure and places Selected work directly after the hero', () => {
     render(<App />)
-    const main = screen.getByRole('main')
     const hero = screen.getByRole('region', {
       name: 'Tech-first operator building at the intersection of marketplaces, product, and AI.'
     })
-    const profile = screen.getByRole('region', { name: 'Read more about me' })
-    const trigger = within(profile).getByRole('button', { name: 'Read more about me' })
-    const panel = document.getElementById('profile-details')
-    const mark = profile.querySelector('.profile__toggle-mark')
+    const selectedWork = screen.getByRole('region', { name: 'Selected work' })
 
-    expect(hero.nextElementSibling).toBe(profile)
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(trigger).toHaveAttribute('aria-controls', 'profile-details')
-    expect(mark).toHaveTextContent('+')
-    expect(panel).toHaveAttribute('aria-hidden', 'true')
-
-    await user.click(trigger)
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    expect(mark).toHaveTextContent('×')
-    expect(panel).not.toHaveAttribute('aria-hidden')
-    expect(within(profile).getByText(/problems with real operational texture/i)).toBeVisible()
-    expect(within(profile).getByText(/five promotions in under four years/i)).toBeVisible()
-    expect(within(profile).getByText(/~\$250M in value across Bain engagements/i)).toBeVisible()
-    expect(within(profile).queryByText(/youngest student/i)).not.toBeInTheDocument()
-    expect(within(main).queryByRole('region', { name: 'About' })).not.toBeInTheDocument()
-
-    await user.click(trigger)
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(panel).toHaveAttribute('aria-hidden', 'true')
-    expect(trigger).toHaveFocus()
+    expect(hero.nextElementSibling).toBe(selectedWork)
+    expect(screen.queryByRole('region', { name: 'Read more about me' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Read more about me' })).not.toBeInTheDocument()
+    expect(screen.queryByText('The longer version')).not.toBeInTheDocument()
   })
 
   it('exposes every main section as a region labelled by its own visible heading', () => {
     render(<App />)
-    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 8)
+    expectMainSectionsToBeLabelledRegions(screen.getByRole('main'), 7)
 
     const selectedWork = screen.getByRole('region', { name: 'Selected work' })
     const capabilities = within(

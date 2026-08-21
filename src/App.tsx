@@ -5,7 +5,6 @@ import { Education } from './components/Education'
 import { Experience } from './components/Experience'
 import { Hero } from './components/Hero'
 import { OutsideWork } from './components/OutsideWork'
-import { Profile } from './components/Profile'
 import { SelectedWork } from './components/SelectedWork'
 import { SiteHeader } from './components/SiteHeader'
 import { Writing } from './components/Writing'
@@ -31,7 +30,6 @@ export default function App() {
             content={portfolioContent.hero}
             onOpenAssistant={layers.openAssistant}
           />
-          <Profile content={portfolioContent.about} />
           <SelectedWork
             items={portfolioContent.work}
             projects={portfolioContent.personalProjects}
