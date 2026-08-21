@@ -597,6 +597,10 @@ test('desktop navigation stays exposed and tablet navigation uses a disclosure',
 
 test('invalid direct case queries are removed without opening a dialog', async ({ page }) => {
   await page.goto('/?case=private-client-name')
+  await expect(page.getByRole('heading', {
+    level: 1,
+    name: 'Tech-first operator building at the intersection of marketplaces, product, and AI.'
+  })).toBeVisible()
   await expect(page).toHaveURL('/')
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
